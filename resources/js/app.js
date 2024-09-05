@@ -1,7 +1,4 @@
 import Alpine from 'alpinejs';
-import persist from '@alpinejs/persist'
-
-Alpine.plugin(persist)
 
 const Clover = {
     rule: {
@@ -265,9 +262,11 @@ document.addEventListener('alpine:init', () => {
                 }, 300);
             };
 
+            el.addEventListener('focus', handler);
             el.addEventListener('input', handler);
 
             cleanup(() => {
+                el.removeEventListener('focus', handler);
                 el.removeEventListener('input', handler);
             });
         }
