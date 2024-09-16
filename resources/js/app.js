@@ -2,6 +2,19 @@ import Alpine from 'alpinejs';
 
 const Clover = {
     rule: {
+        flname: function (message) {
+            return function (field, val) {
+                const regex =
+                    /^[a-zA-Z]+(?:[' -][a-zA-Z]+){0,49}$/;
+                return {
+                    rule: 'flname',
+                    value: val.match(regex)
+                        ? false
+                        : message ||
+                        `The  ${field}  does not match with name format`,
+                };
+            };
+        },
         required: function (message) {
             return function (field, val) {
                 return {
@@ -25,10 +38,22 @@ const Clover = {
         },
         password: function (message) {
             return function (field, val) {
-                const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]$/;
+                const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,25}$/;
                 return {
                     rule: 'password',
                     value: val.match(regex)
+                        ? false
+                        : message ||
+                        `The ${field} must have a minimum of eight characters with at least one alphabet and one number`,
+                };
+            };
+        },
+        passwordconfirm: function (message) {
+            return function (field, val) {
+                const password = document.querySelector('input[name="password"]').value;
+                return {
+                    rule: 'passwordconfirm',
+                    value: val === password
                         ? false
                         : message ||
                         `The ${field} must have a minimum of eight characters with at least one alphabet and one number`,
@@ -59,6 +84,14 @@ const Clover = {
                 };
             };
         },
+        termsCheck: function(message){
+            return function (field, val){
+                return{
+                    rule: "termsCheck",
+                    
+                }
+            }
+        },
         number: function (message) {
             return function (field, val) {
                 var regex = /^\d+$/;
@@ -77,6 +110,30 @@ const Clover = {
                 if (!val.match(regex)) {
                     return {
                         rule: 'onlyWordCharacter',
+                        value: message || `The ${field} must be special charactes !#=`,
+                    };
+                }
+                return { value: false };
+            };
+        },
+        usernameLength: function (message) {
+            return function (field, val) {
+                var regex = /^[a-zA-Z0-9._-]{3,15}$/;
+                if (!val.match(regex)) {
+                    return {
+                        rule: 'usernameLength',
+                        value: message || `The ${field} must be special charactes !#=`,
+                    };
+                }
+                return { value: false };
+            };
+        },
+        usernameRestriction: function (message) {
+            return function (field, val) {
+                var regex = /^(?!.*[_.-]{2})[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*$/;
+                if (!val.match(regex)) {
+                    return {
+                        rule: 'usernameRestriction',
                         value: message || `The ${field} must be special charactes !#=`,
                     };
                 }
