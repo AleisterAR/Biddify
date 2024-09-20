@@ -75,12 +75,13 @@
                             </div>
                             <div class="flex items-start">
                                 <div class="flex items-center h-5">
-                                  <input id="terms" aria-describedby="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-0">
+                                  <input id="terms" aria-describedby="terms" name="terms" x-clover-verify="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-0">
                                 </div>
                                 <div class="ml-3 text-sm">
                                   <label for="terms" class="font-light text-gray-500">I accept the <a class="font-medium hover:text-blue-600 hover:underline" href="#" >Terms and Conditions</a></label>
-                                </div>
+                                </div>      
                             </div>
+                            <div x-text="errors.terms" class="text-red-500 text-sm mt-1"></div>
                             <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Create an account</button>
                             <p class="text-sm font-light text-gray-500">
                                 Already have an account? <a href="{% url 'login' %}" class="font-medium text-primary-600 hover:text-blue-500">Login here</a>
@@ -99,9 +100,10 @@
                     firstname:[Clover.rule.required("First name is required!"), Clover.rule.flname("First name must be between 1 and 50 characters long and can only contain letters, spaces, and hyphens.")],
                     lastname:[Clover.rule.required("Last name is required!"), Clover.rule.flname("Last name must be between 1 and 50 characters long and can only contain letters, spaces, and hyphens.")],
                     username: [Clover.rule.required("Username is required!"), Clover.rule.usernameLength("Username must have length of between 3 to 15 characters!"), Clover.rule.usernameRestriction("Username must not contain special characters except \"._-\"")],
-                    password: [Clover.rule.required("Password is required!"), Clover.rule.password("Password must be at least 8 characters long, must contain at least one uppercase letter, one lowercase letter, one number and one special character (e.g., !@#$%^&*).")],
+                    password: [Clover.rule.required("Password is required!"), Clover.rule.password("Password must be at least 8 characters long, must contain at least one uppercase letter, one lowercase letter, one number and one special character (e.g., !@#$%^&*#).")],
                     passwordconfirm: [Clover.rule.required("Password confirmation is required!"), Clover.rule.passwordconfirm("Two passwords must match!")],
                     email: [Clover.rule.required("Email is required!"), Clover.rule.mail('Please enter a valid email address (e.g., name@example.com).')],
+                    terms: [Clover.rule.termsCheck("You must agreee to the Terms and Conditions to continue.")],
                 },
                 errors: {},
                 async submit() {
@@ -117,13 +119,10 @@
                         if (!res.ok) {
                             throw res;
                         }
-
                         const response = await res.json();
                         if (response.status === 'success') {
-                            
-                        } else {
-                        }
-
+                            window.location = "/login"
+                        } 
                     } catch (error) {
                     } finally {
                         

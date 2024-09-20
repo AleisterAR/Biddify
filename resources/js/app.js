@@ -38,7 +38,7 @@ const Clover = {
         },
         password: function (message) {
             return function (field, val) {
-                const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,25}$/;
+                const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,25}$/;
                 return {
                     rule: 'password',
                     value: val.match(regex)
@@ -85,12 +85,12 @@ const Clover = {
             };
         },
         termsCheck: function(message){
-            return function (field, val){
-                return{
-                    rule: "termsCheck",
-                    
-                }
-            }
+            return function (field, val, el) {
+                return {
+                    rule: 'terms',
+                    value: el.checked ? false : message || `You must agree to ${field}.`,
+                };
+            };
         },
         number: function (message) {
             return function (field, val) {

@@ -30,7 +30,7 @@
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                         Sign in to your account
                     </h1>
-                    <form x-data="login" class="space-y-4 md:space-y-6" id="loginForm" x-clover-form="submitForm">
+                    <form x-data="login" class="space-y-4 md:space-y-6" id="loginForm" x-clover-form="submitForm" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div>
                             <label for="inputUsername" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
@@ -42,6 +42,7 @@
                             <input type="password" name="password" id="inputPassword" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" >
                             <div x-text="errors.password" class="text-red-500 text-sm mt-1"></div>
                         </div>
+                        <div class="text-red-500 text-sm mt-1 hidden" id="something_wrong">Incorrect username or password! Try again! </div>
                         <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign in</button>
                         <p class="text-sm font-light text-gray-500">
                             Don’t have an account yet? <a href="{% url 'user_register' %}" class="font-medium text-primary-600 hover:underline hover:text-blue-500">Sign up</a>
@@ -53,6 +54,7 @@
       </section>
       <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
       <script>
+        something_wrong_error = document.getElementById("something_wrong")
         document.addEventListener('alpine:init', () => {
             Alpine.data('login', () => ({
                 rule: {
@@ -62,36 +64,32 @@
                 errors: {},
                 credentialError: "",
                 async submitForm() {
-                    const form = this.$refs.form
-                    const data = new FormData(form)
+                    const form = this.$el;
+                    const data = new FormData(form);
     
-                    if (Object.keys(this.errors).length) return
-                    this.credentialError = ""
-    
-                    try {
-                        const response = await fetch("", {
-                            method: "POST",
-                            body: data
-                        })
-    
-                        if (!response.ok) {
-                            if (response.status === 403) {
-                                return this.credentialError = "Credential Error!"
+                    if (!Object.keys(this.errors).length){
+                        try {
+                            const res = await fetch("", {
+                                method: "POST",
+                                body: data,
+                            })
+                            if (!res.ok) {
+                                throw res;
                             }
-                        }
-                        const res = await response.json()
-    
-                        this.errors = {}
-    
-                        if (res.success === true) {
-                            window.location.href = 'home/';
-                        } else if (res.success === false && res.error === "Invalid credentials") {
-                            this.credentialError =  "Username or Password is incorrect!"
-                        }
-    
+                            const response = await res.json()
+                            if (response.status === "success" && response.role === "admin") {
+                                window.location.href = '/admin/';
+                            }
+                            else if (response.status === "success" && response.role === "participant") {
+                                window.location.href = '/home/';
+                            } else if (response.status === "failure" && response.errors === "credential_error") {
+                                something_wrong_error.classList.remove("hidden")
+                            }
+
                     } catch (error) {
                         this.credentialError =  "Server Error!"
                     }
+                    }           
                 }
             }))
         })

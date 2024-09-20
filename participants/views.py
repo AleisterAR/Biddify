@@ -13,13 +13,15 @@ def custom_login(request):
             user = form.get_user()
             login(request, user)
             if user.user_type == 'admin':
-                return redirect('/admin/')
+                return JsonResponse({"status": "success", "role": "admin"})
             else:
-                return redirect('')
+                return JsonResponse({"status": "success", "role": "participant"})
+        else:
+            errors = form.errors.get_json_data()
+            return JsonResponse({"status": "failure", "errors": "credential_error"})
     else:
         form = AuthenticationForm()
-    
-    return render(request, 'utilities/login.html', {'form': form})
+        return render(request, 'utilities/login.html', {'form': form})
 
 def user_dashboard(request):
     return render(request, 'utilities/home.html')
