@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from participants.models import Participant
+from django.contrib.auth import logout
 
 def custom_login(request):
     if request.method == 'POST':
@@ -33,3 +34,7 @@ def user_register(request):
         participant = Participant.objects.create_user(first_name=form_data["firstname"], last_name=form_data["lastname"], email=form_data["email"], username=form_data["username"], password=form_data["password"], phone=form_data["phone"], address=form_data["address"], user_type='participant')
         return JsonResponse({"status":"success"})
     return render(request, 'utilities/register.html')
+
+def user_logout(request):
+    logout(request)
+    return redirect("home")
