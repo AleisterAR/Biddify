@@ -2,7 +2,7 @@
 {% block content %}
 <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-10 px-3">
     <div class="flex-initial px-9">
-        <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">Your Inventory</h1>
+        <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">Inventory</h1>
     </div>
     <div class="font-medium flex-initial px-9">
         <button data-modal-target="additem-modal" data-modal-toggle="additem-modal" type="button" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-sm lg:text-md px-5 py-2.5 text-center">
@@ -23,7 +23,7 @@
                             <span class="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <form class="p-4 md:p-5" x-data="item_register" x-clover-form="submit" id="registerForm" enctype="multipart/form-data">
+                    <form class="p-4 md:p-5" x-data="item_register" x-clover-form="submit" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="grid gap-4 grid-cols-2">
                             <div>
@@ -47,53 +47,47 @@
                             <div class="grid gap-4 mb-4 grid-cols-2">
                                 <div class="col-span-2">
                                     <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Name</label>
-                                    <input x-clover-verify type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item name">
-                                    <div x-text="errors.name" class="text-red-500 text-sm mt-1"></div>
+                                    <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item name">
                                 </div>
                                 <div class="col-span-2 sm:col-span-1">
                                   <label for="category" class="block mb-2 text-sm font-medium text-gray-900">Category</label>
-                                  <select x-clover-verify id="category" name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                  <select id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
                                     <option value="" disabled selected>Select an item category</option>
                                     {% for category in categories %}
                                         <option value="{{category}}">{{category}}</option>
                                       {% endfor %}
                                   </select>
-                                  <div x-text="errors.category" class="text-red-500 text-sm mt-1"></div>
                                 </div>
                                 <div class="col-span-2 sm:col-span-1">
                                     <label for="price" class="block mb-2 text-sm font-medium text-gray-900">Starting Price</label>
                                     <input type="number" name="price" id="price" step="0.01" min="0" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item starting price">
-                                    <div x-text="errors.price" class="text-red-500 text-sm mt-1"></div>
                                 </div>
                                 <div class="col-span-2">
                                   <label for="creator" class="block mb-2 text-sm font-medium text-gray-900">Creator</label>
                                   <input type="text" name="creator" id="creator" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type name of the creator">
                                 </div>
                                 <div class="col-span-2 sm:col-span-1">
-                                  <label for="year" class="block mb-2 text-sm font-medium text-gray-900">Year of Origin</label>
-                                  <input x-clover-verify type="text" name="year" id="year" min="1000" max="2024" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type year of origin">
+                                  <label for="year_of_origin" class="block mb-2 text-sm font-medium text-gray-900">Year of Origin</label>
+                                  <input type="text" x-clover-verify name="year_of_origin" id="year_of_origin" min="1000" max="2024" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type year of origin">
                                   <div x-text="errors.year" class="text-red-500 text-sm mt-1"></div>
                                 </div>
                                 <div class="col-span-2 sm:col-span-1">
                                     <label for="condition" class="block mb-2 text-sm font-medium text-gray-900">Condition</label>
-                                    <select x-clover-verify id="condition" name="condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    <select id="condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
                                       <option value="" disabled selected>Select an item condition</option>
                                       {% for value, display in condition_choices %}
                                         <option value="{{value}}">{{display}}</option>
                                       {% endfor %}
                                     </select>
-                                    <div x-text="errors.condition" class="text-red-500 text-sm mt-1"></div>
                                 </div>
                                 <div class="col-span-2">
                                     <label for="description" class="block mb-2 text-sm font-medium text-gray-900">Product Description</label>
-                                    <textarea x-clover-verify id="description" name="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Write product description here"></textarea>
-                                    <div x-text="errors.description" class="text-red-500 text-sm mt-1"></div>                      
+                                    <textarea id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Write product description here"></textarea>                    
                                 </div>
                                 <div class="col-span-2">
                                   <label class="block mb-2 text-sm font-medium text-gray-900">Provide image or file of provenance</label>
-                                  <input x-clover-verify accept=".pdf, .png, .jpg, .jpeg" class="block w-full text-sm text-gray-90 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" aria-describedby="file_input_help" id="provenance" name="provenance" type="file">
+                                  <input accept=".pdf, .png, .jpg, .jpeg" class="block w-full text-sm text-gray-90 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" aria-describedby="file_input_help" id="file_input" type="file">
                                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">PNG, JPG or PDF</p>
-                                  <div x-text="errors.provenance" class="text-red-500 text-sm mt-1"></div> 
                                 </div>
                             </div>
                         </div>
@@ -104,20 +98,8 @@
                     </form>
                 </div>
             </div>
-        </div>
-        
+        </div> 
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
-      {% for belonging in belongings %}
-        <div>
-          <img class="h-auto max-w-full" src="{{belonging.itemimage_set.first.image.url}}" alt="">
-          <p class="font-medium font-sans text-lg pt-2">{{belonging.name}}</p><br>
-          <p class="font-mono font-normal text-sm text-gray-500">CURRENT BID</p>
-          <p class="font-sans font-medium text-2xl">€ {{belonging.starting_price}}</p>
-          <p class="pt-1 font-medium font-sans text-md text-gray-500"></p>
-        </div>
-      {% endfor %}
-    </div> 
 </div>
 <script>
     const fileInput = document.getElementById("file-input");
@@ -246,16 +228,16 @@
                                 };
                             };
                         }("At least one image must be selected!"),],
+                    year: [Clover.rule.number("Year must be a number!")],
                     provenance: [Clover.rule.requiredFile("Provenance is required!")],
-                    price: [Clover.rule.required("Price is required!"),Clover.rule.price("Price must be a positive number!")],
-                    description: [Clover.rule.required("Description must be provided!")],
-                    year: [Clover.rule.optionalNumerical("Year must be a positive number!")],
+                    price: [Clover.rule.number("Price must be a number!"), Clover.rule.required("Price is required!")],
+                    description: [Clover.rule.required("Description must be provided!")]
                 },
                 errors: {},
                 async submit() {
                 const form = this.$el;
                 const formData = new FormData(form);
-                currentFiles.forEach((file, index) => {
+                imageFiles.forEach((file, index) => {
                     formData.append('images[]', file);
                 });
                 if (!Object.keys(this.errors).length) {

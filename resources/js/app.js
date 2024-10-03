@@ -23,6 +23,32 @@ const Clover = {
                 };
             };
         },
+        price: function (message) {
+            return function (field, val) {
+                const price = parseFloat(val);
+                return {
+                    rule: 'price',
+                    value: (!isNaN(price) && price > 0)
+                        ? false
+                        : message || `The ${field} must be a positive number`,
+                };
+            };
+        },
+        optionalNumerical: function (message){
+            return function (field, val) {
+                if (!val) {
+                    return { value: false };
+                }
+                
+                const isPositiveNumber = /^[1-9]\d*$/;
+                return {
+                    rule: 'optionalNumerical',
+                    value: val.match(isPositiveNumber) 
+                        ? false 
+                        : message || `The ${field} must be a positive number.`,
+                };
+            };
+        },
         mail: function (message) {
             return function (field, val) {
                 const regex =
@@ -116,6 +142,14 @@ const Clover = {
                 return { value: false };
             };
         },
+        requiredFile: function (message) {
+            return function (field, val) {
+                return {
+                    rule: 'requiredFile',
+                    value: val.length > 0 ? false : message || `The ${field} is required`,
+                };
+            };
+        },
         usernameLength: function (message) {
             return function (field, val) {
                 var regex = /^[a-zA-Z0-9._-]{3,15}$/;
@@ -138,6 +172,16 @@ const Clover = {
                     };
                 }
                 return { value: false };
+            };
+        },
+        requiredDropdown: function (message) {
+            return function (field, val) {
+                return {
+                    rule: 'dropdown',
+                    value: val && val !== '' && val !== 'placeholder' 
+                        ? false 
+                        : message || `Please select a valid option for ${field}`,
+                };
             };
         },
         min({ target, amount }, message) {
@@ -194,6 +238,7 @@ const Clover = {
                 return { value: false };
             };
         },
+
         custom: function (message, cb) {
             return function (field, val) {
                 return { rule: 'custom', value: message || cb(field, val) };
