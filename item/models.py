@@ -1,6 +1,7 @@
 from django.db import models
 from participants.models import Participant
 from django.utils import timezone
+import pycountry
 
 class Category(models.Model):
     category = models.CharField(max_length=255)
@@ -18,10 +19,12 @@ class Item(models.Model):
         ('fair', 'Fair'),
         ('poor', 'Poor'),
     )
+    COUNTRY_CHOICES = sorted([(country.alpha_2, country.name) for country in pycountry.countries], key=lambda x: x[1])
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     creator = models.CharField(max_length=255, null=True, blank=True, default="Annonymous")
+    country = models.CharField(max_length=255, null=True, choices=COUNTRY_CHOICES, blank=True, default="Unknown")
     condition = models.CharField(max_length=255,choices=CONDITION_TYPES, null=True, blank=True)
     year = models.CharField(max_length=255, null=True, blank=True)
     owner = models.ForeignKey(Participant, on_delete=models.CASCADE)

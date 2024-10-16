@@ -1,0 +1,74 @@
+{% extends 'utilities/master.html' %}
+{% block content %}
+    <div class="container max-w-screen-xl mx-auto py-16 px-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-28">
+            <div>
+                <h1 class="mb-4 text-1xl font-semibold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl font-serif">{{item.name}} {% if item.year %}({{item.year}}){% endif %}</h1>
+                <div id="gallery" class="relative w-full" data-carousel="slide">
+                    <div class="relative h-56 overflow-hidden md:h-96">
+                        {% for image in images %}
+                            <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                                <img src="{{image.image.url}}" class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="{{item.name}}">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                        <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-700 group-hover:bg-blue-800 group-focus:ring-4 group-focus:ring-blue-800/70 group-focus:outline-none">
+                            <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                            </svg>
+                            <span class="sr-only">Previous</span>
+                        </span>
+                    </button>
+                    <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                        <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-700 group-hover:bg-blue-800 group-focus:ring-4 group-focus:ring-blue-800/70 group-focus:outline-none">
+                            <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                            </svg>
+                            <span class="sr-only">Next</span>
+                        </span>
+                    </button>
+                </div>
+                <div x-data="{ expanded: false }" class="pt-14">
+                    <p class="font-sans font-medium text-base" :class="expanded ? 'line-clamp-none' : 'line-clamp-3'">
+                        {{item.description|linebreaksbr}}
+                    </p>
+                    <button @click="expanded = !expanded" class="text-blue-700 mt-2 font-medium hover:text-blue-700/60 focus:outline-none">
+                        <span x-text="expanded ? 'Show Less' : 'Show More'"></span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
+                    <div>
+                        <label for="creator" class="font-monospace block text-xs font-medium text-gray-600 mb-1">CREATOR</label>
+                        <span id="creator" class="font-sans text-base font-medium">{{item.creator}}</span>
+                    </div>
+                    <div>
+                        <label for="country" class="font-monospace block text-xs font-medium text-gray-600 mb-1">COUNTRY</label>
+                        <span id="country" class="font-sans text-base font-medium">{{item.country}}</span>
+                    </div>
+                    <div>
+                        <label for="year" class="font-monospace block text-xs font-medium text-gray-600 mb-1">YEAR OF ORIGIN</label>
+                        <span id="year" class="font-sans text-base font-medium">{{item.year}}</span>
+                    </div>
+                    <div>
+                        <label for="condition" class="font-monospace block text-xs font-medium text-gray-600 mb-1">CONDITION</label>
+                        <span id="condition" class="font-sans text-base font-medium capitalize">{{item.condition}}</span>
+                    </div>
+                    <div>
+                        <label for="category" class="font-monospace block text-xs font-medium text-gray-600 mb-1">CATEGORY</label>
+                        <span id="category" class="font-sans text-base font-medium">{{item.category}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div class="px-10 font-sans font-medium text-xl">Closes in 
+                    <span>9h 33m 12s</span>
+                </div>
+                <div class="max-w-md p-6 bg-white border border-gray-300 mt-5">
+                    <p class="font-mono font-normal text-sm text-gray-700">CURRENT BID</p>
+                    <h2 class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl ">€ 62</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

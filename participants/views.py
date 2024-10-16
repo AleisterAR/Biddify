@@ -2,10 +2,11 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from participants.models import Participant
-from django.contrib.auth import logout
+from django.contrib.auth import logout, get_user_model
+
 
 def custom_login(request):
     if request.method == 'POST':
@@ -38,3 +39,10 @@ def user_register(request):
 def user_logout(request):
     logout(request)
     return redirect("home")
+
+def check_username(request):
+    username = request.GET.get("username", None)
+    if Participant.objects.filter(username=username).exists():
+        return JsonResponse({'status': 'unavailable'}, status=200)
+    else:
+        return JsonResponse({'status': 'available'}, status=200)

@@ -50,10 +50,36 @@
                                 <input x-clover-verify type="text" name="email" id="inputEmail" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
                                 <div x-text="errors.email" class="text-red-500 text-sm mt-1"></div>
                             </div>
-                            <div>
+                            <div x-data="{
+                                username: '',
+                                status: '',
+                                checkUsername() {
+                                    if (this.username.length > 0) {
+                                        fetch(`/check_username?username=${this.username}`)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.status === 'available') {
+                                                    this.status = 'Username is available';
+                                                    delete errors['username_duplication']
+                                                } else {
+                                                    this.status = 'Username is already taken';
+                                                    errors['username_duplication'] = true
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                this.status = 'Error checking username';
+                                            });
+                                    } else {
+                                        this.status = '';
+                                        delete errors['username_duplication']
+                                    }
+                                }
+                            }">
                                 <label for="inputUsername" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-                                <input x-clover-verify type="text" name="username" id="inputUsername" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                <div x-text="errors.username" class="text-red-500 text-sm mt-1"></div>
+                                <input x-clover-verify type="text" name="username" id="inputUsername" x-model="username" @input.debounce.500ms="checkUsername()" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
+                                <div x-text="errors.username" id="username-error" class="text-red-500 text-sm mt-1"></div>
+                                <div x-text="status" class="text-sm mt-1" :class="status === 'Username is available' ? 'text-green-500' : 'text-red-500'"></div>
                             </div>
                             <div>
                                 <label for="inputPassword" class="block mb-2 text-sm font-medium text-gray-900">Password</label>

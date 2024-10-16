@@ -1,4 +1,5 @@
 {% extends 'utilities/master.html' %}
+{% load tailwind_filters %}
 {% block content %}
 <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-10 px-3">
     <div class="flex-initial px-9">
@@ -65,9 +66,18 @@
                                     <input type="number" name="price" id="price" step="0.01" min="0" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item starting price">
                                     <div x-text="errors.price" class="text-red-500 text-sm mt-1"></div>
                                 </div>
-                                <div class="col-span-2">
+                                <div class="col-span-2 sm:col-span-1">
                                   <label for="creator" class="block mb-2 text-sm font-medium text-gray-900">Creator</label>
                                   <input type="text" name="creator" id="creator" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type name of the creator">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                  <label for="country" class="block mb-2 text-sm font-medium text-gray-900">Country</label>
+                                  <select id="country" name="country" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                    <option value="" selected>Select a country of origin</option>
+                                    {% for core, country_name in countries %}
+                                        <option value="{{core}}">{{country_name}}</option>
+                                      {% endfor %}
+                                  </select>
                                 </div>
                                 <div class="col-span-2 sm:col-span-1">
                                   <label for="year" class="block mb-2 text-sm font-medium text-gray-900">Year of Origin</label>
@@ -92,12 +102,12 @@
                                 <div class="col-span-2">
                                   <label class="block mb-2 text-sm font-medium text-gray-900">Provide image or file of provenance</label>
                                   <input x-clover-verify accept=".pdf, .png, .jpg, .jpeg" class="block w-full text-sm text-gray-90 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" aria-describedby="file_input_help" id="provenance" name="provenance" type="file">
-                                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">PNG, JPG or PDF</p>
+                                  <p class="mt-1 text-sm text-gray-500" id="file_input_help">PNG, JPG or PDF</p>
                                   <div x-text="errors.provenance" class="text-red-500 text-sm mt-1"></div> 
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center">
                             <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                             Add new product
                         </button>
@@ -105,20 +115,56 @@
                 </div>
             </div>
         </div>
-        
+    </div>
+  </div>
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-6 px-3" x-data="{category: '', searchvalue: '', items: []}" x-init="posts = await (await fetch('/posts')).json()">
+    <div class="px-9">
+      <form id="searchForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="w-full max-w-lg grid grid-cols-3 gap-4">
+          <input type="text" name="searchbar" id="searchbar" class="col-span-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <select id="filter_category" name="filter_category" class="col-span-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+            <option value="" disabled selected>All</option>
+            {% for category in categories %}
+              <option value="{{category}}">{{category}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </form>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
       {% for belonging in belongings %}
-        <div>
+        <a href="{% url 'item_detail' belonging.id %}">
           <img class="h-auto max-w-full" src="{{belonging.itemimage_set.first.image.url}}" alt="">
           <p class="font-medium font-sans text-lg pt-2">{{belonging.name}}</p><br>
           <p class="font-mono font-normal text-sm text-gray-500">CURRENT BID</p>
           <p class="font-sans font-medium text-2xl">€ {{belonging.starting_price}}</p>
           <p class="pt-1 font-medium font-sans text-md text-gray-500"></p>
-        </div>
+        </a>
       {% endfor %}
-    </div> 
+    </div>
+  </div>
+
+<div class="flex flex-col items-center pt-12">
+  <span class="text-sm text-gray-700">
+      Showing Page <span class="font-semibold text-gray-900">{{belongings.number}}</span> of <span class="font-semibold text-gray-900">{{belongings.paginator.num_pages}}</span><!-- of <span class="font-semibold text-gray-900">100</span> Entries -->
+  </span>
+  <div class="inline-flex mt-2 xs:mt-0">
+    <a {% if belongings.has_previous %} href="?page={{belongings.previous_page_number}}" {% endif %} class="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-blue-700 hover:bg-blue-800">
+        <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
+        </svg>
+        Prev
+    </a>
+    <a {% if belongings.has_next %} href="?page={{belongings.next_page_number}}" {% endif %} class="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-blue-700 border-0 border-s border-blue-700 hover:bg-blue-800">
+        Next
+        <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+      </svg>
+    </a>
+  </div>
 </div>
+
 <script>
     const fileInput = document.getElementById("file-input");
       const dropZone = document.getElementById("drop-zone");
