@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import htmx from 'htmx.org';
 
 const Clover = {
     rule: {

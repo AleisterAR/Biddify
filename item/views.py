@@ -7,6 +7,11 @@ from django.conf import settings
 
 # Create your views here.
 def inventory(request):
+    owner = get_object_or_404(Participant, id=request.user.id)
+    search = request.GET.get("search")
+    items = Item.objects.filter(owner=owner)
+    if search:
+        items = Item.objects.filter(owner=owner, name__icontains=search)
     if request.method == "POST":
         name = request.POST.get('name')
         description = request.POST.get('description')
@@ -15,7 +20,6 @@ def inventory(request):
         starting_price = request.POST.get('price')
         provenance = request.FILES.get('provenance')
         category_name = request.POST.get('category')
-        owner = get_object_or_404(Participant, id=request.user.id)
         creator = request.POST.get('creator')
         country = request.POST.get('country')
         item = Item.objects.create(
@@ -33,12 +37,14 @@ def inventory(request):
         )
         for file in request.FILES.getlist('images[]'):
             ItemImage.objects.create(image=file, item=item)
+    paginator = Paginator(items, 16)
+    page = request.GET.get("page")
+    belongings = paginator.get_page(page)
+    if request.htmx:
+        return render(request, "items/inventory_partial.html", {"belongings": belongings})
     condition_choices = Item.CONDITION_TYPES
     categories = Category.objects.all()
     countries = Item.COUNTRY_CHOICES
-    paginator = Paginator(Item.objects.filter(owner=get_object_or_404(Participant, id=request.user.id)), 16)
-    page = request.GET.get("page")
-    belongings = paginator.get_page(page)
     context = {"condition_choices":condition_choices, "categories":categories, "belongings":belongings, "countries":countries}
     return render(request, "items/inventory.html", context=context)
 
@@ -50,3 +56,13 @@ def item_detail(request, item_id):
     images = item.itemimage_set.all()
     return render(request, "items/item_detail.html", context={"item":item,'images': images,})
 
+def search_item(request):
+    search = request.POST.get("search")
+    owner = get_object_or_404(Participant, id=request.user.id)
+    print(owner)
+    if search:
+        results = Item.objects.filter(owner=owner, name__icontains=search)
+    else:
+        results = Item.objects.filter(owner=owner)
+    context = {"results":results}
+    return render(request, "items/inventory.html", context=context)

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-10 px-3">
     <div class="flex-initial px-9">
-        <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">Your Inventory</h1>
+        <h1 class="mb-4 text-3xl font-semibold leading-none tracking-tight text-gray-900 md:text-3xl">Your Inventory</h1>
     </div>
     <div class="font-medium flex-initial px-9">
         <button data-modal-target="additem-modal" data-modal-toggle="additem-modal" type="button" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-sm lg:text-md px-5 py-2.5 text-center">
@@ -117,12 +117,12 @@
         </div>
     </div>
   </div>
-  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-6 px-3" x-data="{category: '', searchvalue: '', items: []}" x-init="posts = await (await fetch('/posts')).json()">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-6 px-3">
     <div class="px-9">
       <form id="searchForm" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="w-full max-w-lg grid grid-cols-3 gap-4">
-          <input type="text" name="searchbar" id="searchbar" class="col-span-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <input hx-get="{% url 'inventory' %}" hx-trigger="keyup changed delay:1000ms" hx-target="#items-list" type="text" name="search" class="col-span-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
           <select id="filter_category" name="filter_category" class="col-span-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
             <option value="" disabled selected>All</option>
             {% for category in categories %}
@@ -132,38 +132,12 @@
         </div>
       </form>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
-      {% for belonging in belongings %}
-        <a href="{% url 'item_detail' belonging.id %}">
-          <img class="h-auto max-w-full" src="{{belonging.itemimage_set.first.image.url}}" alt="">
-          <p class="font-medium font-sans text-lg pt-2">{{belonging.name}}</p><br>
-          <p class="font-mono font-normal text-sm text-gray-500">CURRENT BID</p>
-          <p class="font-sans font-medium text-2xl">€ {{belonging.starting_price}}</p>
-          <p class="pt-1 font-medium font-sans text-md text-gray-500"></p>
-        </a>
-      {% endfor %}
-    </div>
   </div>
 
-<div class="flex flex-col items-center pt-12">
-  <span class="text-sm text-gray-700">
-      Showing Page <span class="font-semibold text-gray-900">{{belongings.number}}</span> of <span class="font-semibold text-gray-900">{{belongings.paginator.num_pages}}</span><!-- of <span class="font-semibold text-gray-900">100</span> Entries -->
-  </span>
-  <div class="inline-flex mt-2 xs:mt-0">
-    <a {% if belongings.has_previous %} href="?page={{belongings.previous_page_number}}" {% endif %} class="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-blue-700 hover:bg-blue-800">
-        <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
-        </svg>
-        Prev
-    </a>
-    <a {% if belongings.has_next %} href="?page={{belongings.next_page_number}}" {% endif %} class="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-blue-700 border-0 border-s border-blue-700 hover:bg-blue-800">
-        Next
-        <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-      </svg>
-    </a>
-  </div>
+<div id="items-list">
+  {% include 'items/inventory_partial.html' %}
 </div>
+
 
 <script>
     const fileInput = document.getElementById("file-input");
