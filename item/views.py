@@ -4,14 +4,19 @@ from participants.models import Participant
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.db.models import Q
 
 # Create your views here.
 def inventory(request):
     owner = get_object_or_404(Participant, id=request.user.id)
-    search = request.GET.get("search")
+    search = request.GET.get("search","")
+    filter_category = request.GET.get("filter_category","")
+    print(filter_category, search)
+    images = []
     items = Item.objects.filter(owner=owner)
-    if search:
-        items = Item.objects.filter(owner=owner, name__icontains=search)
+    if search or filter_category:
+        items = items.filter(Q(name__icontains=search) & Q(category__category__contains=filter_category))
+        print(items)
     if request.method == "POST":
         name = request.POST.get('name')
         description = request.POST.get('description')
@@ -36,7 +41,8 @@ def inventory(request):
             created_at=timezone.now()
         )
         for file in request.FILES.getlist('images[]'):
-            ItemImage.objects.create(image=file, item=item)
+            images.append(ItemImage(image=file, item=item))
+        ItemImage.objects.bulk_create(images)
     paginator = Paginator(items, 16)
     page = request.GET.get("page")
     belongings = paginator.get_page(page)
@@ -54,15 +60,6 @@ def item_list(request):
 def item_detail(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     images = item.itemimage_set.all()
-    return render(request, "items/item_detail.html", context={"item":item,'images': images,})
+    ownership = request.user == item.owner
+    return render(request, "items/item_detail.html", context={"item":item,'images': images, "ownership":ownership})
 
-def search_item(request):
-    search = request.POST.get("search")
-    owner = get_object_or_404(Participant, id=request.user.id)
-    print(owner)
-    if search:
-        results = Item.objects.filter(owner=owner, name__icontains=search)
-    else:
-        results = Item.objects.filter(owner=owner)
-    context = {"results":results}
-    return render(request, "items/inventory.html", context=context)

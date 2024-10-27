@@ -122,9 +122,9 @@
       <form id="searchForm" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="w-full max-w-lg grid grid-cols-3 gap-4">
-          <input hx-get="{% url 'inventory' %}" hx-trigger="keyup changed delay:1000ms" hx-target="#items-list" type="text" name="search" class="col-span-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-          <select id="filter_category" name="filter_category" class="col-span-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-            <option value="" disabled selected>All</option>
+          <input id="search" hx-get="{% url 'inventory' %}" hx-trigger="keyup changed delay:1000ms" hx-target="#items-list" hx-vals="js:{filter_category : document.getElementById('filter_category').value}" type="text" name="search" class="col-span-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <select id="filter_category" hx-get="{% url 'inventory' %}" hx-trigger="change delay:500ms" hx-target="#items-list" id="filter_category" hx-vals="js:{search : document.getElementById('search').value}" name="filter_category" class="col-span-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+            <option value="" selected>All</option>
             {% for category in categories %}
               <option value="{{category}}">{{category}}</option>
             {% endfor %}

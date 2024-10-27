@@ -30,6 +30,7 @@ class Item(models.Model):
     owner = models.ForeignKey(Participant, on_delete=models.CASCADE)
     starting_price = models.DecimalField(max_digits=10, decimal_places=2)
     provenance = models.FileField(upload_to='provenance_documents/', blank=True, null=True)
+    verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self) -> str:
