@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import htmx from 'htmx.org';
+import 'hyperscript';
 
 const Clover = {
     rule: {

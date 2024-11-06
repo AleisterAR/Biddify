@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_tailwind',
-    'ninja',
     'django_htmx',
 ]
 
@@ -85,6 +84,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'keister_house.wsgi.application'
 ASGI_APPLICATION = 'keister_house.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

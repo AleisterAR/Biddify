@@ -10,112 +10,7 @@
             <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                 Add new item
         </button>
-        <div id="additem-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative p-4 w-full max-w-screen-lg max-h-full">
-                <div class="relative bg-white rounded-lg shadow">
-                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
-                        <h3 class="text-lg font-semibold text-gray-900">
-                            Add New Item to your Inventory
-                        </h3>
-                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-toggle="additem-modal">
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
-                    </div>
-                    <form class="p-4 md:p-5" x-data="item_register" x-clover-form="submit" id="registerForm" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="grid gap-4 grid-cols-2">
-                            <div>
-                                <div class="p-2">
-                                    <label class="mb-2 font-medium flex justify-between items-center">
-                                      <span>Choose images for the item</span>
-                                      <label id="select-button" class="bg-blue-700 hover:bg-blue-800 text-white text-sm py-2 px-4 transition-colors duration-300">
-                                        Select
-                                      </label>
-                                    </label>
-                                    <input id="file-input" type="file" multiple class="hidden" accept=".png, .jpg, .jpeg" />
-                                    <div class="flex mb-4 flex-col">
-                                      <div id="drop-zone" class="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg flex justify-center items-center text-gray-400 text-lg">
-                                        <span>Drag and drop files here</span>
-                                      </div>
-                                      <div id="selected-files-count" class="text-gray-500 text-sm font-medium"></div>
-                                      <div id="selected-images" class="flex flex-wrap -mx-2 mt-6"></div>
-                                    </div>
-                                  </div>
-                            </div>
-                            <div class="grid gap-4 mb-4 grid-cols-2">
-                                <div class="col-span-2">
-                                    <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Name</label>
-                                    <input x-clover-verify type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item name">
-                                    <div x-text="errors.name" class="text-red-500 text-sm mt-1"></div>
-                                </div>
-                                <div class="col-span-2 sm:col-span-1">
-                                  <label for="category" class="block mb-2 text-sm font-medium text-gray-900">Category</label>
-                                  <select x-clover-verify id="category" name="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                    <option value="" disabled selected>Select an item category</option>
-                                    {% for category in categories %}
-                                        <option value="{{category}}">{{category}}</option>
-                                      {% endfor %}
-                                  </select>
-                                  <div x-text="errors.category" class="text-red-500 text-sm mt-1"></div>
-                                </div>
-                                <div class="col-span-2 sm:col-span-1">
-                                    <label for="price" class="block mb-2 text-sm font-medium text-gray-900">Starting Price</label>
-                                    <input type="number" name="price" id="price" step="0.01" min="0" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item starting price">
-                                    <div x-text="errors.price" class="text-red-500 text-sm mt-1"></div>
-                                </div>
-                                <div class="col-span-2 sm:col-span-1">
-                                  <label for="creator" class="block mb-2 text-sm font-medium text-gray-900">Creator</label>
-                                  <input type="text" name="creator" id="creator" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type name of the creator">
-                                </div>
-                                <div class="col-span-2 sm:col-span-1">
-                                  <label for="country" class="block mb-2 text-sm font-medium text-gray-900">Country</label>
-                                  <select id="country" name="country" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                    <option value="" selected>Select a country of origin</option>
-                                    {% for core, country_name in countries %}
-                                        <option value="{{core}}">{{country_name}}</option>
-                                      {% endfor %}
-                                  </select>
-                                </div>
-                                <div class="col-span-2 sm:col-span-1">
-                                  <label for="year" class="block mb-2 text-sm font-medium text-gray-900">Year of Origin</label>
-                                  <input x-clover-verify type="text" name="year" id="year" min="1000" max="2024" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type year of origin">
-                                  <div x-text="errors.year" class="text-red-500 text-sm mt-1"></div>
-                                </div>
-                                <div class="col-span-2 sm:col-span-1">
-                                    <label for="condition" class="block mb-2 text-sm font-medium text-gray-900">Condition</label>
-                                    <select x-clover-verify id="condition" name="condition" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                      <option value="" disabled selected>Select an item condition</option>
-                                      {% for value, display in condition_choices %}
-                                        <option value="{{value}}">{{display}}</option>
-                                      {% endfor %}
-                                    </select>
-                                    <div x-text="errors.condition" class="text-red-500 text-sm mt-1"></div>
-                                </div>
-                                <div class="col-span-2">
-                                    <label for="description" class="block mb-2 text-sm font-medium text-gray-900">Product Description</label>
-                                    <textarea x-clover-verify id="description" name="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Write product description here"></textarea>
-                                    <div x-text="errors.description" class="text-red-500 text-sm mt-1"></div>                      
-                                </div>
-                                <div class="col-span-2">
-                                  <label class="block mb-2 text-sm font-medium text-gray-900">Provide image or file of provenance</label>
-                                  <input x-clover-verify accept=".pdf, .png, .jpg, .jpeg" class="block w-full text-sm text-gray-90 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" aria-describedby="file_input_help" id="provenance" name="provenance" type="file">
-                                  <p class="mt-1 text-sm text-gray-500" id="file_input_help">PNG, JPG or PDF</p>
-                                  <div x-text="errors.provenance" class="text-red-500 text-sm mt-1"></div> 
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center">
-                            <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                            Add new product
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+        {% include 'items/partials/add_item_partial.html' %}
   </div>
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-6 px-3">
     <div class="px-9">
@@ -135,7 +30,7 @@
   </div>
 
 <div id="items-list">
-  {% include 'items/inventory_partial.html' %}
+  {% include 'items/partials/inventory_partial.html' %}
 </div>
 
 

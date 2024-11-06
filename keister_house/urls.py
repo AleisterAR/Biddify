@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("participants.urls")),
     path("items/", include("item.urls")),
+    path("auction/", include("bid.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

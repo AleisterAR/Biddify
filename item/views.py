@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.db.models import Q
+from bid.models import Auction
+from bid.forms import AuctionForm
 
 # Create your views here.
 def inventory(request):
@@ -47,7 +49,7 @@ def inventory(request):
     page = request.GET.get("page")
     belongings = paginator.get_page(page)
     if request.htmx:
-        return render(request, "items/inventory_partial.html", {"belongings": belongings})
+        return render(request, "items/partials/inventory_partial.html", {"belongings": belongings})
     condition_choices = Item.CONDITION_TYPES
     categories = Category.objects.all()
     countries = Item.COUNTRY_CHOICES
@@ -61,5 +63,13 @@ def item_detail(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     images = item.itemimage_set.all()
     ownership = request.user == item.owner
-    return render(request, "items/item_detail.html", context={"item":item,'images': images, "ownership":ownership})
+    auction_started = False
+    context = {"item":item,'images': images, "ownership":ownership, "auction_started":auction_started, "form": AuctionForm()}
+    if Auction.objects.filter(item=item).exists():
+        auction = Auction.objects.filter(item=item)[0]
+        auction_started = auction.timer_started()
+        context["auction"] = auction
+        return render(request, "items/item_detail.html", context=context)
+    return render(request, "items/item_detail.html", context=context)
+
 

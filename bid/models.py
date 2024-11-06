@@ -5,12 +5,15 @@ from django.utils import timezone
 
 # Create your models here.
 class Auction(models.Model):
-    item = models.OneToOneField(Item, on_delete=models.CASCADE)
-    starting_time = models.DateTimeField()
-    ending_time = models.DateTimeField()
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    starting_time = models.DateTimeField(null=True, blank=True)
+    ending_time = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f'Auction for {self.item.name}'
+    
+    def timer_started(self):
+        return timezone.now() >= self.starting_time 
     
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE)
