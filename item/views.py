@@ -13,9 +13,8 @@ def inventory(request):
     owner = get_object_or_404(Participant, id=request.user.id)
     search = request.GET.get("search","")
     filter_category = request.GET.get("filter_category","")
-    print(filter_category, search)
     images = []
-    items = Item.objects.filter(owner=owner)
+    items = Item.objects.select_related("owner").filter(owner=owner)
     if search or filter_category:
         items = items.filter(Q(name__icontains=search) & Q(category__category__contains=filter_category))
         print(items)

@@ -23,6 +23,7 @@
     "flowbite": "^2.5.1",
     "htmx.org": "^2.0.3",
     "hyperscript": "^2.0.2",
+    "hyperscript.org": "^0.9.13",
     "mix-tailwindcss": "^1.3.0",
     "postcss": "^8.4.45"
   }

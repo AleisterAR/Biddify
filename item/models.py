@@ -27,7 +27,7 @@ class Item(models.Model):
     country = models.CharField(max_length=255, null=True, choices=COUNTRY_CHOICES, blank=True, default="Unknown")
     condition = models.CharField(max_length=255,choices=CONDITION_TYPES, null=True, blank=True)
     year = models.CharField(max_length=255, null=True, blank=True)
-    owner = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Participant, on_delete=models.CASCADE, related_name="item_owner")
     starting_price = models.DecimalField(max_digits=10, decimal_places=2)
     provenance = models.FileField(upload_to='provenance_documents/', blank=True, null=True)
     verified = models.BooleanField(default=False, null=True, blank=True)

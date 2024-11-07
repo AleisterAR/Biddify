@@ -14,6 +14,7 @@ def create_auction(request, item_id):
             auction = form.save(commit=False)
             auction.item = item
             auction.save()
+            messages.success(request, "Auction has been registered successfully!")
             return render(request, 'items/partials/start_auction_partial.html', {'form': form, 'item': item})
     else:
         form = AuctionForm()
