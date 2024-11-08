@@ -3,6 +3,8 @@ from bid.forms import AuctionForm
 from bid.models import Auction
 from item.models import Item
 from django.contrib import messages
+import json
+from django_htmx.http import trigger_client_event
 
 # Create your views here.
 def create_auction(request, item_id):
@@ -15,7 +17,9 @@ def create_auction(request, item_id):
             auction.item = item
             auction.save()
             messages.success(request, "Auction has been registered successfully!")
-            return render(request, 'items/partials/start_auction_partial.html', {'form': form, 'item': item})
+            response = render(request, 'items/partials/start_auction_partial.html', {'form': form, 'item': item})
+            response["HX-Trigger"] = "auction_created"
+            return response
     else:
         form = AuctionForm()
     return render(request, 'items/partials/start_auction_partial.html', {'form': form, 'item': item})

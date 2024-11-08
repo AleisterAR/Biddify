@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_tailwind',
     'django_htmx',
+    'django_extensions',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS ="tailwind"
