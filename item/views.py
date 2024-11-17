@@ -62,12 +62,12 @@ def item_detail(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     images = item.itemimage_set.all()
     ownership = request.user == item.owner
-    auction_started = False
-    context = {"item":item,'images': images, "ownership":ownership, "auction_started":auction_started, "form": AuctionForm()}
-    if Auction.objects.filter(item=item).exists():
+    auction_started = auction_created = False
+    context = {"item":item,'images': images, "ownership":ownership, "auction_started":auction_started, "auction_created":auction_created, "form": AuctionForm()}
+    if auction_created := Auction.objects.filter(item=item).exists():
         auction = Auction.objects.filter(item=item)[0]
         auction_started = auction.timer_started()
-        context["auction"] = auction
+        context["auction"], context["auction_created"], context["auction_started"] = auction, auction_created, auction_started
         return render(request, "items/item_detail.html", context=context)
     return render(request, "items/item_detail.html", context=context)
 

@@ -61,64 +61,135 @@
                 </div>
             </div>
             <div class="flex flex-col" >
-                <div class="px-10 font-sans font-medium text-xl">Closes in 
-                    <span>9h 33m 12s</span>
-                </div>
+                    <div class="px-5 font-sans font-medium text-lg">
+                        {% if auction_created %}
+                            {% if auction_started%}
+                                Closes in 
+                                <div>9h 33m 12s</div>
+                            {% else %}
+                                Auction will begin in 
+                                <span id="countdown" class="whitespace-nowrap overflow-hidden text-ellipsis"></span>
+                            {% endif %}    
+                        {% endif %}
+                    </div>
                 <div class="max-w-md p-6 bg-white border border-gray-300 mt-5">
-                    {% if auction_started %}
+                    {% if auction_created %}
                         <p class="font-mono font-normal text-sm text-gray-700">CURRENT BID</p>
-                        <h2 class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl ">€ 62</h2>
+                        <h2 class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl ">€ 0</h2>
                     {% else %}
                         <div class="mx-auto flex justify-center">
                             <h2 class="mb-4 text-2xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-3xl ">Auction has not started yet!</h2>
                         </div>          
                     {% endif %}
-                    <div class="mx-auto flex justify-center py-2">
-                        <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center" type="button">
-                            Create an auction!
-                        </button>
-                    </div>
-                    <div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                        <div class="relative p-4 w-full max-w-md max-h-full">
-                            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                        Create an Auction!
-                                    </h3>
-                                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center " data-modal-toggle="crud-modal">
-                                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                                        </svg>
-                                        <span class="sr-only">Close modal</span>
-                                    </button>
-                                </div> 
-                        <div id="formContainer">
-                            <form class="p-4 md:p-5" method="post" hx-post="{% url 'create_auction' item.id %}" id="auction-form" 
-                                hx-swap="innerHTML"
-                                hx-target="#auction-form"
-                                _="on auction_created wait 3s then call closeModal()">
-                                {% include 'items/partials/start_auction_partial.html' %}
-                            </form>
+                    {% if not auction_created %}
+                        <div class="mx-auto flex justify-center py-2">
+                            <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center" type="button">
+                                Create an auction!
+                            </button>
+                        </div>
+                        <div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                            <div class="relative p-4 w-full max-w-md max-h-full">
+                                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                            Create an Auction!
+                                        </h3>
+                                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center " data-modal-toggle="crud-modal">
+                                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                            </svg>
+                                            <span class="sr-only">Close modal</span>
+                                        </button>
+                                    </div> 
+                                    <div id="formContainer">
+                                        <form class="p-4 md:p-5" method="post" hx-post="{% url 'create_auction' item.id %}" id="auction-form" 
+                                            hx-swap="innerHTML"
+                                            hx-target="#auction-form"
+                                            _="on auction_created wait 2s then call closeModal()">
+                                            {% include 'items/partials/start_auction_partial.html' %}
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                        <!-- <div class="relative mb-6">
+                    {% else %}
+                        <div class="relative mb-6">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                                 <svg class="w-7 h-7" viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" enable-background="new 0 0 76.00 76.00" xml:space="preserve" fill="#6b7280" stroke="#6b7280"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill="#6b7280" fill-opacity="1" stroke-width="0.2" stroke-linejoin="round" d="M 51.4237,48.8848C 50.7931,49.2215 49.8882,49.5476 48.7089,49.8629C 47.5297,50.1782 46.2685,50.3472 44.9253,50.3698C 43.486,50.3769 42.1321,50.1485 40.8638,49.6844C 39.5955,49.2203 38.4982,48.4778 37.5719,47.4568C 36.7168,46.4954 36.0898,45.1626 35.6908,43.4585L 49.9986,43.4585L 49.9986,39.5398L 34.8927,39.5398C 34.8927,39.2394 34.8927,38.9079 34.8927,38.5453C 34.8832,37.8721 34.9022,37.2298 34.9497,36.6185L 49.9986,36.6185L 49.9986,32.6998L 35.8048,32.6998C 36.1848,31.1509 36.7928,29.8925 37.6289,28.9245C 38.5243,27.8536 39.5694,27.0623 40.7641,26.5506C 41.9588,26.0389 43.2318,25.7849 44.5833,25.7885C 45.854,25.8067 47.0463,25.9591 48.1603,26.2457C 49.2742,26.5323 50.21,26.8444 50.9677,27.182L 52.5638,20.7122C 51.5235,20.2469 50.2694,19.852 48.8016,19.5276C 47.3337,19.2032 45.7376,19.0339 44.0133,19.0198C 41.2942,19.0327 38.8275,19.5428 36.6132,20.5499C 34.3988,21.557 32.505,22.9836 30.9319,24.8297C 29.0913,26.9158 27.8084,29.5392 27.0833,32.6998L 23.2788,32.6998L 23.2788,36.6185L 26.4697,36.6185C 26.4511,37.2401 26.4326,37.8617 26.414,38.4832C 26.414,38.8665 26.414,39.2187 26.414,39.5398L 23.2788,39.5398L 23.2788,43.4585L 26.9717,43.4585C 27.5109,46.4794 28.5521,48.9483 30.0953,50.8652C 31.6842,52.9082 33.6699,54.4627 36.0523,55.5289C 38.4347,56.5951 41.0504,57.1317 43.8993,57.1385C 45.7448,57.1168 47.4406,56.8989 48.9868,56.4851C 50.533,56.0712 51.8014,55.592 52.7918,55.0474L 51.4237,48.8848 Z "></path> </g></svg>
                             </div>
-                            <input type="text" inputmode="numeric" pattern="[0-9]" id="input-group-1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"  placeholder=""
+                            <input type="text" inputmode="numeric" pattern="[0-9]" id="input-group-1" class="bg-gray-50 border border-gray-300 text-black text-sm font-sans font-medium focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
                             hx-post="" hx-trigger="keyup changed delay:300ms" oninput="this.value = this.value.replace(/[^0-9]/g, '');" >
                             <div id="error-message" class="text-red-500 text-sm mt-1"></div>
-                        </div> -->
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center {% if not auction_started%} cursor-not-allowed {% endif %}" type="button" {% if not auction_started%} disabled {% endif %}>
+                                Place bid
+                            </button>
+                            <button class="block text-blue-700 bg-white hover:text-opacity-50 border border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center" type="button">
+                                Clear
+                            </button>
+                        </div>
+                    {% endif %}
+
                 </div>
             </div>
         </div>
     </div>
     <script>
+        let days = 0, hours = 0, minutes = 0, seconds = 0;
+        let is_auction_created = {{ auction_created|yesno:'true,false' }};
+        let is_auction_started = {{ auction_started|yesno:'true,false' }};
         function closeModal(){
             const modalInstance = window.FlowbiteInstances.getInstance('Modal', 'crud-modal');
             modalInstance.hide()
+            window.location.href = "{% url 'item_detail' item.id %}";
+        }
+        if (is_auction_created && !is_auction_started) {
+            const auctionStartTime = new Date("{{ auction.starting_time|date:'Y-m-d H:i:s'}}");
+            function updateCountdown(){
+                let now = new Date()
+                timeDif = auctionStartTime - now
+                if (timeDif > 0) {
+                    days = Math.floor(timeDif / (1000 * 60 * 60 * 24));
+                    hours = Math.floor((timeDif % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    minutes = Math.floor((timeDif % (1000 * 60 * 60)) / (1000 * 60));
+                    seconds = Math.floor((timeDif % (1000 * 60)) / 1000);
+                    if (days === 0 && hours === 0 && minutes === 0) {
+                        countdownText = `${seconds} second${seconds !== 1 ? "s" : ""}.`;
+                    } 
+                    else {
+                        countdownText = `${
+                            days > 0 ? days + " day" + (days > 1 ? "s" : "") + ", " : ""
+                        }${
+                            hours > 0 ? hours + " hour" + (hours > 1 ? "s" : "") + (minutes > 0 ? (days > 1 ? ", " : " and ") : "") : ""
+                        }${
+                            minutes > 0 ? minutes + " minute" + (minutes > 1 ? "s" : "") : ""
+                        }.`;
+                    }
+                    document.getElementById("countdown").innerText = countdownText
+                } else {
+                    clearInterval(timer)
+                    location.reload()
+                }
+            }
+            if (days === 0 && hours === 0 && minutes === 0){
+                const timer = setInterval(updateCountdown, 60000);
+            }
+            else{
+                const timer = setInterval(updateCountdown, 1000);
+            }
+            updateCountdown()
+        }
+
+        else if (is_auction_created && is_auction_started){
+            const auctionEndTime = new Date("{{ auction.ending_time|date:'Y-m-d H:i:s'}}");
+            function updateEndCountdown(){
+                let now = new Date();
+                timeDif = auctionEndTime - now;
+                if (timeDif > 0){
+                    
+                }
+            }
         }
     </script>
 {% endblock content %}
