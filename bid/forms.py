@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from bid.models import Auction
+from bid.models import Auction, Bid
 from django.utils import timezone
 
 from django import forms
@@ -39,3 +39,19 @@ class AuctionForm(forms.ModelForm):
 
         return cleaned_data
 
+class BidForm(forms.ModelForm):
+    bid_amount = forms.IntegerField(widget=forms.NumberInput(attrs={"inputmode":"numeric",
+                                                                    "class":"bg-gray-50 border border-gray-300 text-black text-sm font-sans font-medium focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5",
+                                                                    "pattern":"[0-9]",
+                                                                    "oninput":"this.value = this.value.replace(/[^0-9]/g, '');",
+                                                                    "type":"text"}))
+
+    class Meta:
+        model = Bid
+        fields = ['bid_amount']
+
+    def clean_bid_amount(self):
+        bid_amount = self.cleaned_data['bid_amount']
+        if bid_amount <= 0:
+            raise self.add_error("bid_amount", "Your bid must be greater than zero.")
+        return bid_amount

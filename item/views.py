@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django.db.models import Q
 from bid.models import Auction
-from bid.forms import AuctionForm
+from bid.forms import AuctionForm, BidForm
 
 # Create your views here.
 def inventory(request):
@@ -63,7 +63,7 @@ def item_detail(request, item_id):
     images = item.itemimage_set.all()
     ownership = request.user == item.owner
     auction_started = auction_created = False
-    context = {"item":item,'images': images, "ownership":ownership, "auction_started":auction_started, "auction_created":auction_created, "form": AuctionForm()}
+    context = {"item":item,'images': images, "ownership":ownership, "auction_started":auction_started, "auction_created":auction_created, "form": AuctionForm(), "bid_form": BidForm()}
     if auction_created := Auction.objects.filter(item=item).exists():
         auction = Auction.objects.filter(item=item)[0]
         auction_started = auction.timer_started()
