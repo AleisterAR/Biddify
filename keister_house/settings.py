@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "debug_toolbar",
+    'widget_tweaks',
     'crispy_forms',
     'crispy_tailwind',
     'django_htmx',

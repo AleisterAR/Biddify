@@ -40,11 +40,6 @@ class AuctionForm(forms.ModelForm):
         return cleaned_data
 
 class BidForm(forms.ModelForm):
-    bid_amount = forms.IntegerField(widget=forms.NumberInput(attrs={"inputmode":"numeric",
-                                                                    "class":"bg-gray-50 border border-gray-300 text-black text-sm font-sans font-medium focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5",
-                                                                    "pattern":"[0-9]",
-                                                                    "oninput":"this.value = this.value.replace(/[^0-9]/g, '');",
-                                                                    "type":"text"}))
 
     class Meta:
         model = Bid

@@ -1,4 +1,5 @@
 {% extends 'utilities/master.html' %}
+{% load widget_tweaks %}
 {% block content %}
 <div class="container max-w-screen-xl mx-auto py-16 px-3">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-28">
@@ -144,8 +145,8 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="relative mb-6">
-                    <form id="bidding_form">
+                <form id="bidding_form" hx-ext="ws" ws-send>
+                    <div class="relative mb-6">
                         {% csrf_token %}
                         <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                             <svg class="w-7 h-7" viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg"
@@ -161,33 +162,53 @@
                                 </g>
                             </svg>
                         </div>
-                        {{ bid_form.bid_amount}}
-                        <div id="error-message" class="text-red-500 text-sm mt-1"></div>
-                    </form>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button
-                        class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center {% if not auction_started%} cursor-not-allowed {% endif %}"
-                        type="submit" {% if not auction_started%} disabled {% endif %}>
-                        Place bid
-                    </button>
-                    <button
-                        class="block text-blue-700 bg-white hover:text-opacity-50 border border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center"
-                        type="button">
-                        Clear
-                    </button>
-                </div>
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        {% render_field bid_form.bid_amount class="bg-gray-50 border border-gray-300 text-black text-sm font-sans font-medium focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5" type="text"%}
+                    </div>
+                        <div id="bid-error" class="text-red-500 text-sm mt-1 hidden h-4">
+                            Your bid can't be 0 or lower!
+                        </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="bid-button"
+                            class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center {% if not auction_started%} cursor-not-allowed {% endif %}"
+                            type="submit" {% if not auction_started%} disabled {% endif %}>
+                            Place bid
+                        </button>
+                        <button _="on click set #id_bid_amount's value to ''"
+                            class="block text-blue-700 bg-white hover:text-opacity-50 border border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center"
+                            type="button">
+                            Clear
+                        </button>
+                    </div>
                 {% endif %}
-
+                </form>
+                {% if auction_started %}
+                    {% if not bids %}
+                        <hr class="h-px mt-8 mb-2 border-0 bg-gray-300">
+                        <div class="relative">
+                            <table class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <tbody>
+                                    <tr class="bg-white">
+                                        <th scope="row" class="px-auto py-4 font-medium text-gray-600 whitespace-nowrap">
+                                            Lebrosi August
+                                        </th>
+                                        <td class="px-6 py-4 font-medium text-gray-400">
+                                            12 hours ago
+                                        </td>
+                                        <td class="float-right px-6 py-4 font-semibold text-gray-950">
+                                            € 145
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
 <script>
-    let auctionSocket = new WebSocket('ws://' + window.location.host + '/ws/auction/' + "{{auction.id}}/")
-    auctionSocket.onopen = function(e){
-                console.log('Chat socket is connected')
-            }
     let days = 0, hours = 0, minutes = 0, seconds = 0;
     let is_auction_created = {{ auction_created|yesno:'true,false' }};
     let is_auction_started = {{ auction_started|yesno:'true,false' }};
@@ -195,6 +216,14 @@
         const modalInstance = window.FlowbiteInstances.getInstance('Modal', 'crud-modal');
         modalInstance.hide()
         window.location.href = "{% url 'item_detail' item.id %}";
+    }
+    if (is_auction_started) {
+        const biddingForm = document.getElementById("bidding_form");
+        const wsUrl = 'ws://' + window.location.host + '/ws/auction/' + '{{auction.id}}/';
+        biddingForm.setAttribute("ws-connect", wsUrl)
+        const bidAmountInput = document.querySelector('input[name="bid_amount"]')
+        bidAmountInput.setAttribute("_","on input if parseInt(my.value) < 0 and my.value === '' ");
+        bidAmountInput.setAttribute("oninput","this.value = this.value.replace(/[^0-9]/g, '');");
     }
     if (is_auction_created && !is_auction_started) {
         const auctionStartTime = new Date("{{ auction.starting_time|date:'Y-m-d H:i:s'}}");
@@ -259,6 +288,7 @@
         else {
             const timer = setInterval(updateEndCountdown, 1000);
         }
+        updateEndCountdown()
     }
 </script>
 {% endblock content %}

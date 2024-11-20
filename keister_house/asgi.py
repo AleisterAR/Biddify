@@ -19,10 +19,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'keister_house.settings')
 
 application = ProtocolTypeRouter(
     {'http': get_asgi_application(),
-     'websocket': AuthMiddlewareStack(
-         URLRouter(
-             bid_route.websocket_urlpatterns
-         )
-     )
+     'websocket': URLRouter(
+             bid_route.websocket_urlpatterns)
      }
 )

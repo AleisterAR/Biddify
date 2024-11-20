@@ -18,7 +18,7 @@ class Auction(models.Model):
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE)
     bidder = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    bid_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    bid_amount = models.PositiveSmallIntegerField()
     bid_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
