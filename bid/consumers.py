@@ -15,7 +15,7 @@ class AuctionConsumer(WebsocketConsumer):
     def connect(self):
         self.auction_id = self.scope['url_route']['kwargs']['auction_id']
         self.room_group_name = f"auction_{self.auction_id}"
-        self.auction =  Auction.objects.prefetch_related('bids').get(id=self.auction_id)
+        self.auction =  Auction.objects.prefetch_related('bids').select_related('item').get(id=self.auction_id)
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name, self.channel_name
         )
@@ -29,7 +29,6 @@ class AuctionConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
         data = json.loads(text_data)
-        print(data)
         bid_amount = data.get("bid_amount")
         user_id = data.get("user_id")
         user = Participant.objects.get(id=user_id)
