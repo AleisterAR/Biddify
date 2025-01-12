@@ -3,7 +3,7 @@
 {% block content %}
 <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-10 px-3">
     <div class="flex-initial px-9">
-        <h1 class="mb-4 text-3xl font-semibold leading-none tracking-tight text-gray-900 md:text-3xl">Your Inventory</h1>
+        <h1 class="mb-4 text-3xl font-semibold leading-none tracking-tight text-gray-900 md:text-3xl">{{request.user.username}}'s Inventory</h1>
     </div>
     <div class="font-medium flex-initial px-9">
         <button data-modal-target="additem-modal" data-modal-toggle="additem-modal" type="button" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-sm lg:text-md px-5 py-2.5 text-center">
@@ -73,6 +73,7 @@
       function handleDrop(event) {
         event.preventDefault();
         const fileList = event.dataTransfer.files;
+        console.log(fileList)
         displayImages(fileList);
         dropZone.classList.remove("border-blue-500");
         dropZone.classList.remove("text-blue-500");

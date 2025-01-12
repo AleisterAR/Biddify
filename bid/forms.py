@@ -2,7 +2,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 from bid.models import Auction, Bid
 from django.utils import timezone
-
 from django import forms
 from django.utils.timezone import now
 
@@ -41,12 +40,26 @@ class AuctionForm(forms.ModelForm):
 
 class BidForm(forms.ModelForm):
 
+    bid_amount = forms.IntegerField(min_value=0, widget=forms.NumberInput(attrs={'type': 'text', 'class': 'bg-gray-50 border border-gray-300 text-black text-sm font-sans font-medium focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5', 'hx-swap-oob':'true'}))
     class Meta:
         model = Bid
-        fields = ['bid_amount']
+        fields = ['bid_amount', 'auction']
 
-    def clean_bid_amount(self):
-        bid_amount = self.cleaned_data['bid_amount']
-        if bid_amount <= 0:
-            raise self.add_error("bid_amount", "Your bid must be greater than zero.")
-        return bid_amount
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['bid_amount'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        bid_amount = cleaned_data.get('bid_amount')
+        if bid_amount is not None:
+            auction = cleaned_data.get('auction')
+            if bid_amount <= 0:
+                self.add_error('bid_amount',"Your bid price must be more than zero!")
+            elif previous_bid := auction.bids.last():
+                if bid_amount <= previous_bid.bid_amount:
+                    self.add_error('bid_amount', f"Your bid price must be more than the previous bid of € {previous_bid.bid_amount}!")
+        else:
+            self.add_error('bid_amount',"Bid price is required!")
+        
+        return cleaned_data

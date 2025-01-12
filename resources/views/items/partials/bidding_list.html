@@ -1,0 +1,16 @@
+<table class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <tbody id="bidding-list">
+        {% for bid in bids %}
+            <tr class="bg-white">
+                <td class="px-auto py-4 font-medium text-gray-600 whitespace-nowrap">
+                    {{ bid.bidder }}
+                </td>
+                <td id="time-ago" class="px-6 py-4 font-medium text-gray-400" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
+                </td>
+                <td class="float-right px-6 py-4 font-semibold text-gray-950">
+                    € {{ bid.bid_amount}}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

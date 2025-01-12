@@ -1,12 +1,20 @@
-<tr class="bg-white">
-    <th scope="row" class="px-auto py-4 font-medium text-gray-600 whitespace-nowrap">
-        August
-    </th>
-    <td class="px-6 py-4 font-medium text-gray-400">
-        12 hours ago
-    </td>
-    <td class="px-6 py-4 font-semibold text-gray-950">
-        € 145
-    </td>
-</tr>
+{% if bid %}
+    <tbody hx-swap-oob="afterbegin:#bidding-list tbody">
+        <tr class="bg-white">
+            <td class="px-auto py-4 font-medium text-gray-600 whitespace-nowrap">
+                {{ bid.bidder }}
+            </td>
+            <td id="time-ago" class="px-6 py-4 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
+            </td>
+            <td class="float-right px-6 py-4 font-semibold text-gray-950">
+                € {{ bid.bid_amount}}
+            </td>
+        </tr>
+    </tbody>
+{% endif %}
 
+<p class="text-red-500 text-sm font-bold mb-3" id="bid-error" hx-swap-oob="true">{{ bid_form.bid_amount.errors.0 }}</p>
+
+<h2 id="current-bid" class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl " hx-swap-oob="true">
+    € {{bids.first.bid_amount}}
+</h2>

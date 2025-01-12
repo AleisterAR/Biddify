@@ -10,8 +10,7 @@ from django_htmx.http import trigger_client_event
 def create_auction(request, item_id):
     item = Item.objects.get(id=item_id)
     if request.method == 'POST':
-        print(request.POST.get('starting_time'))
-        form = AuctionForm(request.POST)
+        form = AuctionForm(data=request.POST)
         if form.is_valid():
             auction = form.save(commit=False)
             auction.item = item

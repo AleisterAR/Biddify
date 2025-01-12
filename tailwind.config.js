@@ -4,9 +4,13 @@ module.exports = {
   theme: {
     extend: {},
   },
+  daisyui: {
+    themes: ["light"],
+  },
   plugins: [
     require('flowbite/plugin'),
     require('@tailwindcss/line-clamp'),
+    require('daisyui'),
   ],
 }
 

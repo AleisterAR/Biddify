@@ -51,7 +51,7 @@
                         </div>
                         <div class="col-span-2 sm:col-span-1">
                             <label for="price" class="block mb-2 text-sm font-medium text-gray-900">Starting Price</label>
-                            <input type="number" name="price" id="price" step="0.01" min="0" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item starting price">
+                            <input type="text" name="price" id="price" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Type item starting price">
                             <div x-text="errors.price" class="text-red-500 text-sm mt-1"></div>
                         </div>
                         <div class="col-span-2 sm:col-span-1">

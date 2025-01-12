@@ -30,7 +30,7 @@
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                         Sign in to your account
                     </h1>
-                    <form x-data="login" class="space-y-4 md:space-y-6" id="loginForm" x-clover-form="submitForm" enctype="multipart/form-data">
+                    <form x-data="login" class="space-y-4 md:space-y-6" id="loginForm" x-clover-form="submitForm" enctype="multipart/form-data" method="POST">
                         {% csrf_token %}
                         <div>
                             <label for="inputUsername" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>

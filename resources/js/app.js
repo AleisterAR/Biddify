@@ -31,7 +31,7 @@ const Clover = {
                 const price = parseFloat(val);
                 return {
                     rule: 'price',
-                    value: (!isNaN(price) && price > 0)
+                    value: (!isNaN(price) && price >= 0)
                         ? false
                         : message || `The ${field} must be a positive number`,
                 };
