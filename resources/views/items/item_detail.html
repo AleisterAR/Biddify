@@ -93,12 +93,12 @@
                     {% endif %}
                 {% endif %}
             </div>
-            <div class="max-w-md p-6 bg-white border border-gray-300 mt-5">
+            <div class="max-w-md pt-6 px-6 bg-white border border-gray-300 mt-5">
                 {% if auction_created %}
-                    {% if bids %}
+                    {% if latest_bids %}
                         <p class="font-mono font-normal text-sm text-gray-700">CURRENT BID</p>
                         <h2 id="current-bid" class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl ">
-                            € {{bids.first.bid_amount}}
+                            € {{latest_bids.first.bid_amount}}
                         </h2>
                     {% else %}
                         <p class="font-mono font-normal text-sm text-gray-700">STARTING PRICE</p>
@@ -182,7 +182,7 @@
                                     Place bid
                                 </button>
                                 <button _="on click set #id_bid_amount's value to ''"
-                                    class="block text-blue-700 bg-white hover:text-opacity-50 border border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center"
+                                    class="block text-blue-700 bg-white hover:text-opacity-70 border border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center"
                                     type="button">
                                     Clear
                                 </button>
@@ -193,35 +193,63 @@
                 {% endif %}
                 {% if auction_started %}
                         <hr class="h-px mt-8 mb-2 border-0 bg-gray-300">
-                        <details class="collapse collapse-arrow">
-                            <summary class="collapse-title font-semibold">Show more</summary>
-                            <div class="collapse-content">
-                                <div class="relative">
-                                    <table id="bidding-list" class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                        <tbody>
-                                            {% for bid in bids %}
+                        <div class="relative">
+                            <table id="bidding-list" class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <tbody>
+                                    {% for bid in latest_bids %}
+                                        <tr class="bg-white">
+                                            <td class="px-auto py-3 font-medium text-gray-600 whitespace-nowrap">
+                                                {{ bid.bidder }}
+                                            </td>
+                                            <td id="time-ago" class="px-6 py-3 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
+                                            </td>
+                                            <td class="float-right py-3 font-semibold text-gray-950">
+                                                € {{ bid.bid_amount}}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div x-data="showmore">
+                                <div id="show-more-bids" class="collapse collapse-arrow {% if not more_bids %} hidden {% endif %}" x-bind:open="open">
+                                    <div class="collapse-title font-semibold text-sm px-0 text-blue-700 select-none hover:text-opacity-70" x-text="open ? 'See less bids' : 'See more bids ({{more_bids|length}})' " @click="toggle"></div>
+                                    <div class="collapse-content px-0" x-show="open">
+                                        <table class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                            <tbody>
+                                                {% for bid in more_bids %}
                                                 <tr class="bg-white">
-                                                    <td class="px-auto py-4 font-medium text-gray-600 whitespace-nowrap">
+                                                    <td class="px-auto py-3 font-medium text-gray-600 whitespace-nowrap">
                                                         {{ bid.bidder }}
                                                     </td>
-                                                    <td id="time-ago" class="px-6 py-4 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
+                                                    <td id="time-ago" class="px-6 py-3 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
                                                     </td>
-                                                    <td class="float-right py-4 font-semibold text-gray-950">
+                                                    <td class="float-right py-3 font-semibold text-gray-950">
                                                         € {{ bid.bid_amount}}
                                                     </td>
                                                 </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </details>
+                        </div>       
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
 <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('showmore', function(){
+            return {
+                open: this.$persist(false).using(sessionStorage),
+                toggle(){
+                    this.open = ! this.open
+                }
+            }
+        })
+    })
     function getDHMS(timeDif){
         days = Math.floor(timeDif / (1000 * 60 * 60 * 24));
         hours = Math.floor((timeDif % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

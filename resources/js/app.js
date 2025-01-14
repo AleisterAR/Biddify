@@ -1,6 +1,10 @@
 import Alpine from 'alpinejs';
 import _hyperscript from 'hyperscript.org';
+import collapse from '@alpinejs/collapse'
+import persist from '@alpinejs/persist'
 
+Alpine.plugin(collapse);
+Alpine.plugin(persist);
 _hyperscript.browserInit();
 
 const Clover = {

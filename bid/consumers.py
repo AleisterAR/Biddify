@@ -55,10 +55,11 @@ class AuctionConsumer(WebsocketConsumer):
          "auction_started":True, 
          "auction_created":True, 
          "form": AuctionForm(), 
-         "bid_form": event['bid_form'],
-         "bids":bids,}
+         "bid_form": event['bid_form'],}
         if event["success"]:
-            context['bid'] = event["bid"]
+            context['latest_bids'] = bids[:3]
+            print(bids[:3])
+            context['more_bids'] = bids[3:]
         html = render_to_string("items/partials/bidding_history_partial.html", context=context)
         self.send(text_data=html)
     
