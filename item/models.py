@@ -19,7 +19,7 @@ class Item(models.Model):
         ('fair', 'Fair'),
         ('poor', 'Poor'),
     )
-    COUNTRY_CHOICES = sorted([(country.alpha_2, country.name) for country in pycountry.countries], key=lambda x: x[1])
+    COUNTRY_CHOICES = sorted([(country.name, country.name) for country in pycountry.countries], key=lambda x: x[1])
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)

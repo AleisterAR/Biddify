@@ -53,6 +53,7 @@ def inventory(request):
     condition_choices = Item.CONDITION_TYPES
     categories = Category.objects.all()
     countries = Item.COUNTRY_CHOICES
+    print(countries[0])
     context = {"condition_choices":condition_choices, "categories":categories, "belongings":belongings, "countries":countries}
     return render(request, "items/inventory.html", context=context)
 

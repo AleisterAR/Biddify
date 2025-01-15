@@ -60,8 +60,8 @@ class BidForm(forms.ModelForm):
                 if bid_amount <= previous_bid.bid_amount:
                     self.add_error('bid_amount', f"Your bid price must be more than the previous bid of € {previous_bid.bid_amount}!")
             elif starting_price := auction.item.starting_price:
-                if bid_amount <= starting_price:
-                    self.add_error('bid_amount', f"Your bid price must be more than the starting bid of € {starting_price}!")
+                if bid_amount < starting_price:
+                    self.add_error('bid_amount', f"Your bid price must be € {starting_price} or more than € {starting_price}!")
         else:
             self.add_error('bid_amount',"Bid price is required!")
         
