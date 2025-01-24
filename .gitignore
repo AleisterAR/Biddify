@@ -1,4 +1,6 @@
 .venv
-public/*
+public/css/*
+public/js/app.js
+public/mix-manifest.json
 node_modules
 localstorage
