@@ -2,26 +2,38 @@
 {% load tailwind_filters %}
 {% block content %}
 <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-10 px-3">
-    <div class="flex-initial px-9">
-        <h1 class="mb-4 text-3xl font-semibold leading-none tracking-tight text-gray-900 md:text-3xl">{{request.user.username}}'s Inventory</h1>
-    </div>
-    <div class="font-medium flex-initial px-9">
-        <button data-modal-target="additem-modal" data-modal-toggle="additem-modal" type="button" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-sm lg:text-md px-5 py-2.5 text-center">
-            <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                Add new item
-        </button>
-        {% include 'items/partials/add_item_partial.html' %}
+  <div class="flex-initial px-9">
+    <h1 class="mb-4 text-3xl font-semibold leading-none tracking-tight text-gray-900 md:text-3xl">
+      {{request.user.username}}'s Inventory</h1>
+  </div>
+  <div class="font-medium flex-initial px-9">
+    <button data-modal-target="additem-modal" data-modal-toggle="additem-modal" type="button"
+      class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 text-sm lg:text-md px-5 py-2.5 text-center">
+      <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd"
+          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd">
+        </path>
+      </svg>
+      Add new item
+    </button>
+    {% include 'items/partials/add_item_partial.html' %}
   </div>
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-6 px-3">
     <div class="px-9">
       <form id="searchForm" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="w-full max-w-lg grid grid-cols-3 gap-4">
-          <input id="search" hx-get="{% url 'inventory' %}" hx-trigger="keyup changed delay:1000ms" hx-target="#items-list" hx-vals="js:{filter_category : document.getElementById('filter_category').value}" type="text" name="search" class="col-span-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-          <select id="filter_category" hx-get="{% url 'inventory' %}" hx-trigger="change delay:500ms" hx-target="#items-list" id="filter_category" hx-vals="js:{search : document.getElementById('search').value}" name="filter_category" class="col-span-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+          <input id="search" hx-get="{% url 'inventory' %}" hx-trigger="keyup changed delay:1000ms"
+            hx-target="#items-list" hx-vals="js:{filter_category : document.getElementById('filter_category').value}"
+            type="text" name="search"
+            class="col-span-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <select id="filter_category" hx-get="{% url 'inventory' %}" hx-trigger="change delay:500ms"
+            hx-target="#items-list" id="filter_category" hx-vals="js:{search : document.getElementById('search').value}"
+            name="filter_category"
+            class="col-span-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
             <option value="" selected>All</option>
             {% for category in categories %}
-              <option value="{{category}}">{{category}}</option>
+            <option value="{{category}}">{{category}}</option>
             {% endfor %}
           </select>
         </div>
@@ -29,171 +41,170 @@
     </div>
   </div>
 
-<div id="items-list" class="mb-8 mx-auto">
-  {% include 'items/partials/inventory_partial.html' %}
-</div>
+  <div id="items-list" class="mb-8 mx-auto">
+    {% include 'items/partials/inventory_partial.html' %}
+  </div>
 
 
-<script>
+  <script>
     const fileInput = document.getElementById("file-input");
-      const dropZone = document.getElementById("drop-zone");
-      const selectedImages = document.getElementById("selected-images");
-      const selectButton = document.getElementById("select-button");
-      const selectedFilesCount = document.getElementById(
-        "selected-files-count"
-      );
-      let currentFiles = [];
-      selectButton.addEventListener("click", () => {
-        fileInput.click();
-      });
+    const dropZone = document.getElementById("drop-zone");
+    const selectedImages = document.getElementById("selected-images");
+    const selectButton = document.getElementById("select-button");
+    const selectedFilesCount = document.getElementById(
+      "selected-files-count"
+    );
+    let currentFiles = [];
+    selectButton.addEventListener("click", () => {
+      fileInput.click();
+    });
 
-      fileInput.addEventListener("change", handleFiles);
-      dropZone.addEventListener("dragover", handleDragOver);
-      dropZone.addEventListener("dragleave", handleDragLeave);
-      dropZone.addEventListener("drop", handleDrop);
+    fileInput.addEventListener("change", handleFiles);
+    dropZone.addEventListener("dragover", handleDragOver);
+    dropZone.addEventListener("dragleave", handleDragLeave);
+    dropZone.addEventListener("drop", handleDrop);
 
-      function handleFiles() {
-        const fileList = this.files;
-        addFilesToCurrentList(fileList);
-        displayImages();
-        resetFileInput();
-      }
-      function handleDragOver(event) {
-        event.preventDefault();
-        dropZone.classList.add("border-blue-500");
-        dropZone.classList.add("text-blue-500");
-      }
+    function handleFiles() {
+      const fileList = this.files;
+      addFilesToCurrentList(fileList);
+      displayImages();
+      resetFileInput();
+    }
+    function handleDragOver(event) {
+      event.preventDefault();
+      dropZone.classList.add("border-blue-500");
+      dropZone.classList.add("text-blue-500");
+    }
 
-      function handleDragLeave(event) {
-        event.preventDefault();
-        dropZone.classList.remove("border-blue-500");
-        dropZone.classList.remove("text-blue-500");
-      }
+    function handleDragLeave(event) {
+      event.preventDefault();
+      dropZone.classList.remove("border-blue-500");
+      dropZone.classList.remove("text-blue-500");
+    }
 
-      function handleDrop(event) {
-        event.preventDefault();
-        const fileList = event.dataTransfer.files;
-        console.log(fileList)
-        displayImages(fileList);
-        dropZone.classList.remove("border-blue-500");
-        dropZone.classList.remove("text-blue-500");
-      }
+    function handleDrop(event) {
+      event.preventDefault();
+      const fileList = event.dataTransfer.files;
+      console.log(fileList)
+      displayImages(fileList);
+      dropZone.classList.remove("border-blue-500");
+      dropZone.classList.remove("text-blue-500");
+    }
 
-      function addFilesToCurrentList(fileList) {
-            for (const file of fileList) {
-                if (!currentFiles.some(f => f.name === file.name)) {
-                    currentFiles.push(file);
-                    console.log(currentFiles)
-                }
-            }
+    function addFilesToCurrentList(fileList) {
+      for (const file of fileList) {
+        if (!currentFiles.some(f => f.name === file.name)) {
+          currentFiles.push(file);
+          console.log(currentFiles)
         }
+      }
+    }
 
-        function displayImages() {
-        selectedImages.innerHTML = "";
-        currentFiles.forEach((file, index) => {
-            const imageWrapper = document.createElement("div");
-            imageWrapper.classList.add("relative", "mx-2", "mb-2");
-            
-            const image = document.createElement("img");
-            image.src = URL.createObjectURL(file);
-            image.classList.add("w-32", "h-32", "object-cover", "rounded-lg");
-            
-            const removeButton = document.createElement("button");
-            removeButton.innerHTML = "&times;";
-            removeButton.classList.add(
-                "absolute",
-                "top-1",
-                "right-1",
-                "h-6",
-                "w-6",
-                "bg-gray-700",
-                "text-white",
-                "text-xs",
-                "rounded-full",
-                "flex",
-                "items-center",
-                "justify-center",
-                "opacity-50",
-                "hover:opacity-100",
-                "transition-opacity",
-                "focus:outline-none"
-            );
+    function displayImages() {
+      selectedImages.innerHTML = "";
+      currentFiles.forEach((file, index) => {
+        const imageWrapper = document.createElement("div");
+        imageWrapper.classList.add("relative", "mx-2", "mb-2");
 
-            removeButton.addEventListener("click", () => {
-                currentFiles.splice(index, 1);
-                displayImages();
-                updateSelectedFilesCount();
-            });
+        const image = document.createElement("img");
+        image.src = URL.createObjectURL(file);
+        image.classList.add("w-32", "h-32", "object-cover", "rounded-lg");
 
-            imageWrapper.appendChild(image);
-            imageWrapper.appendChild(removeButton);
-            selectedImages.appendChild(imageWrapper);
+        const removeButton = document.createElement("button");
+        removeButton.innerHTML = "&times;";
+        removeButton.classList.add(
+          "absolute",
+          "top-1",
+          "right-1",
+          "h-6",
+          "w-6",
+          "bg-gray-700",
+          "text-white",
+          "text-xs",
+          "rounded-full",
+          "flex",
+          "items-center",
+          "justify-center",
+          "opacity-50",
+          "hover:opacity-100",
+          "transition-opacity",
+          "focus:outline-none"
+        );
+
+        removeButton.addEventListener("click", () => {
+          currentFiles.splice(index, 1);
+          displayImages();
+          updateSelectedFilesCount();
         });
-        updateSelectedFilesCount();
+
+        imageWrapper.appendChild(image);
+        imageWrapper.appendChild(removeButton);
+        selectedImages.appendChild(imageWrapper);
+      });
+      updateSelectedFilesCount();
     }
-      
+
     function resetFileInput() {
-        fileInput.value = "";
+      fileInput.value = "";
     }
 
-      function updateSelectedFilesCount() {
-        const count = selectedImages.children.length;
-        if (count > 0) {
-          selectedFilesCount.textContent = `${count} file${
-            count === 1 ? "" : "s"
+    function updateSelectedFilesCount() {
+      const count = selectedImages.children.length;
+      if (count > 0) {
+        selectedFilesCount.textContent = `${count} file${count === 1 ? "" : "s"
           } selected`;
-        } else {
-          selectedFilesCount.textContent = "";
-        }
+      } else {
+        selectedFilesCount.textContent = "";
       }
-      document.addEventListener("alpine:init", ()=>{
-            Alpine.data("item_register", ()=>({
-                rule:{
-                    name:[Clover.rule.required("Item name is required!")],
-                    category:[Clover.rule.requiredDropdown("Item's category is required!")],
-                    condition: [Clover.rule.required("Item's condition is required!")],
-                    item_images: [function (message) {
-                            return function (field, val) {
-                                return {
-                                    rule: 'images',
-                                    value: currentFiles.length > 0
-                                        ? false
-                                        : message || `At least one image is required.`,
-                                };
-                            };
-                        }("At least one image must be selected!"),],
-                    provenance: [Clover.rule.requiredFile("Provenance is required!")],
-                    price: [Clover.rule.required("Price is required!"),Clover.rule.price("Price must be a positive number!")],
-                    description: [Clover.rule.required("Description must be provided!")],
-                    year: [Clover.rule.optionalNumerical("Year must be a positive number!")],
-                },
-                errors: {},
-                async submit() {
-                const form = this.$el;
-                const formData = new FormData(form);
-                currentFiles.forEach((file, index) => {
-                    formData.append('images[]', file);
-                });
-                if (!Object.keys(this.errors).length) {
-                    try {
-                        const res = await fetch("", {
-                            method: "POST",
-                            body: formData,
-                        });
+    }
+    document.addEventListener("alpine:init", () => {
+      Alpine.data("item_register", () => ({
+        rule: {
+          name: [Clover.rule.required("Item name is required!")],
+          category: [Clover.rule.requiredDropdown("Item's category is required!")],
+          condition: [Clover.rule.required("Item's condition is required!")],
+          item_images: [function (message) {
+            return function (field, val) {
+              return {
+                rule: 'images',
+                value: currentFiles.length > 0
+                  ? false
+                  : message || `At least one image is required.`,
+              };
+            };
+          }("At least one image must be selected!"),],
+          provenance: [Clover.rule.requiredFile("Provenance is required!")],
+          price: [Clover.rule.required("Price is required!"), Clover.rule.price("Price must be a positive number!")],
+          description: [Clover.rule.required("Description must be provided!")],
+          year: [Clover.rule.optionalNumerical("Year must be a positive number!")],
+        },
+        errors: {},
+        async submit() {
+          const form = this.$el;
+          const formData = new FormData(form);
+          currentFiles.forEach((file, index) => {
+            formData.append('images[]', file);
+          });
+          if (!Object.keys(this.errors).length) {
+            try {
+              const res = await fetch("", {
+                method: "POST",
+                body: formData,
+              });
 
-                        if (!res.ok) {
-                            throw res;
-                        }
-                        const response = await res.json();
-                        if (response.status === 'success') {
-                            window.location = "/items/inventory"
-                        } 
-                    } catch (error) {
-                        
-                    }
-                } 
-            },
-        }))
-        })
-</script>
-{% endblock content %}
+              if (!res.ok) {
+                throw res;
+              }
+              const response = await res.json();
+              if (response.status === 'success') {
+                window.location = "/items/inventory"
+              }
+            } catch (error) {
+
+            }
+          }
+        },
+      }))
+    })
+  </script>
+  {% endblock content %}

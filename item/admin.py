@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Item, ItemImage
+from .models import Item, ItemImage, Category
 import os
 
 @admin.register(Item)
@@ -27,3 +27,5 @@ class ItemImageAdmin(admin.ModelAdmin):
             return format_html('<img src="{}" width="100" height="100" />', obj.image.url)
         return "No Image"
     display_item_image.short_description = 'Item Image'
+
+admin.site.register(Category)
