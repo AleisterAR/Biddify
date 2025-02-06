@@ -187,7 +187,7 @@
           });
           if (!Object.keys(this.errors).length) {
             try {
-              const res = await fetch("", {
+              const res = await fetch("{% url 'add_item' %}", {
                 method: "POST",
                 body: formData,
               });
