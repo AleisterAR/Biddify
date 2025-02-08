@@ -23,3 +23,9 @@ class Bid(models.Model):
 
     def __str__(self):
         return f'Bid by {self.bidder.first_name} {self.bidder.last_name} on {self.auction.item.name}'
+
+class Notification(models.Model):
+    message = models.TextField(null=True, blank=True)
+    user = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)

@@ -21,22 +21,24 @@
 <div id="show-more-bids" hx-swap-oob="true" class="collapse collapse-arrow {% if not more_bids %} hidden {% endif %}" x-bind:open="open">
     <div class="collapse-title font-semibold text-sm px-0 text-blue-700 select-none hover:text-opacity-70" x-text="open ? 'See less bids' : 'See more bids ({{more_bids|length}})' " @click="toggle"></div>
     <div class="collapse-content px-0" x-show="open">
-        <table class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <tbody>
-                {% for bid in more_bids %}
-                    <tr class="bg-white">
-                        <td class="px-auto py-3 font-medium text-gray-600 whitespace-nowrap">
-                            {{ bid.bidder }}
-                        </td>
-                        <td id="time-ago" class="px-6 py-3 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
-                        </td>
-                        <td class="float-right py-3 font-semibold text-gray-950">
-                            € {{ bid.bid_amount}}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="max-h-[132px] overflow-y-auto px-1">
+            <table class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <tbody>
+                    {% for bid in more_bids %}
+                        <tr class="bg-white">
+                            <td class="px-auto py-3 font-medium text-gray-600 whitespace-nowrap">
+                                {{ bid.bidder }}
+                            </td>
+                            <td id="time-ago" class="px-6 py-3 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
+                            </td>
+                            <td class="float-right py-3 font-semibold text-gray-950">
+                                € {{ bid.bid_amount}}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endif %}

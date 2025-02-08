@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from bid.forms import AuctionForm
-from bid.models import Auction
+from bid.models import Auction, Notification
 from item.models import Item
 from django.contrib import messages
 import json
 from django_htmx.http import trigger_client_event
+from django.http import HttpResponse
 
 # Create your views here.
 def create_auction(request, item_id):
@@ -22,3 +23,7 @@ def create_auction(request, item_id):
     else:
         form = AuctionForm()
     return render(request, 'items/partials/start_auction_partial.html', {'form': form, 'item': item})
+
+def delete_notification(request, notification_id):
+    Notification.objects.get(id=notification_id).delete()
+    return HttpResponse("")

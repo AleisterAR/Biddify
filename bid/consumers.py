@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from datetime import datetime
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from bid.models import Auction, Bid
 from bid.forms import BidForm, AuctionForm
@@ -58,8 +58,20 @@ class AuctionConsumer(WebsocketConsumer):
          "bid_form": event['bid_form'],}
         if event["success"]:
             context['latest_bids'] = bids[:3]
-            print(bids[:3])
             context['more_bids'] = bids[3:]
         html = render_to_string("items/partials/bidding_history_partial.html", context=context)
         self.send(text_data=html)
-    
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user_id = self.scope["url_route"]["kwargs"]["user_id"]
+        self.group_name = f"user_{self.user_id}_notifications"
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+    async def send_notification(self, event):
+        html = render_to_string("utilities/partials/notification.html", context=event["notification_data"])
+        await self.send(text_data=html) 

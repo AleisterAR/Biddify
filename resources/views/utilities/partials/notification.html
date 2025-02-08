@@ -1,0 +1,15 @@
+<div id="notification-list" hx-swap-oob="afterbegin">
+    <a class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+        <div class="w-full ps-3">
+          <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">{{ notification.message }}</div>
+          <div class="text-xs text-blue-600 dark:text-blue-500">a few moments ago</div>
+        </div>
+        <button type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 hover:text-red-500">
+            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+          </svg>                      
+        </button>
+      </a>
+</div>
+
+<div id="notification-empty-message" hx-swap="outerHTML"></div>
