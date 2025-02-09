@@ -15,7 +15,7 @@ def send_bid_notification(sender, instance, created, **kwargs):
         for participant in participants:
             if participant.id != instance.bidder.id:
                 notification_message = f"{instance.bidder.username} bid € {instance.bid_amount} on {auction_title}."
-                notification = Notification(message=notification_message, user=participant)
+                notification = Notification(message=notification_message, user=participant, is_read=False)
                 notifications.append(notification)
                 async_to_sync(channel_layer.group_send)(
                     f"user_{participant.id}_notifications", {

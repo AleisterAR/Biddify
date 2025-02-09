@@ -1,7 +1,7 @@
 <div id="notification-list" hx-swap-oob="afterbegin">
-  <a class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+  <a class="flex px-4 py-3 hover:bg-gray-100 {% if notification.is_read %} bg-gray-100 {% endif %}" {% if not notification.is_read %} hx-post="{% url 'mark_as_read' notification.message %}" hx-trigger="intersect delay:500ms once" hx-swap="outerHTML" hx-target="this" {% endif %}>
     <div class="w-full ps-3">
-      <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">{{ notification.message }}{{ notification.id }}</div>
+      <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">{{ notification.message }}</div>
       <div class="text-xs text-blue-600 dark:text-blue-500">a few moments ago</div>
     </div>
     <button type="button" hx-delete="{% url "delete_notification" notification.message %}">

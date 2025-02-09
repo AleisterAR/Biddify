@@ -23,6 +23,8 @@ def custom_login(request):
             return JsonResponse({"status": "failure", "errors": "credential_error"})
     else:
         form = AuthenticationForm()
+        if request.user.is_authenticated:
+            return redirect("home")
         return render(request, 'utilities/login.html', {'form': form})
 
 def user_dashboard(request):
@@ -34,7 +36,10 @@ def user_register(request):
         form_data = {field: request.POST.get(field) for field in fields}
         participant = Participant.objects.create_user(first_name=form_data["firstname"], last_name=form_data["lastname"], email=form_data["email"], username=form_data["username"], password=form_data["password"], phone=form_data["phone"], address=form_data["address"], user_type='participant')
         return JsonResponse({"status":"success"})
-    return render(request, 'utilities/register.html')
+    else:
+        if request.user.is_authenticated:
+            return redirect("home")
+        return render(request, 'utilities/register.html')
 
 def user_logout(request):
     logout(request)
