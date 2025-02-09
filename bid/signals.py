@@ -25,4 +25,4 @@ def send_bid_notification(sender, instance, created, **kwargs):
                         }
                     }
                 )
-        Notification.objects.bulk_create(notifications)
+        news = Notification.objects.bulk_create(notifications)
