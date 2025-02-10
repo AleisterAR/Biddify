@@ -21,7 +21,8 @@ def send_bid_notification(sender, instance, created, **kwargs):
                     f"user_{participant.id}_notifications", {
                         "type": "send_notification",
                         "notification_data": {
-                            "notification" : notification
+                            "notification" : notification,
+                            "has_unread": True
                         }
                     }
                 )
