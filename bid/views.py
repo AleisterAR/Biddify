@@ -33,7 +33,7 @@ def delete_notification(request, notification_message):
 
 def delete_all_notifications(request):
     Notification.objects.filter(user=request.user).delete()
-    return render(request, 'utilities/partials/empty_notification.html') 
+    return render(request, 'utilities/partials/empty_notification.html', context={"has_unread":False}) 
 
 def mark_as_read(request, notification_message):
     new_noti = Notification.objects.get(message=notification_message, user=request.user)
