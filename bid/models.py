@@ -13,7 +13,10 @@ class Auction(models.Model):
         return f'Auction for {self.item.name}'
     
     def timer_started(self):
-        return timezone.now() >= self.starting_time 
+        return timezone.now() >= self.starting_time
+    
+    def auction_ended(self):
+        return timezone.now() > self.ending_time
     
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="bids")

@@ -3,7 +3,7 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12" id="items-list">
         {% for belonging in belongings %}
           <a href="{% url 'item_detail' belonging.id %}">
-            <img class="sm:min-h-[226.5px] h-auto max-w-full" src="/localstorage/{{belonging.first_image}}" alt="">
+            <img class="min-h-[226.5px] h-auto max-w-full max-h-[226.5px]" src="/localstorage/{{belonging.first_image}}" alt="Image of {{belonging.name}}">
             <p class="font-medium font-sans text-lg pt-2">{{belonging.name}}</p><br>
             <p class="font-mono font-normal text-sm text-gray-500">CURRENT BID</p>
             <p class="font-sans font-medium text-2xl">€ {{belonging.starting_price}}</p>

@@ -83,7 +83,7 @@
         </div>
         <div class="flex flex-col">
             <div class="px-3 font-sans font-medium text-lg">
-                {% if auction_created %}
+                {% if auction_created and not auction.auction_ended %}
                     {% if auction_started%}
                     Closes in
                     <span id="countdown" class="whitespace-nowrap overflow-hidden text-ellipsis"></span>
@@ -91,12 +91,20 @@
                     Auction will begin in
                     <span id="countdown" class="whitespace-nowrap overflow-hidden text-ellipsis"></span>
                     {% endif %}
+                {% else %}
+                    Auction has ended!
                 {% endif %}
             </div>
             <div class="max-w-md py-6 px-6 bg-white border border-gray-300 mt-5">
                 {% if auction_created %}
                     {% if latest_bids %}
-                        <p class="font-mono font-normal text-sm text-gray-700">CURRENT BID</p>
+                        <p class="font-mono font-normal text-sm text-gray-700">
+                            {% if auction.auction_ended %}
+                                HIGHEST BID
+                            {% else %}
+                                CURRENT BID
+                            {% endif %}
+                        </p>
                         <h2 id="current-bid" class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl ">
                             € {{latest_bids.first.bid_amount}}
                         </h2>
@@ -153,7 +161,7 @@
                 </div>
                 {% else %}
                     <div id="bidding_form" hx-ext="ws">
-                        {% if not ownership %}
+                        {% if not ownership and not auction.auction_ended %}
                         <form ws-send>
                             <div class="relative mb-4">
                                 {% csrf_token %}
@@ -178,7 +186,7 @@
                             <div class="grid grid-cols-2 gap-3">
                                 <button id="bid-button"
                                     class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center {% if not auction_started%} cursor-not-allowed {% endif %}"
-                                    type="submit" {% if not auction_started%} disabled {% endif %}>
+                                    type="submit" {% if not auction_started %} disabled {% endif %}>
                                     Place bid
                                 </button>
                                 <button _="on click set #id_bid_amount's value to ''"
@@ -285,9 +293,10 @@
     }
 
     let days = 0, hours = 0, minutes = 0, seconds = 0;
-    let is_auction_created = {{ auction_created|yesno:'true,false' }};
-    let is_auction_started = {{ auction_started|yesno:'true,false' }};
-    let is_owner = {{ ownership|yesno:'true,false' }};
+    let is_auction_created = Boolean("{{ auction_created|yesno:'true,' }}");
+    let is_auction_started = Boolean("{{ auction_started|yesno:'true,' }}");
+    let is_auction_ended = Boolean("{{ auction.auction_ended|yesno:'true,' }}");
+    let is_owner = Boolean("{{ ownership|yesno:'true,' }}");
     function closeModal() {
         const modalInstance = window.FlowbiteInstances.getInstance('Modal', 'crud-modal');
         modalInstance.hide()
@@ -299,8 +308,10 @@
         biddingForm.setAttribute("ws-connect", wsUrl)
         if(!is_owner){
             const bidAmountInput = document.querySelector('input[name="bid_amount"]')
-            bidAmountInput.setAttribute("_","on input if parseInt(my.value) < 0 and my.value === '' ");
-            bidAmountInput.setAttribute("oninput","this.value = this.value.replace(/[^0-9]/g, '');");
+            if (bidAmountInput !== null){
+                bidAmountInput.setAttribute("_","on input if parseInt(my.value) < 0 and my.value === '' ");
+                bidAmountInput.setAttribute("oninput","this.value = this.value.replace(/[^0-9]/g, '');");
+            }
         }
     }
     function bidTimeAgo(){
@@ -323,7 +334,8 @@
             }
         })
     }
-    if (is_auction_created && !is_auction_started) {
+    if (!is_auction_ended){
+        if (is_auction_created && !is_auction_started) {
         const auctionStartTime = new Date("{{ auction.starting_time|date:'Y-m-d H:i:s'}}");
         function updateCountdown() {
             let now = new Date()
@@ -351,9 +363,9 @@
             timeDif = auctionEndTime - now;
             if (timeDif > 0) {
                 countdownText = formatTime(timeDif)
-                document.getElementById("countdown").innerText = countdownText
+                document.getElementById("countdown").innerText = countdownText === undefined ? "0 second" : countdownText
             } else {
-            
+                location.reload()
             }
         }
         if (days !== 0 && hours !== 0 && minutes !== 0) {
@@ -366,5 +378,7 @@
         bidTimeAgo()
         setInterval(bidTimeAgo, 1000)
     }
+    }
+    
 </script>
 {% endblock content %}

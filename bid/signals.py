@@ -12,9 +12,9 @@ def send_bid_notification(sender, instance, created, **kwargs):
         auction_title = instance.auction.item.name
         channel_layer = get_channel_layer()
         participants = Participant.objects.filter(bid__auction=instance.auction).distinct()
+        notification_message = f"{instance.bidder.username} bid € {instance.bid_amount} on {auction_title}."
         for participant in participants:
             if participant.id != instance.bidder.id:
-                notification_message = f"{instance.bidder.username} bid € {instance.bid_amount} on {auction_title}."
                 notification = Notification(message=notification_message, user=participant, is_read=False)
                 notifications.append(notification)
                 async_to_sync(channel_layer.group_send)(
@@ -26,4 +26,13 @@ def send_bid_notification(sender, instance, created, **kwargs):
                         }
                     }
                 )
-        news = Notification.objects.bulk_create(notifications)
+        notification = Notification(message=notification_message, user=instance.auction.item.owner, is_read=False)
+        notifications.append(notification)
+        async_to_sync(channel_layer.group_send)(
+            f"user_{instance.auction.item.owner.id}_notifications", {
+                "type": "send_notification",
+                "notification_data": {
+                "notification" : notification,
+                "has_unread": True
+            }})
+        Notification.objects.bulk_create(notifications)
