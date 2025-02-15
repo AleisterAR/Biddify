@@ -1,0 +1,152 @@
+{% load static %}
+<nav class="bg-white border-gray-200" id="navbar">
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <a href="{% url 'home' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+          <img src="{% static 'common/logo.png' %}" class="h-8" alt="Flowbite Logo" />
+          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Biddify</span>
+        </a>
+        <button data-collapse-toggle="navbar-default" type="button"
+          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          aria-controls="navbar-default" aria-expanded="false">
+          <span class="sr-only">Open main menu</span>
+          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M1 1h15M1 7h15M1 13h15" />
+          </svg>
+        </button>
+        <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+          <ul
+            class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
+            <li>
+              <a href="#"
+                class="block mt-2 py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                aria-current="page">Home</a>
+            </li>
+            <li>
+              <a href="#"
+                class="block mt-2 py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 ">Auctions</a>
+            </li>
+            <li>
+              <a href="#"
+                class="block mt-2 py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 ">About</a>
+            </li>
+            <li>
+              {% if request.user.is_authenticated %}
+              <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center inline-flex items-center"
+                type="button">{{request.user.username}} <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m1 1 4 4 4-4" />
+                </svg>
+              </button>
+              <div id="dropdownHover"
+                class="z-10 hidden bg-white divide-y divide-gray-100 shadow w-44 dark:bg-gray-700">
+                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownHoverButton">
+                  <li>
+                    <a href="{% url 'inventory' %}" class="block px-4 py-2 hover:bg-gray-100 red">Inventory</a>
+                  </li>
+                  <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
+                  </li>
+                  <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 ">Earnings</a>
+                  </li>
+                  <li>
+                    <a href="{% url 'logout' %}" class="flex px-4 py-2 hover:bg-gray-100 items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-4 h-4 me-2 text-red-500">
+                        <path fill-rule="evenodd"
+                          d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      <p>Logout</p>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              {% else %}
+              <a class="block text-center w-[87px] h-[42px] py-2 px-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium text-md"
+                href="{% url 'login' %}">Sign in</a>
+              {% endif %}
+            </li>
+            <li>
+              {% if request.user.is_authenticated %}
+              <div hx-ext="ws" id="noti-div">
+                <button id="dropdownNotificationButton" data-dropdown-toggle="dropdownNotification"
+                  data-dropdown-delay="400" data-dropdown-trigger="hover"
+                  class="relative inline-flex items-center pt-2 text-sm font-medium text-center text-gray-500 hover:text-gray-900 focus:outline-none dark:hover:text-white dark:text-gray-400"
+                  type="button">
+                  <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                    viewBox="0 0 14 20">
+                    <path
+                      d="M12.133 10.632v-1.8A5.406 5.406 0 0 0 7.979 3.57.946.946 0 0 0 8 3.464V1.1a1 1 0 0 0-2 0v2.364a.946.946 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C1.867 13.018 0 13.614 0 14.807 0 15.4 0 16 .538 16h12.924C14 16 14 15.4 14 14.807c0-1.193-1.867-1.789-1.867-4.175ZM3.823 17a3.453 3.453 0 0 0 6.354 0H3.823Z" />
+                  </svg>
+                  <div id="new-noti-indicator">
+                    {% if has_unread %}
+                    <div
+                      class="absolute block w-3 h-3 mt-2 bg-red-500 border-2 border-white rounded-full -top-0.5 start-2.5 dark:border-gray-900 animate-pulse">
+                    </div>
+                    {% endif %}
+                  </div>
+                </button>
+                <div id="dropdownNotification"
+                  class="z-20 hidden w-full max-w-64 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-800 dark:divide-gray-700"
+                  aria-labelledby="dropdownNotificationButton">
+                  <div
+                    class="block px-4 py-2 font-medium text-center text-gray-700 rounded-t-lg bg-gray-50 dark:bg-gray-800 dark:text-white">
+                    Notifications
+                  </div>
+                  <div class="divide-y divide-gray-100 max-h-[174px] overflow-y-auto dark:divide-gray-700"
+                    id="notification-list" hx-target="closest a" hx-swap="outerHTML swap:1s">
+                    {% if notifications %}
+                    {% for notification in notifications %}
+                    <a class="swapable-a flex px-4 py-3 smooth-transition hover:bg-gray-100 {% if notification.is_read %} bg-gray-100 {% endif %}"
+                      {% if not notification.is_read %} hx-post="{% url 'mark_as_read' notification.message %}"
+                      hx-trigger="intersect delay:500ms once" hx-swap="outerHTML" hx-target="this" {% endif %}>
+                      <div class="w-full ps-3">
+                        <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">{{ notification.message }}</div>
+                        <div class="text-xs text-blue-600 dark:text-blue-500">a few moments ago</div>
+                      </div>
+                      <button type="button" hx-delete="{% url " delete_notification" notification.message %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                          class="size-5 hover:text-red-500">
+                          <path fill-rule="evenodd"
+                            d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </a>
+                    {% endfor %}
+                    {% else %}
+                    <div class="flex px-4 py-3" id="notification-empty-message">
+                      <div class="w-full ps-3">
+                        <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">You've caught up. There is no
+                          notifications for now!</div>
+                      </div>
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div id="clear-all-btn">
+                    {% if notifications or notification %}
+                    <a hx-delete="{% url 'delete_all_notifications' %}" hx-target="#notification-list"
+                      hx-swap="innerHTML"
+                      class="flex items-center p-3 text-sm font-medium text-red-600 border-t border-gray-200 rounded-b-lg bg-gray-50 hover:bg-gray-100 hover:underline cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-4 h-4 me-2">
+                        <path fill-rule="evenodd"
+                          d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      Clear all notifications
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
