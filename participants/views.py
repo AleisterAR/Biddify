@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from participants.models import Participant
 from django.contrib.auth import logout, get_user_model
-
+from bid.models import Auction
 
 def custom_login(request):
     if request.method == 'POST':
@@ -28,7 +28,8 @@ def custom_login(request):
         return render(request, 'utilities/login.html', {'form': form})
 
 def user_dashboard(request):
-    return render(request, 'utilities/home.html')
+    auctions_count = Auction.objects.all().count()
+    return render(request, 'utilities/home.html', context={"auctions_count": auctions_count})
 
 def user_register(request):
     if request.method == "POST":

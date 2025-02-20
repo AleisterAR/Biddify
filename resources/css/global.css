@@ -10,3 +10,7 @@ a.swapable-a.htmx-swapping {
 .smooth-transition {
     transition: all 1s ease-in;
 }
+
+.footer-border{
+    border-top: 1px solid #d2d9e1;
+}

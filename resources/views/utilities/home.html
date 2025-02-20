@@ -19,9 +19,25 @@
             </div>
         </div>
     </section>
+    <div class="max-w-full bg-[#f0f1f5] min-h-32 py-8 px-8 lg:py-16">
+        <div class="grid grid-cols-2 justify-items-center justify-center">
+            <div>
+                <h6 class="font-semibold text-lg">Your daily discovery</h6>
+                <p>Browse daily to find your destined treasure!</p>
+            </div>
+            <div>
+                <a href="#" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 ">
+                    Find your next treasure
+                </a>
+            </div>
+        </div>
+    </div>
     <div class="mx-auto max-w-screen-xl py-8 px-4 lg:py-16">
-        <h4 class="text-lg font-bold tracking-tight leading-none text-gray-800 md:text-xl lg:text-2xl">
-            Featured Auctions
+        <p class="text-3xl font-semibold tracking-tight leading-none text-gray-800 pb-10">
+            Bid on over <a href="#" class="text-blue-600 font-serif">{{auctions_count}} special objects</a> every week, with streamlined bidding processes.
+        </p>
+        <h4 class="text-lg font-semibold tracking-tight leading-none text-gray-800">
+            Here are some of the featured auctions
         </h4>
         <div hx-get="{% url 'featured_auctions' %}" hx-trigger="load, every 60s" hx-swap="innerHTML" hx-target="this" class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
             {% include 'utilities/partials/featured_auctions.html' %}
