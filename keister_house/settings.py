@@ -50,7 +50,12 @@ INSTALLED_APPS = [
     'crispy_tailwind',
     'django_htmx',
     'django_extensions',
+    'payments',
 ]
+
+STRIPE_PUBLISHABLE_KEY = "pk_test_51QuviHFbyy0r1SrNHOg4ANIT4QVXFZoKS8ZjuLTexs72uSEuCGxywXuYpqtfjJzGEslBoU6NLmYQxIBnQAZSpwT000FYexe7OI"
+STRIPE_SECRET_KEY = "sk_test_51QuviHFbyy0r1SrNIsxn0U0DpzPhk5DWNRNmrm6xXBEFoMtuTwFAroOkEcrTfXV1TpX6BpH5OFWkVx5AodsAdfrq00MZc4k5dq"
+
 
 CRISPY_ALLOWED_TEMPLATE_PACKS ="tailwind"
 

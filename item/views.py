@@ -49,7 +49,7 @@ def item_detail(request, item_id):
         winner = None
         if auction.auction_ended():
             winner = bids[0].bidder.id if len(bids) != 0 else None
-        context["auction"], context["auction_created"], context["auction_started"], context["latest_bids"], context["more_bids"], context['winner'], context["highest_bid"] = auction, auction_created, auction_started, bids[:3], bids[3:], winner, bids[0]
+        context["auction"], context["auction_created"], context["auction_started"], context["latest_bids"], context["more_bids"], context['winner'], context["highest_bid"] = auction, auction_created, auction_started, bids[:3], bids[3:], winner, bids[0] if len(bids) != 0 else ""
         return render(request, "items/item_detail.html", context=context)
     return render(request, "items/item_detail.html", context=context)
 
