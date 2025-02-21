@@ -46,7 +46,10 @@ def item_detail(request, item_id):
         auction = Auction.objects.filter(item=item)[0]
         bids = Bid.objects.filter(auction=auction).select_related("bidder").order_by('-bid_time', '-bid_amount')
         auction_started = auction.timer_started()
-        context["auction"], context["auction_created"], context["auction_started"], context["latest_bids"], context["more_bids"] = auction, auction_created, auction_started, bids[:3], bids[3:]
+        winner = None
+        if auction.auction_ended():
+            winner = bids[0].bidder.id if len(bids) != 0 else None
+        context["auction"], context["auction_created"], context["auction_started"], context["latest_bids"], context["more_bids"], context['winner'], context["highest_bid"] = auction, auction_created, auction_started, bids[:3], bids[3:], winner, bids[0]
         return render(request, "items/item_detail.html", context=context)
     return render(request, "items/item_detail.html", context=context)
 

@@ -18,8 +18,8 @@
           <ul
             class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
             <li>
-              <a href="#"
-                class="block mt-2 py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+              <a href="{% url 'home' %}"
+                class="block mt-2 py-2 px-3 text-gray-900 {% if request.resolver_match.url_name == 'home' %}!text-blue-600{%endif%} hover:text-blue-600 rounded md:bg-transparent md:p-0"
                 aria-current="page">Home</a>
             </li>
             <li>

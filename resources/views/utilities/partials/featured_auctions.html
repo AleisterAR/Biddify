@@ -1,9 +1,23 @@
-{% for featured_auction in featured_auctions %}
-    <a href="{% url 'item_detail' featured_auction.item_id %}">
-        <img class="min-h-[226.5px] h-auto max-w-full max-h-[226.5px]" src="/localstorage/{{featured_auction.first_image}}" alt="Image of {{featured_auction.item.name}}">
-        <p class="font-medium font-sans text-lg pt-2">{{featured_auction.item.name}}</p><br>
-        <p class="font-mono font-normal text-sm text-gray-500">CURRENT BID</p>
-        <p class="font-sans font-medium text-2xl">€ {{featured_auction.max_bid}}</p>
-        <p class="pt-1 font-medium font-sans text-md text-gray-500"></p>
-    </a>
-{% endfor %}
+{% if featured_auctions %}
+<h4 class="text-lg font-semibold tracking-tight leading-none text-gray-800">
+    Here are some of the featured auctions
+</h4>
+{% endif %}
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12">
+  {% for featured_auction in featured_auctions %}
+  <a href="{% url 'item_detail' featured_auction.item_id %}">
+    <img
+      class="min-h-[226.5px] h-auto max-w-full max-h-[226.5px]"
+      src="/localstorage/{{featured_auction.first_image}}"
+      alt="Image of {{featured_auction.item.name}}"
+    />
+    <p class="font-medium font-sans text-lg pt-2">
+      {{featured_auction.item.name}}
+    </p>
+    <br />
+    <p class="font-mono font-normal text-sm text-gray-500">CURRENT BID</p>
+    <p class="font-sans font-medium text-2xl">€ {{featured_auction.max_bid}}</p>
+    <p class="pt-1 font-medium font-sans text-md text-gray-500"></p>
+  </a>
+  {% endfor %}
+</div>

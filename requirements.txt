@@ -8,4 +8,6 @@ django-htmx == 1.19.0
 django-widget-tweaks == 1.5.0
 setuptools == 68.2.2
 wheel == 0.41.2
-mysqlclient == 2.2.4
+crispy-tailwind
+pycountry
+Pillow
