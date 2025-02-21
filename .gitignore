@@ -4,3 +4,4 @@ node_modules
 localstorage
 __pycache__
 *.pyc
+db.sqlite3
