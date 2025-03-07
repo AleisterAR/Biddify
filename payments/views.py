@@ -3,6 +3,8 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
 import stripe
+from bid.models import Auction
+from django.db.models import Max
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -15,23 +17,31 @@ def stripe_config(request):
     
 @csrf_exempt
 def create_checkout_session(request, auction_id):
+    auction = Auction.objects.prefetch_related("bids").get(id=auction_id)
+    highest_bid = auction.bids.order_by("-bid_amount").first()
     try:
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
                 'price_data': {
-                    'currency': 'usd',
+                    'currency': 'eur',
                     'product_data': {
-                        'name': 'Auction Bid Payment',
+                        'name': f'Payment for Item: {auction.item.name}',
                     },
-                    'unit_amount': 1000,
+                    'unit_amount': int(float(highest_bid.bid_amount) * 100),
                 },
                 'quantity': 1,
             }],
             mode='payment',
-            success_url='http://localhost:8000/success/',
-            cancel_url='http://localhost:8000/cancel/',
+            success_url='http://localhost:8000/payment/success/',
+            cancel_url='http://localhost:8000/payment/cancel/',
         )
         return JsonResponse({'id': session.id})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+def successful_view(request):
+    return render(request, "payment/success.html")
+
+def cancelled_view(request):
+    return render(request, "payment/cancel.html")

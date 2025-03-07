@@ -198,7 +198,7 @@
                         </form>
                         {% elif winner == request.user.id and auction.auction_ended %}
                         <div class="">
-                            <button class="block bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm px-5 py-2.5 text-center">
+                            <button class="block bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm px-5 py-2.5 text-center" id="payment-btn">
                                 Proceed to payment
                             </button>
                         </div>
@@ -255,6 +255,7 @@
         </div>
     </div>
 </div>
+<script src="https://js.stripe.com/v3/"></script>
 <script>
     document.addEventListener('htmx:wsAfterMessage', ()=>{
         document.getElementById("id_bid_amount").value = ""
@@ -319,6 +320,24 @@
                 bidAmountInput.setAttribute("oninput","this.value = this.value.replace(/[^0-9]/g, '');");
             }
         }
+    }
+    if (is_auction_ended){
+            fetch("{% url 'get_stripe_config' %}", {method: "GET"})
+            .then(response => response.json())
+            .then((data)=> {
+                const stripe = Stripe(data.publicKey);
+                document.getElementById("payment-btn").addEventListener("click", ()=>{
+                    fetch(" {% url 'create_checkout_session' auction.id %} ")
+                    .then((result) => { return result.json(); })
+                    .then((data)=> {
+                        console.log(data)
+                        return stripe.redirectToCheckout({sessionId: data.id})
+                    })
+                    .then((res) => {
+                        console.log(res);
+                    });
+                })
+        })
     }
     function bidTimeAgo(){
         const timeElements = document.querySelectorAll("#time-ago");

@@ -25,5 +25,6 @@ urlpatterns = [
     path("", include("participants.urls")),
     path("items/", include("item.urls")),
     path("auction/", include("bid.urls")),
-    path("__debug__/", include("debug_toolbar.urls"))
+    path("payment/", include("payments.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
