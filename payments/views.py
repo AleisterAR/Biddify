@@ -33,8 +33,8 @@ def create_checkout_session(request, auction_id):
                 'quantity': 1,
             }],
             mode='payment',
-            success_url='http://localhost:8000/payment/success/',
-            cancel_url='http://localhost:8000/payment/cancel/',
+            success_url=f"{request.build_absolute_uri('/')}payment/success/",
+            cancel_url=f"{request.build_absolute_uri('/')}payment/cancel/",
         )
         return JsonResponse({'id': session.id})
     except Exception as e:
