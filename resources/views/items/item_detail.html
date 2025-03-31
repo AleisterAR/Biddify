@@ -198,7 +198,7 @@
                         </form>
                         {% elif winner == request.user.id and auction.auction_ended %}
                         <div class="">
-                            <button class="block bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm px-5 py-2.5 text-center" id="payment-btn">
+                            <button data-auction-id="{{ auction.id }}" class="block bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm px-5 py-2.5 text-center" id="payment-btn">
                                 Proceed to payment
                             </button>
                         </div>
@@ -303,6 +303,7 @@
     let is_auction_created = Boolean("{{ auction_created|yesno:'true,' }}");
     let is_auction_started = Boolean("{{ auction_started|yesno:'true,' }}");
     let is_auction_ended = Boolean("{{ auction.auction_ended|yesno:'true,' }}");
+    console.log(is_auction_ended)
     let is_owner = Boolean("{{ ownership|yesno:'true,' }}");
     const auctionId = "{{ auction.id }}"
     function closeModal() {
