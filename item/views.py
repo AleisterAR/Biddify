@@ -19,8 +19,12 @@ def inventory(request):
     filter_category = request.GET.get("filter_category","")
     first_images = ItemImage.objects.filter(item=OuterRef('id')).values('image')[:1]
     items = Item.objects.filter(owner=owner).annotate(first_image=Subquery(first_images))
-    if search or filter_category:
-        items = items.filter(Q(name__icontains=search) & Q(category__category__contains=filter_category))
+    filters = Q()
+    if search:
+        filters &= Q(name__icontains=search)
+    if filter_category:
+        filters &= Q(category__category=filter_category)
+    items = items.filter(filters)
     paginator = Paginator(items, 16)
     page = request.GET.get("page")
     belongings = paginator.get_page(page)

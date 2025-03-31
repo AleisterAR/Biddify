@@ -1,0 +1,74 @@
+{% extends 'utilities/master.html' %} 
+{% load tailwind_filters %} 
+{% block content %}
+<div
+  class="max-w-screen-xl flex flex-wrap items-start justify-between mx-auto pt-10 px-3"
+>
+  <div
+    class="max-w-screen-xl flex flex-wrap items-center justify-between pt-6 px-3"
+  >
+    <div class="px-9">
+      <form id="searchForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="w-full max-w-full grid grid-cols-6 gap-4">
+          <input
+            id="search"
+            hx-get="{% url 'auctions' %}"
+            hx-trigger="keyup changed delay:1000ms"
+            hx-target="#auctions-list"
+            hx-vals="js:{filter_category : document.getElementById('filter_category').value, filter_country : document.getElementById('filter_country').value, filter_condition : document.getElementById('filter_condition').value}"
+            type="text"
+            name="search"
+            class="col-span-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          />
+          <select
+            id="filter_category"
+            hx-get="{% url 'auctions' %}"
+            hx-trigger="change delay:500ms"
+            hx-target="#auctions-list"
+            hx-vals="js:{search : document.getElementById('search').value, filter_country : document.getElementById('filter_country').value, filter_condition : document.getElementById('filter_condition').value}"
+            name="filter_category"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+          >
+            <option value="" selected>All Categories</option>
+            {% for category in categories %}
+            <option value="{{category}}">{{category}}</option>
+            {% endfor %}
+          </select>
+          <select
+            id="filter_country"
+            hx-get="{% url 'auctions' %}"
+            hx-trigger="change delay:500ms"
+            hx-target="#auctions-list"
+            hx-vals="js:{search : document.getElementById('search').value, filter_category : document.getElementById('filter_category').value, filter_condition : document.getElementById('filter_condition').value}"
+            name="filter_country"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+          >
+            <option value="" selected>All Countries</option>
+            {% for value, label in countries %}
+            <option value="{{value}}">{{label}}</option>
+            {% endfor %}
+          </select>
+          <select
+            id="filter_condition"
+            hx-get="{% url 'auctions' %}"
+            hx-trigger="change delay:500ms"
+            hx-target="#auctions-list"
+            hx-vals="js:{search : document.getElementById('search').value, filter_category : document.getElementById('filter_category').value, filter_country : document.getElementById('filter_country').value}"
+            name="filter_condition"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+          >
+            <option value="" selected>All Conditions</option>
+            {% for value, label in conditions %}
+            <option value="{{value}}">{{label}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="auctions-list" class="mb-8 mx-auto">
+    {% include 'auctions/partials/auctions_partial.html' %}
+  </div>
+</div>
+{% endblock content %}

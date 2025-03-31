@@ -24,6 +24,7 @@
     "alpinejs": "^3.14.1",
     "css-loader": "^7.1.2",
     "D": "^1.0.0",
+    "dayjs": "^1.11.13",
     "flowbite": "^2.5.1",
     "htmx.org": "^2.0.3",
     "hyperscript": "^2.0.2",

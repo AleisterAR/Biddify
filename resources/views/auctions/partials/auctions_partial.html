@@ -1,0 +1,79 @@
+<div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto pt-6 px-3">
+    {% if auctions %} 
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12" id="items-list">
+          {% for auction in auctions %}
+            <a href="{% url 'item_detail' auction.id %}">
+              <img class="min-h-[226.5px] h-auto max-w-full max-h-[226.5px]" src="/localstorage/{{auction.first_image}}" alt="Image of {{auction.item.name}}">
+              <p class="font-medium font-sans text-lg pt-2">{{auction.name}}</p><br>
+              <p class="font-mono font-normal text-sm text-gray-500">CURRENT BID</p>
+              <p class="font-sans font-medium text-2xl">€ {{auction.highest_bid}}</p>
+              <p class="pt-1 font-medium font-sans text-md text-gray-500" id="auction_end_time" data-time="{{ auction.auction_ending_time|date:'Y-m-d H:i:s' }}"></p>
+            </a>
+            {% endfor %}
+      </div>
+    {% else %}
+      <div class="flex justify-center items-center mx-auto py-44">
+        <h2 class="mb-4 text-1xl font-bold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl">There is no item in the inventory!</h2>
+      </div>
+    {% endif %}
+</div>
+    {% if auctions.paginator.count %}
+    <div class="flex flex-col items-center pt-12">
+      <span class="text-sm text-gray-700">
+          Showing Page <span class="font-semibold text-gray-900">{{auctions.number}}</span> of <span class="font-semibold text-gray-900">{{auctions.paginator.num_pages}}</span> of <span class="font-semibold text-gray-900">{{auctions.paginator.count}}</span> Entries
+      </span>
+      <div class="inline-flex mt-2 xs:mt-0">
+        <a {% if auctions.has_previous %} href="?page={{auctions.previous_page_number}}" {% endif %} class="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-blue-700 hover:bg-blue-800">
+            <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
+            </svg>
+            Prev
+        </a>
+        <a {% if auctions.has_next %} href="?page={{auctions.next_page_number}}" {% endif %} class="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-blue-700 border-0 border-s border-blue-700 hover:bg-blue-800">
+            Next
+            <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <script>
+
+      function getDHMS(timeDif){
+        days = Math.floor(timeDif / (1000 * 60 * 60 * 24));
+        hours = Math.floor((timeDif % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        minutes = Math.floor((timeDif % (1000 * 60 * 60)) / (1000 * 60));
+        seconds = Math.floor((timeDif % (1000 * 60)) / 1000);
+        return {days, hours, minutes, seconds}
+      }
+
+      function bidTimeAgo(){
+        const timeElements = document.querySelectorAll("#auction_end_time");
+        timeElements.forEach(el => {
+          const timeLeft = new Date(el.getAttribute("data-time"));
+          console.log(timeLeft)
+          const now = new Date();
+            const timeDiff = timeLeft - now;
+            if (timeDiff <= 0) {
+                el.innerHTML = "Auction ended";
+                return;
+            }
+            const { days, hours, minutes, seconds} = getDHMS(timeDiff)
+            const timeParts = []
+            if (days > 0) timeParts.push(`${days} day${days > 1 ? "s" : ""}`);
+            if (hours > 0) timeParts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
+            if (minutes > 0) timeParts.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
+            if (seconds > 0) timeParts.push(`${seconds} second${seconds > 1 ? "s" : ""}`);
+            if (timeParts[0] === undefined){
+                el.innerHTML = "0 second remaining"
+            }
+            else{
+                el.innerHTML = timeParts[0] + ' remaining'
+            }
+        })
+      }
+      bidTimeAgo()
+      setInterval(bidTimeAgo, 1000);
+    </script>
