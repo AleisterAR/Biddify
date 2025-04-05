@@ -47,7 +47,7 @@ def mark_as_read(request, notification_message):
 
 def feature_auctions(request):
     first_images = ItemImage.objects.filter(item=OuterRef('item_id')).values('image')[:1]
-    auctions = Auction.objects.prefetch_related('bids').annotate(max_bid = Max('bids__bid_amount'), first_image=Subquery(first_images)).exclude(max_bid=None, ending_time__lte=timezone.now()).order_by('-max_bid')
+    auctions = Auction.objects.prefetch_related('bids').annotate(max_bid = Max('bids__bid_amount'), first_image=Subquery(first_images)).exclude(max_bid=None).filter(ending_time__gt=timezone.now()).order_by('-max_bid')
 
     return render(request, 'utilities/partials/featured_auctions.html', context={'featured_auctions':auctions})
 

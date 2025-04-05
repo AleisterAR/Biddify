@@ -7,9 +7,11 @@ from django.conf import settings
 from django.db.models import Q
 from bid.models import Auction, Bid
 from bid.forms import AuctionForm, BidForm
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef, Subquery, Exists
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from itertools import chain
+from payments.models import Payment
 
 # Create your views here.
 @login_required
@@ -19,12 +21,16 @@ def inventory(request):
     filter_category = request.GET.get("filter_category","")
     first_images = ItemImage.objects.filter(item=OuterRef('id')).values('image')[:1]
     items = Item.objects.filter(owner=owner).annotate(first_image=Subquery(first_images))
-    filters = Q()
+    highest_bids = Bid.objects.filter(auction=OuterRef('pk')).order_by('-bid_amount')
+    won_auctions = Auction.objects.annotate(
+    top_bid=Subquery(highest_bids.values('bidder')[:1])).filter(top_bid=request.user.id,ending_time__lte=timezone.now())
+    unpaid_auctions = won_auctions.exclude(payment__user_email=request.user.email)
+    unpaid_items = Item.objects.filter(auction__in=unpaid_auctions).annotate(first_image=Subquery(first_images))
+    items = list(chain(items, unpaid_items))
     if search:
-        filters &= Q(name__icontains=search)
+        items = [item for item in items if search.lower() in item.name.lower()]
     if filter_category:
-        filters &= Q(category__category=filter_category)
-    items = items.filter(filters)
+        items = [item for item in items if item.category.category == filter_category]
     paginator = Paginator(items, 16)
     page = request.GET.get("page")
     belongings = paginator.get_page(page)
@@ -51,8 +57,16 @@ def item_detail(request, item_id):
         bids = Bid.objects.filter(auction=auction).select_related("bidder").order_by('-bid_time', '-bid_amount')
         auction_started = auction.timer_started()
         winner = None
+        payment_made = False
         if auction.auction_ended():
             winner = bids[0].bidder.id if len(bids) != 0 else None
+        if winner == request.user.id:
+            payment_made = Payment.objects.filter(
+                auction=auction,
+                user_email=request.user.email,
+                payment_status='completed'
+            ).exists()
+        context["payment_made"] = payment_made
         context["auction"], context["auction_created"], context["auction_started"], context["latest_bids"], context["more_bids"], context['winner'], context["highest_bid"] = auction, auction_created, auction_started, bids[:3], bids[3:], winner, bids[0] if len(bids) != 0 else ""
         return render(request, "items/item_detail.html", context=context)
     return render(request, "items/item_detail.html", context=context)
