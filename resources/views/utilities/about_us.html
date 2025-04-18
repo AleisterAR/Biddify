@@ -1,0 +1,48 @@
+{% extends 'utilities/master.html' %}
+{% load tailwind_filters %}
+{% block content %}
+<div class="mx-auto max-w-screen-xl py-8 px-4 lg:py-16">
+    <div class="flex flex-col items-start gap-4">
+        <div>
+            <p class="text-5xl text-blue-600 font-serif font-bold">
+                Buying and Selling
+            </p>
+            <p class="text-5xl text-gray-900 font-semibold">
+                on Biddify
+            </p>
+        </div>
+        <p class="text-xl text-gray-800 font-semibold max-w-3xl">
+            Biddify is the most-visited curated marketplace in Europe for special objects, offering over 75,000 objects for auction each week. Our mission is to provide an exciting and seamless experience to our customers for buying and selling special, hard-to-find objects.
+        </p>
+    </div>
+    <div class="flex items-start mt-8 justify-between">
+        <p class="text-4xl text-gray-900 font-semibold trakcing-wider">
+            Why Biddify?
+        </p>
+        <div class="flex flex-col items-start space-y-16">
+            <div class="flex flex-col space-y-6">
+                <p class="text-3xl font-semibold">
+                    A Global Marketplace
+                </p>
+                <p class="text-lg text-gray-800 font-normal max-w-3xl">
+                    Biddify is the most-visited curated marketplace in Europe for special objects, offering over 75,000 objects for auction each week. Our mission is to provide an exciting and seamless experience to our customers for buying and selling special, hard-to-find objects.
+                </p>
+            </div>
+            <div class="flex flex-col space-y-6">
+                <p class="text-3xl font-semibold">
+                    Safe, Secure Payments
+                </p>
+                <p class="text-lg text-gray-800 font-normal max-w-3xl">
+                    We work with payment providers to handle all payments in a safe and secure manner.
+                </p>
+                <p class="text-lg text-gray-800 font-normal max-w-3xl">
+                    For Buyers: Biddify holds your payment until 3 days after you have received the object or until the seller has confirmed the object was picked up and no complaint was received.
+                </p>
+                <p class="text-lg text-gray-800 font-normal max-w-3xl">
+                    For Sellers: Once Biddify confirms we have received payment from the buyer, you may ship your object. Our system will then confirm the buyer has received their purchase - based on a valid Track & Trace - and the payment will be deposited into your account.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

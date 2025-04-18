@@ -1,13 +1,14 @@
 from django.urls import path
 from django.shortcuts import redirect
-from .views import custom_login, user_dashboard, user_register, user_logout, check_username
+from .views import custom_login, user_dashboard, user_register, user_logout, check_username, about_us
 
 urlpatterns = [
     path("", lambda x: redirect("home")),
     path('login/',custom_login,name="login"),
     path('home/',user_dashboard,name="home"),
     path('register/',user_register,name="user_register"),
-    path('logout/', user_logout, name="logout")
+    path('logout/', user_logout, name="logout"),
+    path('about_us/', about_us, name="about_us"),
 ]
 
 htmx_urlpatterns = [

@@ -35,6 +35,9 @@ AUTH_USER_MODEL = 'participants.Participant'
 INSTALLED_APPS = [
     'daphne',
     'channels',
+    'django_light',
+    'admin_tools_stats', 
+    'django_nvd3',
     'participants',
     'item',
     'bid',

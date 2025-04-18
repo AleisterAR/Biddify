@@ -52,3 +52,6 @@ def check_username(request):
         return JsonResponse({'status': 'unavailable'}, status=200)
     else:
         return JsonResponse({'status': 'available'}, status=200)
+    
+def about_us(request):
+    return render(request, 'utilities/about_us.html')
