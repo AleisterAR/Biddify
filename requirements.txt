@@ -11,3 +11,8 @@ wheel == 0.41.2
 crispy-tailwind
 pycountry
 Pillow
+python-dotenv
+django-light
+django-admin-charts
+mysqlclient
+stripe
