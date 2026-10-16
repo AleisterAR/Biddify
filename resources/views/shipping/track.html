@@ -31,7 +31,7 @@
         <li class="flex flex-col items-center text-center" {% if forloop.counter0 == current_step %}aria-current="step"{% endif %}>
             <div class="w-full flex items-center">
                 <div class="flex-1 h-1 {% if forloop.first %}invisible{% elif forloop.counter0 <= current_step %}bg-paddle{% else %}bg-gallery-deep{% endif %}"></div>
-                <span class="relative flex items-center justify-center w-9 h-9 rounded-full shrink-0 {% if forloop.counter0 <= current_step %}bg-paddle text-white{% else %}bg-gallery-deep text-ink-faint{% endif %}">
+                <span class="relative flex items-center justify-center w-9 h-9 rounded-full shrink-0 {% if forloop.counter0 <= current_step %}bg-paddle text-onaccent{% else %}bg-gallery-deep text-ink-faint{% endif %}">
                     {% if forloop.counter0 < current_step or shipment.status == 'delivered' %}
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                     {% else %}
@@ -63,7 +63,7 @@
         <ol class="mt-6 relative border-s-2 border-gallery-deep ms-2">
             {% for event in events %}
             <li class="mb-7 ms-6">
-                <span class="absolute -start-[9px] mt-1 w-4 h-4 rounded-full border-2 border-white {% if forloop.first %}bg-paddle{% else %}bg-gallery-deep{% endif %}" aria-hidden="true"></span>
+                <span class="absolute -start-[9px] mt-1 w-4 h-4 rounded-full border-2 border-card {% if forloop.first %}bg-paddle{% else %}bg-gallery-deep{% endif %}" aria-hidden="true"></span>
                 <p class="font-semibold">{{ event.get_status_display }}</p>
                 <p class="text-sm text-ink-soft">{{ event.description }}</p>
                 {% if event.location %}<p class="text-sm text-ink-soft">{{ event.location }}</p>{% endif %}

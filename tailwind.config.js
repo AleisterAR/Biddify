@@ -8,13 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Saleroom palette
-        ink: { DEFAULT: '#1A1D3A', soft: '#4A4E6E', faint: '#8A8DA6' },
-        gallery: { DEFAULT: '#EEF0F4', deep: '#E1E4EC' },
-        paddle: { DEFAULT: '#3340D6', dark: '#2630AE', light: '#E8EAFD' },
-        brass: { DEFAULT: '#C9962B', dark: '#8C6512', light: '#F6ECD5' },
-        leading: { DEFAULT: '#13804B', light: '#E3F4EA' },
-        outbid: { DEFAULT: '#C2341B', light: '#FBE7E3' },
+        // "Professional blue + deal green" palette from ui-ux-pro-max (light)
+        canvas: '#F8FAFC',                                        // page background
+        card: '#FFFFFF',                                          // cards, inputs, menus
+        surface: { DEFAULT: '#0F172A', raised: '#1E293B' },       // footer, side panels (dark bands)
+        onaccent: '#FFFFFF',                                      // text on blue/green buttons
+        ink: { DEFAULT: '#0F172A', soft: '#334155', faint: '#475569' },  // foreground text
+        gallery: { DEFAULT: '#F1F5FD', deep: '#E4ECFC' },         // muted bands, chips, borders
+        paddle: { DEFAULT: '#2563EB', dark: '#1D4ED8', light: '#DBEAFE' },     // primary blue
+        brass: { DEFAULT: '#3B82F6', dark: '#1D4ED8', light: '#EFF6FF' },      // tag hole, lot numbers
+        leading: { DEFAULT: '#047857', light: '#D1FAE5' },       // deal green, darkened from #059669 for 4.5:1 text
+        outbid: { DEFAULT: '#DC2626', light: '#FEE2E2' },
         closing: { DEFAULT: '#B45309', light: '#FEF3C7' },
       },
       fontFamily: {
@@ -30,7 +34,7 @@ module.exports = {
           '100%': { transform: 'rotate(0deg)' },
         },
         'bid-flash': {
-          '0%': { backgroundColor: '#F6ECD5', transform: 'scale(1.04)' },
+          '0%': { backgroundColor: '#DBEAFE', transform: 'scale(1.04)' },
           '100%': { backgroundColor: 'transparent', transform: 'scale(1)' },
         },
         'row-in': {

@@ -1,6 +1,6 @@
 <div id="additem-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-screen-lg max-h-full">
-        <div class="relative bg-white shadow-2xl">
+        <div class="relative bg-card shadow-2xl">
             <div class="flex items-center justify-between px-5 py-4 border-b border-ink/10">
                 <h3 class="font-display text-2xl font-semibold">Add an object</h3>
                 <button type="button" class="inline-flex w-11 h-11 items-center justify-center text-ink-faint hover:bg-gallery hover:text-ink" data-modal-toggle="additem-modal">
@@ -85,7 +85,7 @@
                         </div>
                         <div class="col-span-2">
                           <label class="field-label">Provenance document</label>
-                          <input x-clover-verify accept=".pdf, .png, .jpg, .jpeg" class="block w-full text-sm text-ink border border-ink/20 cursor-pointer bg-white file:me-3 file:min-h-[44px] file:px-4 file:border-0 file:bg-ink file:text-white file:font-semibold" aria-describedby="file_input_help" id="provenance" name="provenance" type="file">
+                          <input x-clover-verify accept=".pdf, .png, .jpg, .jpeg" class="block w-full text-sm text-ink border border-ink/20 cursor-pointer bg-card file:me-3 file:min-h-[44px] file:px-4 file:border-0 file:bg-gallery-deep file:text-ink file:font-semibold" aria-describedby="file_input_help" id="provenance" name="provenance" type="file">
                           <p class="mt-1.5 text-sm text-ink-soft" id="file_input_help">A certificate, receipt or photo that shows where the object came from. PNG, JPG or PDF.</p>
                           <div x-text="errors.provenance" class="field-error"></div> 
                         </div>

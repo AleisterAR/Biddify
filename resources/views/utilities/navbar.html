@@ -1,6 +1,6 @@
 {% load static %}
 {% with url_name=request.resolver_match.url_name %}
-<nav class="bg-white/95 backdrop-blur border-b border-ink/10" id="navbar">
+<nav class="bg-canvas/90 backdrop-blur border-b border-ink/10" id="navbar">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 h-16">
     <a href="{% url 'home' %}" class="flex items-center gap-2.5">
       <span class="font-display text-2xl font-bold tracking-tight">Biddify</span>
@@ -18,11 +18,11 @@
           </svg>
           <div id="new-noti-indicator">
             {% if has_unread %}
-            <div class="absolute block w-3 h-3 bg-brass border-2 border-white rounded-full top-2.5 end-2.5 animate-pulse"></div>
+            <div class="absolute block w-3 h-3 bg-paddle border-2 border-card rounded-full top-2.5 end-2.5 animate-pulse"></div>
             {% endif %}
           </div>
         </button>
-        <div id="dropdownNotification" class="z-50 hidden w-full max-w-sm bg-white border border-ink/10 shadow-xl shadow-ink/10"
+        <div id="dropdownNotification" class="z-50 hidden w-full max-w-sm bg-card border border-ink/10 shadow-xl shadow-ink/10"
           aria-labelledby="dropdownNotificationButton">
           <div class="px-4 py-3 font-display text-lg font-semibold border-b border-ink/10">Notifications</div>
           <div class="divide-y divide-ink/5 max-h-[300px] overflow-y-auto" id="notification-list" hx-target="closest a"
@@ -32,7 +32,7 @@
             <a class="swapable-a flex gap-3 px-4 py-3 smooth-transition hover:bg-gallery {% if notification.is_read %} bg-gallery/60 {% endif %}"
               {% if not notification.is_read %} hx-post="{% url 'mark_as_read' notification.message %}"
               hx-trigger="intersect delay:500ms once" hx-swap="outerHTML" hx-target="this" {% endif %}>
-              <span class="mt-1.5 w-2 h-2 shrink-0 rounded-full {% if notification.is_read %}bg-transparent{% else %}bg-brass{% endif %}"></span>
+              <span class="mt-1.5 w-2 h-2 shrink-0 rounded-full {% if notification.is_read %}bg-transparent{% else %}bg-paddle{% endif %}"></span>
               <div class="w-full">
                 <div class="text-sm text-ink mb-1">{{ notification.message }}</div>
                 <div class="text-xs text-ink-faint" data-time-ago="{{ notification.created_at|date:'c' }}"></div>
@@ -61,13 +61,13 @@
 
       <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover"
         class="inline-flex items-center gap-2 h-11 ps-1.5 pe-3 hover:bg-gallery transition-colors" type="button">
-        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-ink text-white text-sm font-semibold uppercase">{{ request.user.username|first }}</span>
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gallery-deep text-ink text-sm font-semibold uppercase">{{ request.user.username|first }}</span>
         <span class="hidden sm:inline text-sm font-semibold">{{ request.user.username }}</span>
         <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
         </svg>
       </button>
-      <div id="dropdownHover" class="z-50 hidden bg-white border border-ink/10 shadow-xl shadow-ink/10 w-48">
+      <div id="dropdownHover" class="z-50 hidden bg-card border border-ink/10 shadow-xl shadow-ink/10 w-48">
         <ul class="py-1 text-sm" aria-labelledby="dropdownHoverButton">
           <li><a href="{% url 'inventory' %}" class="block px-4 py-2.5 hover:bg-gallery">Inventory</a></li>
           <li><a href="{% url 'shipments' %}" class="block px-4 py-2.5 hover:bg-gallery">Shipments</a></li>

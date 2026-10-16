@@ -22,14 +22,14 @@
                     {% endfor %}
                     {% if images|length > 1 %}
                     <button type="button" @click="active = (active - 1 + total) % total" aria-label="Previous photo"
-                        class="absolute start-3 top-1/2 -translate-y-1/2 inline-flex w-11 h-11 items-center justify-center bg-white/90 hover:bg-white shadow">
+                        class="absolute start-3 top-1/2 -translate-y-1/2 inline-flex w-11 h-11 items-center justify-center bg-card/90 hover:bg-card shadow">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
                     </button>
                     <button type="button" @click="active = (active + 1) % total" aria-label="Next photo"
-                        class="absolute end-3 top-1/2 -translate-y-1/2 inline-flex w-11 h-11 items-center justify-center bg-white/90 hover:bg-white shadow">
+                        class="absolute end-3 top-1/2 -translate-y-1/2 inline-flex w-11 h-11 items-center justify-center bg-card/90 hover:bg-card shadow">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                     </button>
-                    <span class="absolute bottom-3 end-3 px-2 py-1 text-xs font-semibold bg-ink/80 text-white figure" x-text="`${active + 1} / ${total}`"></span>
+                    <span class="absolute bottom-3 end-3 px-2 py-1 text-xs font-semibold bg-canvas/80 text-ink figure" x-text="`${active + 1} / ${total}`"></span>
                     {% endif %}
                 </div>
                 {% if images|length > 1 %}
@@ -101,7 +101,7 @@
                         <div id="crud-modal" tabindex="-1" aria-hidden="true"
                             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                             <div class="relative p-4 w-full max-w-md max-h-full">
-                                <div class="relative bg-white shadow-2xl">
+                                <div class="relative bg-card shadow-2xl">
                                     <div class="flex items-center justify-between px-5 py-4 border-b border-ink/10">
                                         <h3 class="font-display text-2xl font-semibold">Schedule an auction</h3>
                                         <button type="button" class="inline-flex w-11 h-11 items-center justify-center text-ink-faint hover:bg-gallery hover:text-ink" data-modal-toggle="crud-modal">
