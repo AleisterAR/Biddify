@@ -7,6 +7,7 @@ import stripe
 from bid.models import Auction
 from django.db.models import Max
 from .models import Payment
+from shipping.models import Shipment
 from django.utils import timezone
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -73,17 +74,22 @@ def stripe_webhook(request):
         if auction_id:
             auction = Auction.objects.filter(id=auction_id).first()
             if auction:
-                Payment.objects.create(
-                    user_email=customer_email,
-                    auction=auction,
-                    amount=amount_paid,
+                # Stripe may retry webhooks, so only act on the first delivery
+                payment, created = Payment.objects.get_or_create(
                     payment_intent=payment_intent,
-                    payment_status='completed',
-                    created_at=timezone.now()
+                    defaults={
+                        'user_email': customer_email,
+                        'auction': auction,
+                        'amount': amount_paid,
+                        'payment_status': 'completed',
+                        'created_at': timezone.now(),
+                    }
                 )
                 winning_bid = auction.bids.order_by('-bid_amount').first()
-                if winning_bid:
+                if created and winning_bid:
                     item = auction.item
+                    # Record the seller before ownership moves to the buyer
+                    Shipment.objects.create(payment=payment, auction=auction, buyer=winning_bid.bidder, seller=item.owner)
                     item.owner = winning_bid.bidder
                     item.save()
     return JsonResponse({'status': 'success'})

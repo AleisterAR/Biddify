@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from itertools import chain
 from payments.models import Payment
+from shipping.models import Shipment
 
 # Create your views here.
 @login_required
@@ -61,11 +62,15 @@ def item_detail(request, item_id):
         if auction.auction_ended():
             winner = bids[0].bidder.id if len(bids) != 0 else None
         if winner == request.user.id:
-            payment_made = Payment.objects.filter(
+            payment = Payment.objects.filter(
                 auction=auction,
                 user_email=request.user.email,
                 payment_status='completed'
-            ).exists()
+            ).first()
+            payment_made = payment is not None
+            if payment_made:
+                # Payments made before shipping existed have no shipment yet (seller unknown)
+                context["shipment"], _ = Shipment.objects.get_or_create(payment=payment, defaults={"auction": auction, "buyer": request.user})
         context["payment_made"] = payment_made
         context["auction"], context["auction_created"], context["auction_started"], context["latest_bids"], context["more_bids"], context['winner'], context["highest_bid"] = auction, auction_created, auction_started, bids[:3], bids[3:], winner, bids[0] if len(bids) != 0 else ""
         return render(request, "items/item_detail.html", context=context)

@@ -1,0 +1,52 @@
+{% extends 'utilities/master.html' %}
+{% block content %}
+<div class="container max-w-screen-xl mx-auto py-10 px-3">
+    <h1 class="mb-8 text-4xl font-bold leading-none tracking-tight text-gray-900">Shipments</h1>
+
+    <h2 class="mb-3 text-xl font-semibold text-gray-900">My purchases</h2>
+    <div class="relative overflow-x-auto mb-12">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3">Item</th>
+                    <th class="px-4 py-3">Seller</th>
+                    <th class="px-4 py-3">Tracking no.</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Est. delivery</th>
+                    <th class="px-4 py-3"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shipment in purchases %}
+                    {% include 'shipping/partials/shipment_row.html' with role='buyer' %}
+                {% empty %}
+                <tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">You have no purchases to ship yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="mb-3 text-xl font-semibold text-gray-900">My sales</h2>
+    <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3">Item</th>
+                    <th class="px-4 py-3">Buyer</th>
+                    <th class="px-4 py-3">Tracking no.</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Est. delivery</th>
+                    <th class="px-4 py-3"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shipment in sales %}
+                    {% include 'shipping/partials/shipment_row.html' with role='seller' %}
+                {% empty %}
+                <tr><td colspan="6" class="px-4 py-6 text-center text-gray-400">None of your sold items need shipping yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

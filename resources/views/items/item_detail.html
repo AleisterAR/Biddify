@@ -202,6 +202,19 @@
                                 Proceed to payment
                             </button>
                         </div>
+                        {% elif winner == request.user.id and payment_made and shipment %}
+                        <div class="flex flex-col gap-2">
+                            <p class="text-sm text-gray-600">Payment received. Shipping status: <span class="font-semibold text-gray-900">{{ shipment.get_status_display }}</span></p>
+                            {% if shipment.status == 'awaiting_address' %}
+                            <a href="{% url 'shipping_details' shipment.id %}" class="block w-fit bg-blue-700 hover:bg-blue-800 text-white font-medium text-sm px-5 py-2.5 text-center">
+                                Enter shipping details
+                            </a>
+                            {% else %}
+                            <a href="{% url 'track_shipment' shipment.id %}" class="block w-fit bg-blue-700 hover:bg-blue-800 text-white font-medium text-sm px-5 py-2.5 text-center">
+                                Track shipment
+                            </a>
+                            {% endif %}
+                        </div>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -323,7 +336,7 @@
             }
         }
     }
-    if (is_auction_ended){
+    if (is_auction_ended && document.getElementById("payment-btn")){
             fetch("{% url 'get_stripe_config' %}", {method: "GET"})
             .then(response => response.json())
             .then((data)=> {

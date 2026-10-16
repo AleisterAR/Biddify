@@ -56,11 +56,15 @@ INSTALLED_APPS = [
     'django_htmx',
     'django_extensions',
     'payments',
+    'shipping',
 ]
 
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_SECRET= os.getenv('STRIPE_WEBHOOK_SECRET')
+
+# Mock shipping carrier: seconds between tracking updates (halved for express)
+MOCK_SHIPPING_STEP_SECONDS = int(os.getenv('MOCK_SHIPPING_STEP_SECONDS', 120))
 
 CRISPY_ALLOWED_TEMPLATE_PACKS ="tailwind"
 

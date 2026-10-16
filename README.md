@@ -23,6 +23,7 @@
 - 🔔 WebSocket-based bid and auction notifications
 - 📊 Visual dashboards with `django-admin-charts`
 - 💳 Stripe integration for payments (test mode)
+- 📦 Mock shipping with tracking numbers and a live tracking timeline
 
 ## 🚀 Getting Started
 
@@ -77,3 +78,14 @@ python manage.py migrate
 python manage.py runserver
 npm run dev
 ```
+
+## 📦 Shipping (mock carrier)
+
+Shipping is simulated: no real carrier is contacted and no parcels are sent.
+
+1. When Stripe confirms a payment, a shipment is created for the winning bidder.
+2. The buyer enters a delivery address (**Shipments** in the user menu, or **Enter shipping details** on the item page). A fake `BDF…EU` tracking number is then generated.
+3. The seller clicks **Mark as shipped**.
+4. The mock carrier moves the parcel through *In transit → Out for delivery → Delivered*, one step every `MOCK_SHIPPING_STEP_SECONDS` (default 120, half that for express). Buyer and seller get notifications along the way.
+
+While `DEBUG = True`, the tracking page has a **Simulate next carrier scan** button so you can skip the wait. Staff can also advance shipments from the Django admin.

@@ -30,6 +30,7 @@ urlpatterns = [
     path("items/", include("item.urls")),
     path("auction/", include("bid.urls")),
     path("payment/", include("payments.urls")),
+    path("shipping/", include("shipping.urls")),
     path("__debug__/", include("debug_toolbar.urls")),
     path('admin_tools_stats/', include('admin_tools_stats.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
