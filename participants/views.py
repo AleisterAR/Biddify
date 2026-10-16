@@ -7,6 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from participants.models import Participant
 from django.contrib.auth import logout, get_user_model
 from bid.models import Auction
+from item.models import ItemImage
+from django.db.models import Count, Max, OuterRef, Subquery
+from django.utils import timezone
 
 def custom_login(request):
     if request.method == 'POST':
@@ -28,8 +31,14 @@ def custom_login(request):
         return render(request, 'utilities/login.html', {'form': form})
 
 def user_dashboard(request):
-    auctions_count = Auction.objects.all().count()
-    return render(request, 'utilities/home.html', context={"auctions_count": auctions_count})
+    now = timezone.now()
+    first_images = ItemImage.objects.filter(item=OuterRef('item_id')).values('image')[:1]
+    live_auctions = Auction.objects.filter(starting_time__lte=now, ending_time__gt=now).select_related('item').annotate(max_bid=Max('bids__bid_amount'), bid_count=Count('bids'), first_image=Subquery(first_images))
+    context = {
+        "live_count": live_auctions.count(),
+        "hero_lot": live_auctions.order_by('ending_time', '-bid_count').first(),
+    }
+    return render(request, 'utilities/home.html', context=context)
 
 def user_register(request):
     if request.method == "POST":

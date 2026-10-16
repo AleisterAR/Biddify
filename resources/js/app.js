@@ -420,6 +420,64 @@ document.addEventListener('alpine:init', () => {
     );
 });
 
+// Live clocks: any element with data-countdown="<ISO date>" or data-time-ago="<ISO date>"
+// is refreshed every second, including elements swapped in later by HTMX.
+const pad = (n) => String(n).padStart(2, '0');
+
+function splitDuration(ms) {
+    const s = Math.floor(ms / 1000);
+    return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 };
+}
+
+function formatCountdown(ms, style) {
+    const { d, h, m, s } = splitDuration(ms);
+    if (style === 'long') {
+        return d > 0 ? `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s` : `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+    }
+    if (d > 0) return `${d}d ${h}h left`;
+    if (h > 0) return `${h}h ${pad(m)}m left`;
+    return `${m}m ${pad(s)}s left`;
+}
+
+function formatTimeAgo(ms) {
+    const { d, h, m, s } = splitDuration(Math.max(ms, 0));
+    if (d > 0) return `${d}d ago`;
+    if (h > 0) return `${h}h ago`;
+    if (m > 0) return `${m}m ago`;
+    return s < 5 ? 'just now' : `${s}s ago`;
+}
+
+function tickClocks() {
+    const now = Date.now();
+    document.querySelectorAll('[data-countdown]').forEach((el) => {
+        const diff = Date.parse(el.dataset.countdown) - now;
+        if (Number.isNaN(diff)) return;
+        if (diff <= 0) {
+            el.textContent = el.dataset.endedText || 'Ended';
+            el.dataset.urgency = 'ended';
+            if ('reloadOnEnd' in el.dataset && !el.dataset.reloaded) {
+                el.dataset.reloaded = '1';
+                setTimeout(() => window.location.reload(), 1000);
+            }
+            return;
+        }
+        el.textContent = formatCountdown(diff, el.dataset.countdownStyle);
+        if (!('noUrgency' in el.dataset)) {
+            el.dataset.urgency = diff < 60_000 ? 'final' : diff < 3_600_000 ? 'closing' : 'open';
+        }
+    });
+    document.querySelectorAll('[data-time-ago]').forEach((el) => {
+        el.textContent = formatTimeAgo(now - Date.parse(el.dataset.timeAgo));
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    tickClocks();
+    setInterval(tickClocks, 1000);
+});
+document.addEventListener('htmx:afterSettle', tickClocks);
+document.addEventListener('htmx:wsAfterMessage', tickClocks);
+
 window.Clover = Clover;
 window.Alpine = Alpine;
 

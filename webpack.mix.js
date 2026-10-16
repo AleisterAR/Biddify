@@ -18,3 +18,4 @@ mix.webpackConfig({
         modules: ['node_modules']
     }
 })
+mix.disableNotifications()

@@ -1,74 +1,85 @@
 {% extends 'utilities/master.html' %}
+{% block title %}Tracking {{ shipment.item.name }} | Biddify{% endblock title %}
 {% block content %}
-<div class="container max-w-screen-lg mx-auto py-10 px-3">
-    <a href="{% url 'shipments' %}" class="text-sm font-medium text-blue-700 hover:underline">&larr; All shipments</a>
+<div class="max-w-screen-lg mx-auto px-4 py-12">
+    <a href="{% url 'shipments' %}" class="text-sm font-medium text-ink-soft hover:text-ink">Back to shipments</a>
 
-    <div class="flex flex-col md:flex-row gap-6 mt-4 mb-10">
-        {% if image %}
-        <img src="{{ image.image.url }}" alt="{{ shipment.item.name }}" class="w-full md:w-48 h-48 object-cover">
-        {% endif %}
-        <div class="flex-1">
-            <h1 class="mb-2 text-3xl font-bold leading-none tracking-tight text-gray-900 font-serif">{{ shipment.item.name }}</h1>
-            <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mt-4">
-                <dt class="text-gray-500">Carrier</dt><dd class="text-gray-900">{{ shipment.carrier }}</dd>
-                <dt class="text-gray-500">Tracking number</dt><dd class="font-mono text-gray-900">{{ shipment.tracking_number|default:"—" }}</dd>
-                <dt class="text-gray-500">Method</dt><dd class="text-gray-900">{{ shipment.get_method_display }}</dd>
-                <dt class="text-gray-500">{% if shipment.delivered_at %}Delivered{% else %}Estimated delivery{% endif %}</dt>
-                <dd class="text-gray-900">{% if shipment.delivered_at %}{{ shipment.delivered_at|date:"M d, Y H:i" }}{% else %}{{ shipment.estimated_delivery|date:"M d, Y"|default:"—" }}{% endif %}</dd>
-                <dt class="text-gray-500">Ship to</dt>
-                <dd class="text-gray-900">{{ shipment.recipient_name }}<br>{{ shipment.address_line }}<br>{{ shipment.postal_code }} {{ shipment.city }}<br>{{ shipment.country }}</dd>
+    <div class="mt-6 grid gap-8 md:grid-cols-[200px_1fr] items-start">
+        <div class="aspect-square bg-gallery overflow-hidden">
+            {% if image %}<img src="{{ image.image.url }}" alt="{{ shipment.item.name }}" class="w-full h-full object-cover">{% endif %}
+        </div>
+        <div>
+            <span class="status-chip {% if shipment.status == 'delivered' %}bg-leading-light text-leading{% else %}bg-paddle-light text-paddle{% endif %}">{{ shipment.get_status_display }}</span>
+            <h1 class="mt-3 display-lg">{{ shipment.item.name }}</h1>
+            <dl class="mt-6 grid grid-cols-2 gap-x-8 gap-y-4 text-sm max-w-xl">
+                <div><dt class="meta-label">Tracking number</dt><dd class="mt-0.5 font-semibold figure">{{ shipment.tracking_number|default:"Not issued yet" }}</dd></div>
+                <div><dt class="meta-label">Carrier</dt><dd class="mt-0.5 font-semibold">{{ shipment.carrier }}, {{ shipment.get_method_display|lower }}</dd></div>
+                <div>
+                    <dt class="meta-label">{% if shipment.delivered_at %}Delivered{% else %}Estimated delivery{% endif %}</dt>
+                    <dd class="mt-0.5 font-semibold figure">{% if shipment.delivered_at %}{{ shipment.delivered_at|date:"M j, Y, H:i" }}{% else %}{{ shipment.estimated_delivery|date:"M j, Y"|default:"Not scheduled" }}{% endif %}</dd>
+                </div>
+                <div>
+                    <dt class="meta-label">Delivering to</dt>
+                    <dd class="mt-0.5 font-semibold">{{ shipment.recipient_name }}<br><span class="font-normal text-ink-soft">{{ shipment.address_line }}, {{ shipment.postal_code }} {{ shipment.city }}, {{ shipment.country }}</span></dd>
+                </div>
             </dl>
         </div>
     </div>
 
-    <ol class="grid grid-cols-5 mb-10">
+    <ol class="mt-12 grid grid-cols-5" aria-label="Delivery progress">
         {% for key, label in steps %}
-        <li class="flex flex-col items-center text-center">
+        <li class="flex flex-col items-center text-center" {% if forloop.counter0 == current_step %}aria-current="step"{% endif %}>
             <div class="w-full flex items-center">
-                <div class="flex-1 h-1 {% if forloop.first %}invisible{% elif forloop.counter0 <= current_step %}bg-blue-700{% else %}bg-gray-200{% endif %}"></div>
-                <span class="flex items-center justify-center w-8 h-8 rounded-full shrink-0 {% if forloop.counter0 <= current_step %}bg-blue-700 text-white{% else %}bg-gray-200 text-gray-500{% endif %}">
+                <div class="flex-1 h-1 {% if forloop.first %}invisible{% elif forloop.counter0 <= current_step %}bg-paddle{% else %}bg-gallery-deep{% endif %}"></div>
+                <span class="relative flex items-center justify-center w-9 h-9 rounded-full shrink-0 {% if forloop.counter0 <= current_step %}bg-paddle text-white{% else %}bg-gallery-deep text-ink-faint{% endif %}">
                     {% if forloop.counter0 < current_step or shipment.status == 'delivered' %}
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                     {% else %}
-                    <span class="text-xs font-semibold">{{ forloop.counter }}</span>
+                    <span class="text-xs font-bold figure">{{ forloop.counter }}</span>
+                    {% endif %}
+                    {% if forloop.counter0 == current_step and shipment.status != 'delivered' %}
+                    <span class="absolute inset-0 rounded-full bg-paddle animate-live-ping" aria-hidden="true"></span>
                     {% endif %}
                 </span>
-                <div class="flex-1 h-1 {% if forloop.last %}invisible{% elif forloop.counter0 < current_step %}bg-blue-700{% else %}bg-gray-200{% endif %}"></div>
+                <div class="flex-1 h-1 {% if forloop.last %}invisible{% elif forloop.counter0 < current_step %}bg-paddle{% else %}bg-gallery-deep{% endif %}"></div>
             </div>
-            <span class="mt-2 text-xs md:text-sm {% if forloop.counter0 == current_step %}font-semibold text-gray-900{% else %}text-gray-500{% endif %}">{{ label }}</span>
+            <span class="mt-2 px-1 text-xs md:text-sm {% if forloop.counter0 == current_step %}font-semibold text-ink{% else %}text-ink-soft{% endif %}">{{ label }}</span>
         </li>
         {% endfor %}
     </ol>
 
     {% if is_seller and shipment.status == 'label_created' %}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 mb-8 bg-amber-50 border border-amber-200">
-        <p class="text-sm text-amber-900">The buyer is waiting. Pack the item, attach label <span class="font-mono">{{ shipment.tracking_number }}</span> and hand it to the carrier.</p>
+    <div class="mt-10 flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-closing-light">
+        <p class="text-sm text-ink">The buyer is waiting. Pack the object, attach label <span class="font-semibold figure">{{ shipment.tracking_number }}</span> and hand it to the carrier.</p>
         <form method="post" action="{% url 'mark_shipped' shipment.id %}">
             {% csrf_token %}
-            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm px-5 py-2.5 whitespace-nowrap">Mark as shipped</button>
+            <button type="submit" class="button-go whitespace-nowrap">Mark as shipped</button>
         </form>
     </div>
     {% endif %}
 
-    <h2 class="mb-4 text-xl font-semibold text-gray-900">Tracking history</h2>
-    <ol class="relative border-s border-gray-200 ms-3">
-        {% for event in events %}
-        <li class="mb-6 ms-6">
-            <span class="absolute flex items-center justify-center w-3 h-3 rounded-full -start-1.5 mt-1.5 {% if forloop.first %}bg-blue-700{% else %}bg-gray-300{% endif %}"></span>
-            <p class="text-sm font-semibold text-gray-900">{{ event.get_status_display }}</p>
-            <p class="text-sm text-gray-600">{{ event.description }}{% if event.location %} &middot; {{ event.location }}{% endif %}</p>
-            <time class="text-xs text-gray-400">{{ event.created_at|date:"M d, Y H:i" }}</time>
-        </li>
-        {% empty %}
-        <li class="ms-6 text-sm text-gray-400">No tracking updates yet.</li>
-        {% endfor %}
-    </ol>
+    <section class="mt-12">
+        <h2 class="display-md">Tracking history</h2>
+        <ol class="mt-6 relative border-s-2 border-gallery-deep ms-2">
+            {% for event in events %}
+            <li class="mb-7 ms-6">
+                <span class="absolute -start-[9px] mt-1 w-4 h-4 rounded-full border-2 border-white {% if forloop.first %}bg-paddle{% else %}bg-gallery-deep{% endif %}" aria-hidden="true"></span>
+                <p class="font-semibold">{{ event.get_status_display }}</p>
+                <p class="text-sm text-ink-soft">{{ event.description }}</p>
+                {% if event.location %}<p class="text-sm text-ink-soft">{{ event.location }}</p>{% endif %}
+                <time class="text-xs text-ink-faint figure" datetime="{{ event.created_at|date:'c' }}">{{ event.created_at|date:"M j, Y, H:i" }}</time>
+            </li>
+            {% empty %}
+            <li class="ms-6 text-sm text-ink-soft">No tracking updates yet.</li>
+            {% endfor %}
+        </ol>
+    </section>
 
     {% if can_simulate %}
-    <form method="post" action="{% url 'simulate_shipment' shipment.id %}" class="mt-8 pt-6 border-t border-dashed border-gray-300">
+    <form method="post" action="{% url 'simulate_shipment' shipment.id %}" class="mt-8 pt-6 border-t border-dashed border-ink/20">
         {% csrf_token %}
-        <p class="mb-2 text-xs text-gray-400">Demo mode (DEBUG): the mock carrier moves the parcel along on its own every few minutes, or you can skip ahead.</p>
-        <button type="submit" class="text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 font-medium text-xs px-4 py-2">Simulate next carrier scan</button>
+        <p class="mb-3 text-sm text-ink-soft">Demo mode: the carrier moves the parcel along every few minutes on its own, or you can skip ahead.</p>
+        <button type="submit" class="button-quiet">Simulate next carrier scan</button>
     </form>
     {% endif %}
 </div>

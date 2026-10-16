@@ -2,6 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    html {
+        @apply bg-white text-ink antialiased;
+    }
+    body {
+        @apply font-sans;
+    }
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-paddle;
+    }
+}
+
+@layer components {
+    /* Buttons */
+    .button {
+        @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-5 text-sm font-semibold bg-paddle text-white transition-[background-color,transform] duration-150 hover:bg-paddle-dark active:scale-[.97] disabled:bg-ink-faint disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer;
+    }
+    .button-quiet {
+        @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-5 text-sm font-semibold bg-white text-ink border border-ink/15 transition-[background-color,transform] duration-150 hover:bg-gallery active:scale-[.97] cursor-pointer;
+    }
+    .button-ink {
+        @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-5 text-sm font-semibold bg-ink text-white transition-[background-color,transform] duration-150 hover:bg-ink-soft active:scale-[.97] cursor-pointer;
+    }
+    .button-go {
+        @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-5 text-sm font-semibold bg-leading text-white transition-[background-color,transform] duration-150 hover:brightness-110 active:scale-[.97] cursor-pointer;
+    }
+    .text-link {
+        @apply font-semibold text-paddle underline-offset-4 hover:underline cursor-pointer;
+    }
+
+    /* Form fields */
+    .field {
+        @apply block w-full min-h-[44px] px-3 py-2.5 text-[15px] bg-white text-ink border border-ink/20 placeholder:text-ink-faint transition-colors focus:border-paddle focus:ring-2 focus:ring-paddle/25 focus:outline-none;
+    }
+    .field-label {
+        @apply block mb-1.5 text-sm font-medium text-ink;
+    }
+    .field-error {
+        @apply mt-1.5 text-sm text-outbid;
+    }
+
+    /* Typography */
+    .display-xl {
+        @apply font-display font-semibold text-5xl md:text-7xl leading-[0.95] tracking-tight;
+    }
+    .display-lg {
+        @apply font-display font-semibold text-4xl md:text-5xl leading-none tracking-tight;
+    }
+    .display-md {
+        @apply font-display font-semibold text-2xl md:text-3xl leading-tight;
+    }
+    .meta-label {
+        @apply text-[13px] font-medium text-ink-soft;
+    }
+    .currency {
+        @apply font-sans font-semibold text-[0.55em] align-[0.45em] me-0.5;
+    }
+    .figure {
+        font-variant-numeric: tabular-nums lining-nums;
+    }
+
+    /* Lot tag: chamfered top corners + punched hole, like a hanging auction tag */
+    .lot-tag {
+        @apply relative flex flex-col bg-white;
+        clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%, 0 22px);
+    }
+    /* clip-path cuts off borders and box-shadows, so the outline is drawn on the parent */
+    .tag-outline {
+        filter: drop-shadow(0 0 1px rgb(26 29 58 / .28)) drop-shadow(0 4px 10px rgb(26 29 58 / .05));
+    }
+    .tag-outline-lifted {
+        filter: drop-shadow(0 0 1px rgb(26 29 58 / .28)) drop-shadow(0 24px 32px rgb(26 29 58 / .16));
+    }
+    .lot-tag-hole {
+        @apply absolute top-3 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-gallery border-2 border-brass;
+    }
+    .lot-number {
+        @apply text-xs font-semibold text-brass-dark figure;
+    }
+
+    /* Status chips */
+    .status-chip {
+        @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold whitespace-nowrap;
+    }
+    .live-dot {
+        @apply relative inline-flex w-2 h-2 rounded-full bg-outbid;
+    }
+    .live-dot::after {
+        content: "";
+        @apply absolute inset-0 rounded-full bg-outbid animate-live-ping;
+    }
+}
+
+/* Countdown urgency, toggled by resources/js/app.js */
+[data-countdown][data-urgency="closing"] {
+    @apply text-closing;
+}
+[data-countdown][data-urgency="final"] {
+    @apply text-outbid;
+    animation: final-pulse 1s ease-in-out infinite;
+}
+@keyframes final-pulse {
+    50% { opacity: .55; }
+}
+
+/* Hover swing on lot tags hanging in a grid */
+.lot-link:hover .lot-tag,
+.lot-link:focus-visible .lot-tag {
+    transform: rotate(-1.2deg);
+}
+.lot-link .lot-tag {
+    transform-origin: 50% 0;
+    transition: transform 300ms cubic-bezier(.34,1.56,.64,1);
+}
+
 a.swapable-a.htmx-swapping {
     opacity: 0;
     transition: opacity 1s ease-out;
@@ -11,6 +126,11 @@ a.swapable-a.htmx-swapping {
     transition: all 1s ease-in;
 }
 
-.footer-border{
-    border-top: 1px solid #d2d9e1;
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+    }
+    .lot-link:hover .lot-tag { transform: none; }
 }

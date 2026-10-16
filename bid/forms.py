@@ -6,8 +6,8 @@ from django import forms
 from django.utils.timezone import now
 
 class AuctionForm(forms.ModelForm):
-    starting_time = forms.DateTimeField(label="Starting Time", widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'}))
-    ending_time = forms.DateTimeField(label="Ending Time", widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5'}))
+    starting_time = forms.DateTimeField(label="Starting Time", widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'field'}))
+    ending_time = forms.DateTimeField(label="Ending Time", widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'field'}))
 
     class Meta:
         model = Auction 
@@ -40,7 +40,7 @@ class AuctionForm(forms.ModelForm):
 
 class BidForm(forms.ModelForm):
 
-    bid_amount = forms.IntegerField(min_value=0, widget=forms.NumberInput(attrs={'type': 'text', 'class': 'bg-gray-50 border border-gray-300 text-black text-sm font-sans font-medium focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5', 'hx-swap-oob':'true'}))
+    bid_amount = forms.IntegerField(min_value=0, widget=forms.NumberInput(attrs={'type': 'text', 'class': 'field ps-9 text-lg font-semibold figure', 'inputmode': 'numeric', 'autocomplete': 'off', 'aria-label': 'Your bid in euros', 'hx-swap-oob':'true'}))
     class Meta:
         model = Bid
         fields = ['bid_amount', 'auction']

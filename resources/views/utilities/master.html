@@ -5,26 +5,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/global.css' %}?{% now 'U' %}">
-  <script defer src="{% static 'js/app.js' %}?{% now 'U' %}"></script>
+  {# Flowbite ships a full Tailwind build; load it first so our stylesheet wins #}
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
+  {% include 'utilities/partials/head_assets.html' %}
   <script defer src="{% static 'js/htmx.min.js' %}?{% now 'U' %}"></script>
   <script defer src="{% static 'js/htmx.ws.js' %}?{% now 'U' %}"></script>
-  <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="{% static 'common/logo.ico' %}">
-  <title>Biddify</title>
+  <title>{% block title %}Biddify{% endblock title %}</title>
 </head>
 
 <body class="h-full">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 button">Skip to content</a>
   <div class="flex flex-col min-h-screen">
-    <header>
+    <header class="sticky top-0 z-40">
       {% include 'utilities/navbar.html' %}
     </header>
-    <main class="flex-grow">
+    <main id="main" class="flex-grow">
       {% block content %}
-  
+
       {% endblock content %}
     </main>
-    <footer class="bg-white footer-border mt-5">
+    <footer class="bg-ink text-white mt-24">
       {% include 'utilities/footer.html' %}
     </footer>
   </div>
@@ -34,8 +34,10 @@
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
     })
     const noti = document.getElementById("noti-div");
-    const wsNotificationUrl = 'ws://' + window.location.host + '/ws/notifications/' + '{{request.user.id}}/';
-    noti.setAttribute("ws-connect", wsNotificationUrl)
+    if (noti) {
+      const wsNotificationUrl = 'ws://' + window.location.host + '/ws/notifications/' + '{{request.user.id}}/';
+      noti.setAttribute("ws-connect", wsNotificationUrl)
+    }
   </script>
 </body>
 

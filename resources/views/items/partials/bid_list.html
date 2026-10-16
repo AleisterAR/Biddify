@@ -1,0 +1,11 @@
+<ol id="bidding-list" class="divide-y divide-ink/10 max-h-[320px] overflow-y-auto pe-1" {% if oob %}hx-swap-oob="true"{% endif %}>
+    {% for bid in latest_bids %}
+        {% include 'items/partials/bid_row.html' with leading=forloop.first %}
+    {% endfor %}
+    {% for bid in more_bids %}
+        {% include 'items/partials/bid_row.html' with leading=False %}
+    {% endfor %}
+    {% if not latest_bids %}
+        <li class="py-6 text-sm text-center text-ink-soft">No bids yet. The opening price is the lowest bid accepted.</li>
+    {% endif %}
+</ol>

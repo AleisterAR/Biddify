@@ -57,7 +57,7 @@ def auctions(request):
     filter_country = request.GET.get("filter_country", "")
     filter_condition = request.GET.get("filter_condition", "")
     first_images = ItemImage.objects.filter(item=OuterRef('id')).values('image')[:1]
-    auctions = Item.objects.filter(auction__starting_time__lte=timezone.now(), auction__ending_time__gte=timezone.now()).annotate(highest_bid=Max('auction__bids__bid_amount'), first_image=Subquery(first_images), auction_ending_time=F('auction__ending_time'))
+    auctions = Item.objects.filter(auction__starting_time__lte=timezone.now(), auction__ending_time__gte=timezone.now()).annotate(highest_bid=Max('auction__bids__bid_amount'), first_image=Subquery(first_images), auction_ending_time=F('auction__ending_time'), lot_id=F('auction__id'))
     filters = Q()
     if search:
         filters &= Q(name__icontains=search)

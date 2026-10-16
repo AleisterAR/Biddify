@@ -1,48 +1,61 @@
 {% extends 'utilities/master.html' %}
-{% load tailwind_filters %}
+{% block title %}How it works | Biddify{% endblock title %}
 {% block content %}
-<div class="mx-auto max-w-screen-xl py-8 px-4 lg:py-16">
-    <div class="flex flex-col items-start gap-4">
-        <div>
-            <p class="text-5xl text-blue-600 font-serif font-bold">
-                Buying and Selling
-            </p>
-            <p class="text-5xl text-gray-900 font-semibold">
-                on Biddify
-            </p>
-        </div>
-        <p class="text-xl text-gray-800 font-semibold max-w-3xl">
-            Biddify is the most-visited curated marketplace in Europe for special objects, offering over 75,000 objects for auction each week. Our mission is to provide an exciting and seamless experience to our customers for buying and selling special, hard-to-find objects.
-        </p>
+<section class="bg-gallery border-b border-ink/10">
+    <div class="max-w-screen-xl mx-auto px-4 py-16 md:py-24">
+        <h1 class="display-xl max-w-3xl">Buying and selling on Biddify</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-soft">Biddify is a curated marketplace for special, hard-to-find objects. Collectors bid against each other live, and we look after the payment and the delivery so both sides can trust the sale.</p>
     </div>
-    <div class="flex items-start mt-8 justify-between">
-        <p class="text-4xl text-gray-900 font-semibold trakcing-wider">
-            Why Biddify?
-        </p>
-        <div class="flex flex-col items-start space-y-16">
-            <div class="flex flex-col space-y-6">
-                <p class="text-3xl font-semibold">
-                    A Global Marketplace
-                </p>
-                <p class="text-lg text-gray-800 font-normal max-w-3xl">
-                    Biddify is the most-visited curated marketplace in Europe for special objects, offering over 75,000 objects for auction each week. Our mission is to provide an exciting and seamless experience to our customers for buying and selling special, hard-to-find objects.
-                </p>
-            </div>
-            <div class="flex flex-col space-y-6">
-                <p class="text-3xl font-semibold">
-                    Safe, Secure Payments
-                </p>
-                <p class="text-lg text-gray-800 font-normal max-w-3xl">
-                    We work with payment providers to handle all payments in a safe and secure manner.
-                </p>
-                <p class="text-lg text-gray-800 font-normal max-w-3xl">
-                    For Buyers: Biddify holds your payment until 3 days after you have received the object or until the seller has confirmed the object was picked up and no complaint was received.
-                </p>
-                <p class="text-lg text-gray-800 font-normal max-w-3xl">
-                    For Sellers: Once Biddify confirms we have received payment from the buyer, you may ship your object. Our system will then confirm the buyer has received their purchase - based on a valid Track & Trace - and the payment will be deposited into your account.
-                </p>
-            </div>
-        </div>
-    </div>
+</section>
+
+<div class="max-w-screen-xl mx-auto px-4 py-16 grid gap-16 md:grid-cols-2">
+    <section>
+        <h2 class="display-md">For buyers</h2>
+        <ol class="mt-8 space-y-8">
+            <li class="relative ps-14">
+                <span class="absolute start-0 top-0 inline-flex w-10 h-10 items-center justify-center rounded-full border-2 border-brass font-display text-lg font-bold text-brass-dark">1</span>
+                <h3 class="text-lg font-semibold">Bid while the lot is live</h3>
+                <p class="mt-1.5 text-ink-soft leading-relaxed">Each lot has a closing time. Bids appear for everyone instantly, and you're notified if someone outbids you.</p>
+            </li>
+            <li class="relative ps-14">
+                <span class="absolute start-0 top-0 inline-flex w-10 h-10 items-center justify-center rounded-full border-2 border-brass font-display text-lg font-bold text-brass-dark">2</span>
+                <h3 class="text-lg font-semibold">Pay for what you won</h3>
+                <p class="mt-1.5 text-ink-soft leading-relaxed">Pay by card through Stripe. Biddify holds your payment until 3 days after you've received the object, or until the seller confirms it was picked up and no complaint was raised.</p>
+            </li>
+            <li class="relative ps-14">
+                <span class="absolute start-0 top-0 inline-flex w-10 h-10 items-center justify-center rounded-full border-2 border-brass font-display text-lg font-bold text-brass-dark">3</span>
+                <h3 class="text-lg font-semibold">Track it to your door</h3>
+                <p class="mt-1.5 text-ink-soft leading-relaxed">Add your delivery address and follow the parcel with its tracking number under Shipments.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section>
+        <h2 class="display-md">For sellers</h2>
+        <ol class="mt-8 space-y-8">
+            <li class="relative ps-14">
+                <span class="absolute start-0 top-0 inline-flex w-10 h-10 items-center justify-center rounded-full border-2 border-brass font-display text-lg font-bold text-brass-dark">1</span>
+                <h3 class="text-lg font-semibold">List your object</h3>
+                <p class="mt-1.5 text-ink-soft leading-relaxed">Add photos, a description and a provenance document to your inventory, then choose when bidding opens and closes.</p>
+            </li>
+            <li class="relative ps-14">
+                <span class="absolute start-0 top-0 inline-flex w-10 h-10 items-center justify-center rounded-full border-2 border-brass font-display text-lg font-bold text-brass-dark">2</span>
+                <h3 class="text-lg font-semibold">Ship once it's paid for</h3>
+                <p class="mt-1.5 text-ink-soft leading-relaxed">When we confirm the buyer's payment, you'll get their address and a shipping label. Hand the parcel to the carrier and mark it as shipped.</p>
+            </li>
+            <li class="relative ps-14">
+                <span class="absolute start-0 top-0 inline-flex w-10 h-10 items-center justify-center rounded-full border-2 border-brass font-display text-lg font-bold text-brass-dark">3</span>
+                <h3 class="text-lg font-semibold">Get paid</h3>
+                <p class="mt-1.5 text-ink-soft leading-relaxed">Once tracking confirms the buyer received the object, the payment is released to your account.</p>
+            </li>
+        </ol>
+    </section>
 </div>
+
+<section class="max-w-screen-xl mx-auto px-4">
+    <div class="bg-ink text-white px-8 py-12 md:px-14 flex flex-wrap items-center justify-between gap-6">
+        <p class="font-display text-3xl md:text-4xl font-semibold max-w-xl">See what's under the hammer today.</p>
+        <a href="{% url 'auctions' %}" class="inline-flex items-center justify-center min-h-[44px] px-6 text-sm font-semibold bg-white text-ink hover:bg-gallery transition-colors">Browse live auctions</a>
+    </div>
+</section>
 {% endblock content %}

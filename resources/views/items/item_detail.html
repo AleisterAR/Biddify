@@ -1,424 +1,300 @@
 {% extends 'utilities/master.html' %}
-{% load widget_tweaks %}
+{% block title %}{{ item.name }} | Biddify{% endblock title %}
 {% block content %}
-<div class="container max-w-screen-xl mx-auto py-16 px-3">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-28">
-        <div>
-            <h1
-                class="mb-4 text-1xl font-semibold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl font-serif">
-                {{item.name}} {% if item.year %}({{item.year}}){% endif %}</h1>
-            <div id="gallery" class="relative w-full" data-carousel="slide">
-                <div class="relative h-56 overflow-hidden md:h-96">
+<div class="max-w-screen-xl mx-auto px-4 pt-8 pb-10">
+    <nav class="mb-6 text-sm text-ink-soft" aria-label="Breadcrumb">
+        <a href="{% url 'auctions' %}" class="hover:text-ink">Auctions</a>
+        {% if item.category %}<span class="mx-2 text-ink-faint" aria-hidden="true">/</span><span>{{ item.category }}</span>{% endif %}
+    </nav>
+
+    <div class="grid gap-10 lg:gap-x-14 lg:gap-y-12 lg:grid-cols-[1.25fr_1fr] items-start">
+        {# ---------- Catalogue entry ---------- #}
+        <div class="lg:col-start-1">
+            <div x-data="{ active: 0, total: {{ images|length }} }" class="select-none">
+                <div class="relative aspect-[4/3] bg-gallery overflow-hidden">
                     {% for image in images %}
-                    <div class="hidden duration-700 ease-in-out" data-carousel-item>
-                        <img src="{{image.image.url}}"
-                            class="absolute block max-w-full h-auto -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                            alt="{{item.name}}">
-                    </div>
+                    <img src="{{ image.image.url }}" alt="{{ item.name }}, photo {{ forloop.counter }}"
+                        class="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
+                        x-bind:class="active === {{ forloop.counter0 }} ? 'opacity-100' : 'opacity-0'"
+                        {% if not forloop.first %}loading="lazy"{% endif %}>
+                    {% empty %}
+                    <div class="absolute inset-0 flex items-center justify-center text-ink-faint">No photos yet</div>
+                    {% endfor %}
+                    {% if images|length > 1 %}
+                    <button type="button" @click="active = (active - 1 + total) % total" aria-label="Previous photo"
+                        class="absolute start-3 top-1/2 -translate-y-1/2 inline-flex w-11 h-11 items-center justify-center bg-white/90 hover:bg-white shadow">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                    </button>
+                    <button type="button" @click="active = (active + 1) % total" aria-label="Next photo"
+                        class="absolute end-3 top-1/2 -translate-y-1/2 inline-flex w-11 h-11 items-center justify-center bg-white/90 hover:bg-white shadow">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                    </button>
+                    <span class="absolute bottom-3 end-3 px-2 py-1 text-xs font-semibold bg-ink/80 text-white figure" x-text="`${active + 1} / ${total}`"></span>
+                    {% endif %}
+                </div>
+                {% if images|length > 1 %}
+                <div class="mt-3 flex gap-2 overflow-x-auto">
+                    {% for image in images %}
+                    <button type="button" @click="active = {{ forloop.counter0 }}" aria-label="Show photo {{ forloop.counter }}"
+                        class="shrink-0 w-20 h-20 bg-gallery border-2 transition-colors"
+                        x-bind:class="active === {{ forloop.counter0 }} ? 'border-paddle' : 'border-transparent opacity-70 hover:opacity-100'">
+                        <img src="{{ image.image.url }}" alt="" class="w-full h-full object-cover" loading="lazy">
+                    </button>
                     {% endfor %}
                 </div>
-                <button type="button"
-                    class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-prev>
-                    <span
-                        class="inline-flex items-center justify-center w-10 h-10 bg-blue-700 group-hover:bg-blue-800 group-focus:ring-4 group-focus:ring-blue-800/70 group-focus:outline-none">
-                        <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5 1 1 5l4 4" />
-                        </svg>
-                        <span class="sr-only">Previous</span>
-                    </span>
-                </button>
-                <button type="button"
-                    class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-next>
-                    <span
-                        class="inline-flex items-center justify-center w-10 h-10 bg-blue-700 group-hover:bg-blue-800 group-focus:ring-4 group-focus:ring-blue-800/70 group-focus:outline-none">
-                        <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 9 4-4-4-4" />
-                        </svg>
-                        <span class="sr-only">Next</span>
-                    </span>
-                </button>
+                {% endif %}
             </div>
-            <div x-data="{ expanded: false }" class="pt-14">
-                <p class="font-sans font-medium text-base" :class="expanded ? 'line-clamp-none' : 'line-clamp-3'">
-                    {{item.description|linebreaksbr}}
-                </p>
-                <button @click="expanded = !expanded"
-                    class="text-blue-700 mt-2 font-medium hover:text-blue-700/60 focus:outline-none">
-                    <span x-text="expanded ? 'Show Less' : 'Show More'"></span>
-                </button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
-                <div>
-                    <label for="creator"
-                        class="font-monospace block text-xs font-medium text-gray-600 mb-1">CREATOR</label>
-                    <span id="creator" class="font-sans text-base font-medium">{{item.creator}}</span>
-                </div>
-                <div>
-                    <label for="country"
-                        class="font-monospace block text-xs font-medium text-gray-600 mb-1">COUNTRY</label>
-                    <span id="country" class="font-sans text-base font-medium">{{item.country}}</span>
-                </div>
-                <div>
-                    <label for="year" class="font-monospace block text-xs font-medium text-gray-600 mb-1">YEAR OF
-                        ORIGIN</label>
-                    <span id="year" class="font-sans text-base font-medium">{{item.year}}</span>
-                </div>
-                <div>
-                    <label for="condition"
-                        class="font-monospace block text-xs font-medium text-gray-600 mb-1">CONDITION</label>
-                    <span id="condition" class="font-sans text-base font-medium capitalize">{{item.condition}}</span>
-                </div>
-                <div>
-                    <label for="category"
-                        class="font-monospace block text-xs font-medium text-gray-600 mb-1">CATEGORY</label>
-                    <span id="category" class="font-sans text-base font-medium">{{item.category}}</span>
-                </div>
-            </div>
+
         </div>
-        <div class="flex flex-col">
-            <div class="px-3 font-sans font-medium text-lg">
-                {% if auction_created and not auction.auction_ended %}
-                    {% if auction_started %}
-                    Closes in
-                    <span id="countdown" class="whitespace-nowrap overflow-hidden text-ellipsis"></span>
-                    {% else %}
-                    Auction will begin in
-                    <span id="countdown" class="whitespace-nowrap overflow-hidden text-ellipsis"></span>
-                    {% endif %}
-                {% elif auction.auction_ended %}
-                    Auction has ended!
-                {% endif %}
-            </div>
-            <div class="max-w-md py-6 px-6 bg-white border border-gray-300 mt-5">
-                {% if auction_created %}
-                    {% if latest_bids %}
-                        <p class="font-mono font-normal text-sm text-gray-700">
-                            {% if auction.auction_ended %}
-                                HIGHEST BID
+
+        {# ---------- Bid panel ---------- #}
+        <aside class="lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:row-span-2 tag-outline">
+            <div class="lot-tag">
+                <span class="lot-tag-hole" aria-hidden="true"></span>
+                <div class="px-6 pt-10 pb-7">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="lot-number">{% if auction_created %}Lot {{ auction.id|stringformat:"03d" }}{% else %}Not yet listed{% endif %}</span>
+                        {% if auction_created and not auction.auction_ended %}
+                            {% if auction_started %}
+                            <span class="status-chip bg-outbid-light text-outbid"><span class="live-dot" aria-hidden="true"></span>Live</span>
                             {% else %}
-                                CURRENT BID
+                            <span class="status-chip bg-paddle-light text-paddle">Upcoming</span>
                             {% endif %}
-                        </p>
-                        <h2 id="current-bid" class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl ">
-                            € {{ highest_bid.bid_amount }}
-                        </h2>
-                    {% else %}
-                        <p class="font-mono font-normal text-sm text-gray-700">STARTING PRICE</p>
-                        <h2 id="current-bid" class="mb-4 text-4xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-5xl ">
-                            € {{ item.starting_price }}
-                        </h2>
-                    {% endif %}
-                {% else %}
-                <div class="mx-auto flex justify-center">
-                    <h2
-                        class="mb-4 text-2xl font-semibold font-sans antialiased leading-none tracking-tight text-gray-900 md:text-3xl ">
-                        Auction has not started yet!</h2>
-                </div>
-                {% endif %}
-                {% if not auction_created %}
-                <div class="mx-auto flex justify-center py-2">
-                    <button data-modal-target="crud-modal" data-modal-toggle="crud-modal"
-                        class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center"
-                        type="button">
-                        Create an auction!
-                    </button>
-                </div>
-                <div id="crud-modal" tabindex="-1" aria-hidden="true"
-                    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    <div class="relative p-4 w-full max-w-md max-h-full">
-                        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                            <div
-                                class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                    Create an Auction!
-                                </h3>
-                                <button type="button"
-                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center "
-                                    data-modal-toggle="crud-modal">
-                                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 14 14">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                    </svg>
-                                    <span class="sr-only">Close modal</span>
-                                </button>
-                            </div>
-                            <div id="formContainer">
-                                <form class="p-4 md:p-5" method="post" hx-post="{% url 'create_auction' item.id %}"
-                                    id="auction-form" hx-swap="innerHTML" hx-target="#auction-form"
-                                    _="on auction_created wait 2s then call closeModal()">
-                                    {% include 'items/partials/start_auction_partial.html' %}
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                    <div id="bidding_form" hx-ext="ws">
-                        {% if not ownership and not auction.auction_ended %}
-                        <form ws-send>
-                            <div class="relative mb-4">
-                                {% csrf_token %}
-                                <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                                    <svg class="w-7 h-7" viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full"
-                                        enable-background="new 0 0 76.00 76.00" xml:space="preserve" fill="#6b7280"
-                                        stroke="#6b7280">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                        <g id="SVGRepo_iconCarrier">
-                                            <path fill="#6b7280" fill-opacity="1" stroke-width="0.2" stroke-linejoin="round"
-                                                d="M 51.4237,48.8848C 50.7931,49.2215 49.8882,49.5476 48.7089,49.8629C 47.5297,50.1782 46.2685,50.3472 44.9253,50.3698C 43.486,50.3769 42.1321,50.1485 40.8638,49.6844C 39.5955,49.2203 38.4982,48.4778 37.5719,47.4568C 36.7168,46.4954 36.0898,45.1626 35.6908,43.4585L 49.9986,43.4585L 49.9986,39.5398L 34.8927,39.5398C 34.8927,39.2394 34.8927,38.9079 34.8927,38.5453C 34.8832,37.8721 34.9022,37.2298 34.9497,36.6185L 49.9986,36.6185L 49.9986,32.6998L 35.8048,32.6998C 36.1848,31.1509 36.7928,29.8925 37.6289,28.9245C 38.5243,27.8536 39.5694,27.0623 40.7641,26.5506C 41.9588,26.0389 43.2318,25.7849 44.5833,25.7885C 45.854,25.8067 47.0463,25.9591 48.1603,26.2457C 49.2742,26.5323 50.21,26.8444 50.9677,27.182L 52.5638,20.7122C 51.5235,20.2469 50.2694,19.852 48.8016,19.5276C 47.3337,19.2032 45.7376,19.0339 44.0133,19.0198C 41.2942,19.0327 38.8275,19.5428 36.6132,20.5499C 34.3988,21.557 32.505,22.9836 30.9319,24.8297C 29.0913,26.9158 27.8084,29.5392 27.0833,32.6998L 23.2788,32.6998L 23.2788,36.6185L 26.4697,36.6185C 26.4511,37.2401 26.4326,37.8617 26.414,38.4832C 26.414,38.8665 26.414,39.2187 26.414,39.5398L 23.2788,39.5398L 23.2788,43.4585L 26.9717,43.4585C 27.5109,46.4794 28.5521,48.9483 30.0953,50.8652C 31.6842,52.9082 33.6699,54.4627 36.0523,55.5289C 38.4347,56.5951 41.0504,57.1317 43.8993,57.1385C 45.7448,57.1168 47.4406,56.8989 48.9868,56.4851C 50.533,56.0712 51.8014,55.592 52.7918,55.0474L 51.4237,48.8848 Z ">
-                                            </path>
-                                        </g>
-                                    </svg>
-                                </div>
-                                <input type="hidden" name="user_id" value="{{ user.id }}">
-                                {{bid_form.bid_amount}}
-                            </div> 
-                                <p id="bid-error" class="h-2"></p>
-                            <div class="grid grid-cols-2 gap-3">
-                                <button id="bid-button"
-                                    class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center {% if not auction_started%} cursor-not-allowed {% endif %}"
-                                    type="submit" {% if not auction_started %} disabled {% endif %}>
-                                    Place bid
-                                </button>
-                                <button _="on click set #id_bid_amount's value to ''"
-                                    class="block text-blue-700 bg-white hover:text-opacity-70 border border-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center"
-                                    type="button">
-                                    Clear
-                                </button>
-                            </div>
-                        </form>
-                        {% elif winner == request.user.id and auction.auction_ended and not payment_made %}
-                        <div class="">
-                            <button data-auction-id="{{ auction.id }}" class="block bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm px-5 py-2.5 text-center" id="payment-btn">
-                                Proceed to payment
-                            </button>
-                        </div>
-                        {% elif winner == request.user.id and payment_made and shipment %}
-                        <div class="flex flex-col gap-2">
-                            <p class="text-sm text-gray-600">Payment received. Shipping status: <span class="font-semibold text-gray-900">{{ shipment.get_status_display }}</span></p>
-                            {% if shipment.status == 'awaiting_address' %}
-                            <a href="{% url 'shipping_details' shipment.id %}" class="block w-fit bg-blue-700 hover:bg-blue-800 text-white font-medium text-sm px-5 py-2.5 text-center">
-                                Enter shipping details
-                            </a>
-                            {% else %}
-                            <a href="{% url 'track_shipment' shipment.id %}" class="block w-fit bg-blue-700 hover:bg-blue-800 text-white font-medium text-sm px-5 py-2.5 text-center">
-                                Track shipment
-                            </a>
-                            {% endif %}
-                        </div>
+                        {% elif auction.auction_ended %}
+                            <span class="status-chip bg-gallery text-ink-soft">Closed</span>
                         {% endif %}
                     </div>
-                {% endif %}
-                {% if auction_started %}
-                        <hr class="h-px mt-8 mb-2 border-0 bg-gray-300">
-                        <div class="relative">
-                            <table id="bidding-list" class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <tbody>
-                                    {% for bid in latest_bids %}
-                                        <tr class="bg-white">
-                                            <td class="px-auto py-3 font-medium text-gray-600 whitespace-nowrap">
-                                                {{ bid.bidder }}
-                                            </td>
-                                            <td id="time-ago" class="px-6 py-3 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s' }}">
-                                            </td>
-                                            <td class="float-right py-3 font-semibold text-gray-950">
-                                                € {{ bid.bid_amount}}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            <div x-data="showmore">
-                                <div id="show-more-bids" class="collapse collapse-arrow {% if not more_bids %} hidden {% endif %}" x-bind:open="open">
-                                    <div class="collapse-title font-semibold text-sm px-0 text-blue-700 select-none hover:text-opacity-70" x-text="open ? 'See less bids' : 'See more bids ({{more_bids|length}})' " @click="toggle"></div>
-                                    <div class="collapse-content px-0" x-show="open">
-                                        <div class="max-h-[132px] overflow-y-auto px-1">
-                                            <table class="w-full font-sans text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                                <tbody>
-                                                    {% for bid in more_bids %}
-                                                    <tr class="bg-white">
-                                                        <td class="px-auto py-3 font-medium text-gray-600 whitespace-nowrap">
-                                                            {{ bid.bidder }}
-                                                        </td>
-                                                        <td id="time-ago" class="px-6 py-3 font-medium text-gray-400 text-center" data-time="{{ bid.bid_time|date:'Y-m-d H:i:s'}}">
-                                                        </td>
-                                                        <td class="float-right py-3 font-semibold text-gray-950">
-                                                            € {{ bid.bid_amount}}
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
+
+                    <h1 class="mt-3 font-display text-3xl md:text-4xl font-semibold leading-tight">{{ item.name }}{% if item.year %} <span class="text-ink-faint font-medium figure">({{ item.year }})</span>{% endif %}</h1>
+
+                    {% if auction_created and not auction.auction_ended %}
+                    <div class="mt-5 flex items-baseline justify-between gap-3 py-3 border-y border-ink/10">
+                        <span class="meta-label">{% if auction_started %}Closes in{% else %}Opens in{% endif %}</span>
+                        <span id="countdown" class="text-xl font-semibold figure"
+                            data-countdown="{% if auction_started %}{{ auction.ending_time|date:'c' }}{% else %}{{ auction.starting_time|date:'c' }}{% endif %}"
+                            data-countdown-style="long" data-reload-on-end {% if not auction_started %}data-no-urgency{% endif %}
+                            data-ended-text="{% if auction_started %}Closing{% else %}Opening{% endif %}"></span>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-5">
+                        {% if auction_created %}
+                            {% if latest_bids %}
+                                {% if auction.auction_ended %}
+                                    {% include 'items/partials/current_bid.html' with amount=highest_bid.bid_amount label="Hammer price" has_bids=True %}
+                                {% else %}
+                                    {% include 'items/partials/current_bid.html' with amount=highest_bid.bid_amount label="Current bid" has_bids=True %}
+                                {% endif %}
+                            {% else %}
+                                {% include 'items/partials/current_bid.html' with amount=item.starting_price label="Opening price" has_bids=False %}
+                            {% endif %}
+                        {% else %}
+                            {% include 'items/partials/current_bid.html' with amount=item.starting_price label="Opening price" has_bids=False %}
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-5">
+                    {% if not auction_created %}
+                        {% if ownership %}
+                        <p class="text-sm text-ink-soft mb-4">Choose when bidding opens and closes. Your lot appears in Live auctions as soon as it opens.</p>
+                        <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="button w-full" type="button">Schedule an auction</button>
+                        <div id="crud-modal" tabindex="-1" aria-hidden="true"
+                            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                            <div class="relative p-4 w-full max-w-md max-h-full">
+                                <div class="relative bg-white shadow-2xl">
+                                    <div class="flex items-center justify-between px-5 py-4 border-b border-ink/10">
+                                        <h3 class="font-display text-2xl font-semibold">Schedule an auction</h3>
+                                        <button type="button" class="inline-flex w-11 h-11 items-center justify-center text-ink-faint hover:bg-gallery hover:text-ink" data-modal-toggle="crud-modal">
+                                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" /></svg>
+                                            <span class="sr-only">Close</span>
+                                        </button>
+                                    </div>
+                                    <div id="formContainer">
+                                        <form class="p-5" method="post" hx-post="{% url 'create_auction' item.id %}"
+                                            id="auction-form" hx-swap="innerHTML" hx-target="#auction-form"
+                                            _="on auction_created wait 2s then call closeModal()">
+                                            {% include 'items/partials/start_auction_partial.html' %}
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-                        </div>       
-                {% endif %}
+                        </div>
+                        {% else %}
+                        <p class="text-sm text-ink-soft">The owner hasn't scheduled an auction for this object yet.</p>
+                        {% endif %}
+                    {% else %}
+                        <div id="bidding_form" hx-ext="ws">
+                            {% if not ownership and not auction.auction_ended %}
+                            {% include 'items/partials/bid_standing.html' with viewer=request.user %}
+                            <form ws-send class="mt-3">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <div class="flex gap-2">
+                                    <div class="relative flex-1">
+                                        <span class="absolute inset-y-0 start-0 flex items-center ps-3.5 text-lg font-semibold text-ink-faint pointer-events-none" aria-hidden="true">€</span>
+                                        {{ bid_form.bid_amount }}
+                                    </div>
+                                    <button id="bid-button" class="button px-6" type="submit" {% if not auction_started %}disabled{% endif %}>Place bid</button>
+                                </div>
+                                <p id="bid-error" class="field-error min-h-[1.25rem]" role="alert"></p>
+                                {% if auction_started %}
+                                <div class="flex flex-wrap items-center gap-2" id="quick-bids" aria-label="Quick bid amounts"></div>
+                                {% else %}
+                                <p class="text-sm text-ink-soft">Bidding opens when the countdown ends.</p>
+                                {% endif %}
+                            </form>
+                            {% elif ownership and not auction.auction_ended %}
+                            <p class="px-3 py-2.5 text-sm bg-gallery text-ink-soft">This is your lot, so you can't bid on it. You'll be notified about every new bid.</p>
+                            {% elif winner == request.user.id and not payment_made %}
+                            <div class="p-4 bg-leading-light">
+                                <p class="font-display text-2xl font-semibold text-leading">You won this lot</p>
+                                <p class="mt-1 text-sm text-ink-soft">Pay now to have the seller ship it to you.</p>
+                                <button data-auction-id="{{ auction.id }}" class="button-go w-full mt-4" id="payment-btn">Pay €{{ highest_bid.bid_amount }} by card</button>
+                            </div>
+                            {% elif winner == request.user.id and payment_made and shipment %}
+                            <div class="p-4 bg-gallery">
+                                <p class="font-semibold">Paid. Shipping status: <span class="text-paddle">{{ shipment.get_status_display }}</span></p>
+                                {% if shipment.status == 'awaiting_address' %}
+                                <a href="{% url 'shipping_details' shipment.id %}" class="button w-full mt-4">Enter shipping details</a>
+                                {% else %}
+                                <a href="{% url 'track_shipment' shipment.id %}" class="button w-full mt-4">Track shipment</a>
+                                {% endif %}
+                            </div>
+                            {% elif auction.auction_ended %}
+                            <p class="px-3 py-2.5 text-sm bg-gallery text-ink-soft">
+                                {% if latest_bids %}Bidding has closed. This lot sold to {% if ownership %}{{ highest_bid.bidder }}{% else %}another collector{% endif %}.{% else %}Bidding has closed without any bids.{% endif %}
+                            </p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    </div>
+
+                    {% if auction_started %}
+                    <div class="mt-7">
+                        <h2 class="text-sm font-semibold mb-1">Bid history</h2>
+                        {% include 'items/partials/bid_list.html' with viewer=request.user %}
+                    </div>
+                    {% endif %}
+                </div>
             </div>
+        </aside>
+
+        <div class="lg:col-start-1">
+            <section class="lg:mt-0">
+                <h2 class="display-md mb-4">About this object</h2>
+                <div x-data="{ expanded: false }">
+                    <p class="text-[17px] leading-relaxed text-ink-soft max-w-prose" :class="expanded ? 'line-clamp-none' : 'line-clamp-4'">
+                        {{ item.description|linebreaksbr }}
+                    </p>
+                    <button @click="expanded = !expanded" class="text-link mt-2" x-text="expanded ? 'Show less' : 'Read the full description'"></button>
+                </div>
+            </section>
+
+            <section class="mt-12">
+                <h2 class="display-md mb-4">Catalogue details</h2>
+                <dl class="grid grid-cols-2 border-t border-ink/10">
+                    <div class="py-4 pe-4 border-b border-ink/10">
+                        <dt class="meta-label">Creator</dt>
+                        <dd class="mt-1 font-semibold">{{ item.creator|default:"Unknown" }}</dd>
+                    </div>
+                    <div class="py-4 ps-4 border-b border-s border-ink/10">
+                        <dt class="meta-label">Country of origin</dt>
+                        <dd class="mt-1 font-semibold">{{ item.country|default:"Unknown" }}</dd>
+                    </div>
+                    <div class="py-4 pe-4 border-b border-ink/10">
+                        <dt class="meta-label">Year of origin</dt>
+                        <dd class="mt-1 font-semibold figure">{{ item.year|default:"Unknown" }}</dd>
+                    </div>
+                    <div class="py-4 ps-4 border-b border-s border-ink/10">
+                        <dt class="meta-label">Condition</dt>
+                        <dd class="mt-1 font-semibold">{{ item.get_condition_display|default:"Not stated" }}</dd>
+                    </div>
+                    <div class="py-4 pe-4 border-b border-ink/10">
+                        <dt class="meta-label">Category</dt>
+                        <dd class="mt-1 font-semibold">{{ item.category|default:"Uncategorised" }}</dd>
+                    </div>
+                    <div class="py-4 ps-4 border-b border-s border-ink/10">
+                        <dt class="meta-label">Provenance</dt>
+                        <dd class="mt-1 font-semibold">
+                            {% if item.provenance %}<a href="{{ item.provenance.url }}" class="text-link" target="_blank" rel="noopener">View document</a>{% else %}Not provided{% endif %}
+                            {% if item.provenance and item.verified %}<span class="status-chip ms-1 bg-leading-light text-leading">Verified</span>{% endif %}
+                        </dd>
+                    </div>
+                </dl>
+            </section>
         </div>
+
     </div>
 </div>
+
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-    document.addEventListener('htmx:wsAfterMessage', ()=>{
-        document.getElementById("id_bid_amount").value = ""
-    })
+    const auctionId = "{{ auction.id }}";
+    const isAuctionStarted = Boolean("{{ auction_started|yesno:'true,' }}");
+    const isOwner = Boolean("{{ ownership|yesno:'true,' }}");
 
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('showmore', function(){
-            return {
-                open: this.$persist(false).using(sessionStorage),
-                toggle(){
-                    this.open = ! this.open
-                }
-            }
-        })
-    })
-    function getDHMS(timeDif){
-        days = Math.floor(timeDif / (1000 * 60 * 60 * 24));
-        hours = Math.floor((timeDif % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        minutes = Math.floor((timeDif % (1000 * 60 * 60)) / (1000 * 60));
-        seconds = Math.floor((timeDif % (1000 * 60)) / 1000);
-        return days, hours, minutes, seconds
-    }
-
-    function formatTime(timeDif, mode){
-        days, hours, minutes, seconds = getDHMS(timeDif)
-        const timeParts = []
-
-        if (days || hours || minutes){
-            if (days > 0) timeParts.push(`${days} day${days > 1 ? "s" : ""}`);
-            if (hours > 0) timeParts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
-            if (minutes > 0) timeParts.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
-        }
-        else{
-            if (seconds > 0) timeParts.push(`${seconds} second${seconds > 1 ? "s" : ""}`);
-        }
-        if (mode === "bid") {
-            return timeParts[0]
-        }
-        else {
-            return timeParts.length > 1 ? timeParts.slice(0, -1).join(", ") + " and " + timeParts.slice(-1) : timeParts[0]
-        } 
-    }
-
-    let days = 0, hours = 0, minutes = 0, seconds = 0;
-    let is_auction_created = Boolean("{{ auction_created|yesno:'true,' }}");
-    let is_auction_started = Boolean("{{ auction_started|yesno:'true,' }}");
-    let is_auction_ended = Boolean("{{ auction.auction_ended|yesno:'true,' }}");
-    console.log(is_auction_ended)
-    let is_owner = Boolean("{{ ownership|yesno:'true,' }}");
-    const auctionId = "{{ auction.id }}"
     function closeModal() {
         const modalInstance = window.FlowbiteInstances.getInstance('Modal', 'crud-modal');
         modalInstance.hide()
         window.location.href = "{% url 'item_detail' item.id %}";
     }
-    if (is_auction_started) {
+
+    // Quick-bid chips are rebuilt from the live price every time a bid comes in
+    function renderQuickBids() {
+        const holder = document.getElementById("quick-bids");
+        const current = document.getElementById("current-bid");
+        if (!holder || !current) return;
+        const amount = parseInt(current.dataset.amount, 10);
+        const hasBids = current.dataset.hasBids === "1";
+        const options = hasBids ? [amount + 5, amount + 10, amount + 25] : [amount, amount + 5, amount + 10];
+        holder.innerHTML = '<span class="meta-label me-1">Quick bid</span>' + options.map((value) =>
+            `<button type="button" data-quick-bid="${value}" class="button-quiet min-h-[36px] px-3 text-sm figure">€${value}</button>`
+        ).join("");
+    }
+    document.addEventListener("click", (event) => {
+        const chip = event.target.closest("[data-quick-bid]");
+        if (!chip) return;
+        const input = document.getElementById("id_bid_amount");
+        input.value = chip.dataset.quickBid;
+        input.focus();
+    });
+
+    if (isAuctionStarted) {
         const biddingForm = document.getElementById("bidding_form");
-        const wsUrl = 'ws://' + window.location.host + '/ws/auction/' + '{{auction.id}}/';
-        biddingForm.setAttribute("ws-connect", wsUrl)
-        if(!is_owner){
-            const bidAmountInput = document.querySelector('input[name="bid_amount"]')
-            if (bidAmountInput !== null){
-                bidAmountInput.setAttribute("_","on input if parseInt(my.value) < 0 and my.value === '' ");
-                bidAmountInput.setAttribute("oninput","this.value = this.value.replace(/[^0-9]/g, '');");
-            }
+        biddingForm.setAttribute("ws-connect", 'ws://' + window.location.host + '/ws/auction/{{ auction.id }}/');
+        const bidInput = document.getElementById("id_bid_amount");
+        if (!isOwner && bidInput) {
+            bidInput.setAttribute("oninput", "this.value = this.value.replace(/[^0-9]/g, '');");
         }
-    }
-    if (is_auction_ended && document.getElementById("payment-btn")){
-            fetch("{% url 'get_stripe_config' %}", {method: "GET"})
-            .then(response => response.json())
-            .then((data)=> {
-                const stripe = Stripe(data.publicKey);
-                document.getElementById("payment-btn").addEventListener("click", ()=>{
-                    fetch(`/payment/create_checkout_session/${auctionId}/`)
-                    .then((result) => { return result.json(); })
-                    .then((data)=> {
-                        console.log(data)
-                        return stripe.redirectToCheckout({sessionId: data.id})
-                    })
-                    .then((res) => {
-                        console.log(res);
-                    });
-                })
-        })
-    }
-    function bidTimeAgo(){
-        const timeElements = document.querySelectorAll("#time-ago");
-        timeElements.forEach(el => {
-            const bidTime = new Date(el.getAttribute("data-time"));
-            const now = new Date();
-            timeDiff = now - bidTime
-            days, hours, minutes, seconds = getDHMS(timeDiff)
-            const timeParts = []
-            if (days > 0) timeParts.push(`${days} day${days > 1 ? "s" : ""}`);
-            if (hours > 0) timeParts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
-            if (minutes > 0) timeParts.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
-            if (seconds > 0) timeParts.push(`${seconds} second${seconds > 1 ? "s" : ""}`);
-            if (timeParts[0] === undefined){
-                el.innerHTML = "0 second ago"
+        renderQuickBids();
+
+        // Only clear the input once our own bid has been accepted
+        let bidPending = false;
+        document.addEventListener("htmx:wsBeforeSend", () => { bidPending = true; });
+        document.addEventListener("htmx:wsAfterMessage", () => {
+            renderQuickBids();
+            const error = document.getElementById("bid-error");
+            if (bidPending && error && !error.textContent.trim() && bidInput) {
+                document.getElementById("id_bid_amount").value = "";
             }
-            else{
-                el.innerHTML = timeParts[0] + ' ago'
-            }
-        })
-    }
-    if (!is_auction_ended){
-        if (is_auction_created && !is_auction_started) {
-        const auctionStartTime = new Date("{{ auction.starting_time|date:'Y-m-d H:i:s'}}");
-        function updateCountdown() {
-            let now = new Date()
-            timeDif = auctionStartTime - now
-            if (timeDif > 0) {
-                countdownText = formatTime(timeDif)
-                document.getElementById("countdown").innerText = countdownText === undefined ? "0 second" : countdownText
-            } else {
-                location.reload()
-            }
-        }
-        if (days !== 0 && hours !== 0 && minutes !== 0) {
-            const timer = setInterval(updateCountdown, 60000);
-        }
-        else {
-            const timer = setInterval(updateCountdown, 1000);
-        }
-        updateCountdown()
+            bidPending = false;
+        });
     }
 
-    else if (is_auction_created && is_auction_started) {
-        const auctionEndTime = new Date("{{ auction.ending_time|date:'Y-m-d H:i:s'}}");
-        function updateEndCountdown() {
-            let now = new Date();
-            timeDif = auctionEndTime - now;
-            if (timeDif > 0) {
-                countdownText = formatTime(timeDif)
-                document.getElementById("countdown").innerText = countdownText === undefined ? "0 second" : countdownText
-            } else {
-                location.reload()
-            }
-        }
-        if (days !== 0 && hours !== 0 && minutes !== 0) {
-            const timer = setInterval(updateEndCountdown, 60000);
-        }
-        else {
-            const timer = setInterval(updateEndCountdown, 1000);
-        }
-        updateEndCountdown()
-        bidTimeAgo()
-        setInterval(bidTimeAgo, 1000)
+    const paymentButton = document.getElementById("payment-btn");
+    if (paymentButton) {
+        fetch("{% url 'get_stripe_config' %}", {method: "GET"})
+        .then(response => response.json())
+        .then((data) => {
+            const stripe = Stripe(data.publicKey);
+            paymentButton.addEventListener("click", () => {
+                paymentButton.disabled = true;
+                paymentButton.textContent = "Opening secure checkout…";
+                fetch(`/payment/create_checkout_session/${auctionId}/`)
+                .then((result) => result.json())
+                .then((data) => stripe.redirectToCheckout({sessionId: data.id}))
+            })
+        })
     }
-    }
-    bidTimeAgo()
 </script>
 {% endblock content %}

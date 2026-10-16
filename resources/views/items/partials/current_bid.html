@@ -1,0 +1,4 @@
+<div id="current-bid" {% if oob %}hx-swap-oob="true"{% endif %} data-amount="{{ amount }}" data-has-bids="{{ has_bids|yesno:'1,0' }}" class="-mx-3 px-3 py-2 {% if oob %}animate-bid-flash{% endif %}">
+    <p class="meta-label">{{ label }}</p>
+    <p class="mt-1 font-display text-6xl md:text-7xl font-semibold leading-none figure"><span class="currency">€</span>{{ amount }}</p>
+</div>

@@ -48,17 +48,25 @@ class AuctionConsumer(WebsocketConsumer):
         )
 
     def bid_handler(self, event):
-        bids = Bid.objects.filter(auction=self.auction).order_by('-bid_time', '-bid_amount')
+        viewer = self.scope.get("user")
+        is_bidder = viewer is not None and viewer.id == event["user"].id
+        # A rejected bid only concerns the person who placed it
+        if not event["success"] and not is_bidder:
+            return
+        bids = Bid.objects.filter(auction=self.auction).select_related("bidder").order_by('-bid_time', '-bid_amount')
         context = {"item":self.auction.item, 
          'images': self.auction.item.itemimage_set.all(), 
          "ownership": event["user"] == self.auction.item.owner, 
          "auction_started":True, 
          "auction_created":True, 
          "form": AuctionForm(), 
-         "bid_form": event['bid_form'],}
+         "bid_form": event['bid_form'],
+         "viewer": viewer,}
         if event["success"]:
             context['latest_bids'] = bids[:3]
             context['more_bids'] = bids[3:]
+            if viewer is not None and viewer.is_authenticated and viewer.id != self.auction.item.owner_id:
+                context['has_bid'] = bids.filter(bidder_id=viewer.id).exists()
         html = render_to_string("items/partials/bidding_history_partial.html", context=context)
         self.send(text_data=html)
 

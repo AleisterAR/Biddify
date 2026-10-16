@@ -21,12 +21,13 @@ def inventory(request):
     search = request.GET.get("search","")
     filter_category = request.GET.get("filter_category","")
     first_images = ItemImage.objects.filter(item=OuterRef('id')).values('image')[:1]
-    items = Item.objects.filter(owner=owner).annotate(first_image=Subquery(first_images))
+    lot_ids = Auction.objects.filter(item=OuterRef('id')).values('id')[:1]
+    items = Item.objects.filter(owner=owner).annotate(first_image=Subquery(first_images), lot_id=Subquery(lot_ids))
     highest_bids = Bid.objects.filter(auction=OuterRef('pk')).order_by('-bid_amount')
     won_auctions = Auction.objects.annotate(
     top_bid=Subquery(highest_bids.values('bidder')[:1])).filter(top_bid=request.user.id,ending_time__lte=timezone.now())
     unpaid_auctions = won_auctions.exclude(payment__user_email=request.user.email)
-    unpaid_items = Item.objects.filter(auction__in=unpaid_auctions).annotate(first_image=Subquery(first_images))
+    unpaid_items = Item.objects.filter(auction__in=unpaid_auctions).annotate(first_image=Subquery(first_images), lot_id=Subquery(lot_ids))
     items = list(chain(items, unpaid_items))
     if search:
         items = [item for item in items if search.lower() in item.name.lower()]
@@ -72,6 +73,7 @@ def item_detail(request, item_id):
                 # Payments made before shipping existed have no shipment yet (seller unknown)
                 context["shipment"], _ = Shipment.objects.get_or_create(payment=payment, defaults={"auction": auction, "buyer": request.user})
         context["payment_made"] = payment_made
+        context["has_bid"] = not ownership and bids.filter(bidder=request.user).exists()
         context["auction"], context["auction_created"], context["auction_started"], context["latest_bids"], context["more_bids"], context['winner'], context["highest_bid"] = auction, auction_created, auction_started, bids[:3], bids[3:], winner, bids[0] if len(bids) != 0 else ""
         return render(request, "items/item_detail.html", context=context)
     return render(request, "items/item_detail.html", context=context)

@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'utilities/partials/head_assets.html' %}
+    <title>{% block title %}Biddify{% endblock title %}</title>
+</head>
+<body>
+    <div class="min-h-screen grid lg:grid-cols-[1fr_1.1fr]">
+        <aside class="hidden lg:flex flex-col justify-between bg-ink text-white p-12">
+            <a href="{% url 'home' %}" class="flex items-center gap-2.5">
+                <span class="font-display text-2xl font-bold">Biddify</span>
+            </a>
+            <div>
+                <p class="font-display text-5xl font-semibold leading-[1.05] max-w-md">{% block pitch %}{% endblock pitch %}</p>
+                <p class="mt-5 max-w-sm text-white/70 leading-relaxed">{% block pitch_detail %}{% endblock pitch_detail %}</p>
+            </div>
+            <p class="text-sm text-white/50">Payments by Stripe. Every lot ships with a tracking number.</p>
+        </aside>
+        <main class="flex flex-col px-6 py-10 sm:px-12">
+            <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-sm font-medium text-ink-soft hover:text-ink">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+                Back to Biddify
+            </a>
+            <div class="flex-1 flex items-center">
+                <div class="w-full max-w-md mx-auto py-10">
+                    {% block form %}{% endblock form %}
+                </div>
+            </div>
+        </main>
+    </div>
+    {% block scripts %}{% endblock scripts %}
+</body>
+</html>

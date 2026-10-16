@@ -1,20 +1,15 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/global.css' %}?{% now 'U' %}">
-    <script defer src="{% static 'js/app.js' %}?{% now 'U' %}"></script>
-    <title>Cancelled</title>
-</head>
-<body>
-    <div class="flex flex-col h-screen items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-72 text-red-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
-        <p class="tracking-tight font-bold text-3xl">Payment Cancelled!</p>
-        <a href="{% url 'home' %}" class="tracking-tight font-semibold text-lg text-sky-500">Return to home</a> 
-    </div>  
-</body>
-</html>
+{% extends 'utilities/auth_base.html' %}
+{% block title %}Payment cancelled | Biddify{% endblock title %}
+{% block pitch %}Your lot is still waiting.{% endblock pitch %}
+{% block pitch_detail %}You won it fair and square. Pay whenever you're ready from the lot's page.{% endblock pitch_detail %}
+{% block form %}
+    <span class="inline-flex w-16 h-16 items-center justify-center rounded-full bg-outbid-light text-outbid" aria-hidden="true">
+        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+    </span>
+    <h1 class="mt-6 display-lg">Payment cancelled</h1>
+    <p class="mt-4 text-lg text-ink-soft leading-relaxed">You haven't been charged. Your won lots are in your inventory, ready to pay for when you are.</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{% url 'inventory' %}" class="button">Go to inventory</a>
+        <a href="{% url 'home' %}" class="button-quiet">Back to Biddify</a>
+    </div>
+{% endblock form %}

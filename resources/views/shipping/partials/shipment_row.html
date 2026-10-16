@@ -1,27 +1,33 @@
-<tr class="bg-white border-b border-gray-200">
-    <td class="px-4 py-3 font-medium text-gray-900">
-        <a href="{% url 'item_detail' shipment.item.id %}" class="hover:text-blue-700">{{ shipment.item.name }}</a>
-    </td>
-    <td class="px-4 py-3 text-gray-600">{% if role == 'buyer' %}{{ shipment.seller|default:"—" }}{% else %}{{ shipment.buyer }}{% endif %}</td>
-    <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ shipment.tracking_number|default:"—" }}</td>
-    <td class="px-4 py-3">
-        <span class="px-2 py-1 text-xs font-medium {% if shipment.status == 'delivered' %}bg-emerald-100 text-emerald-800{% elif shipment.status == 'awaiting_address' %}bg-amber-100 text-amber-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+<li class="grid gap-3 py-5 md:grid-cols-[2fr_1fr_1.2fr_1fr_auto] md:items-center">
+    <div class="min-w-0">
+        <a href="{% url 'item_detail' shipment.item.id %}" class="font-display text-xl font-semibold hover:text-paddle">{{ shipment.item.name }}</a>
+        <p class="text-sm text-ink-soft">{% if role == 'buyer' %}Sold by {{ shipment.seller|default:"an unknown seller" }}{% else %}Bought by {{ shipment.buyer }}{% endif %}</p>
+    </div>
+    <div>
+        <span class="status-chip {% if shipment.status == 'delivered' %}bg-leading-light text-leading{% elif shipment.status == 'awaiting_address' %}bg-closing-light text-closing{% else %}bg-paddle-light text-paddle{% endif %}">
             {{ shipment.get_status_display }}
         </span>
-    </td>
-    <td class="px-4 py-3 text-gray-600">{{ shipment.estimated_delivery|date:"M d, Y"|default:"—" }}</td>
-    <td class="px-4 py-3 text-right">
+    </div>
+    <div class="text-sm">
+        <span class="meta-label md:hidden">Tracking number </span>
+        <span class="figure">{{ shipment.tracking_number|default:"Not issued yet" }}</span>
+    </div>
+    <div class="text-sm">
+        <span class="meta-label md:hidden">Estimated delivery </span>
+        <span class="figure">{{ shipment.estimated_delivery|date:"M j, Y"|default:"Not scheduled" }}</span>
+    </div>
+    <div class="md:text-right">
         {% if role == 'buyer' and shipment.status == 'awaiting_address' %}
-        <a href="{% url 'shipping_details' shipment.id %}" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-medium text-xs px-3 py-2">Enter address</a>
+        <a href="{% url 'shipping_details' shipment.id %}" class="button min-h-[40px] px-4">Add address</a>
         {% elif role == 'seller' and shipment.status == 'label_created' %}
         <form method="post" action="{% url 'mark_shipped' shipment.id %}" class="inline">
             {% csrf_token %}
-            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-3 py-2">Mark as shipped</button>
+            <button type="submit" class="button-go min-h-[40px] px-4">Mark as shipped</button>
         </form>
         {% elif shipment.status != 'awaiting_address' %}
-        <a href="{% url 'track_shipment' shipment.id %}" class="font-medium text-blue-700 hover:underline">Track</a>
+        <a href="{% url 'track_shipment' shipment.id %}" class="button-quiet min-h-[40px] px-4">Track parcel</a>
         {% else %}
-        <span class="text-xs text-gray-400">Waiting for buyer</span>
+        <span class="text-sm text-ink-faint">Waiting for the buyer's address</span>
         {% endif %}
-    </td>
-</tr>
+    </div>
+</li>

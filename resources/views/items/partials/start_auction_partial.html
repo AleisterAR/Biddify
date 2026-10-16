@@ -1,35 +1,28 @@
-
-
             {% if messages %}
-                <div class="p-4 mb-1 text-sm text-green-400 rounded-lg bg-green-50" role="alert" _="on load wait 2s then add .hidden">
-                    {% for message in messages %}
-                        <span class="font-medium">{{ message }}</span>       
-                    {% endfor %}
+                <div class="flex items-center gap-2 p-3 mb-4 text-sm font-semibold bg-leading-light text-leading" role="status">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                    {% for message in messages %}<span>{{ message }}</span>{% endfor %}
                 </div>
             {% endif %}
                 {% csrf_token %}
-                <div class="grid gap-4 mb-4 grid-cols-2">
-                    <div class="col-span-2">
-                        <label for="{{form.starting_time.id_for_label}}" class="block mb-2 text-sm font-medium text-gray-900">{{form.starting_time.label}}</label>
+                <div class="grid gap-4 mb-4">
+                    <div>
+                        <label for="{{form.starting_time.id_for_label}}" class="field-label">Bidding opens</label>
                         {{form.starting_time}}
                         {% if form.starting_time.errors %}
-                            <p class="text-red-500 text-sm mt-1">{{ form.starting_time.errors.0 }}</p>
+                            <p class="field-error">{{ form.starting_time.errors.0 }}</p>
                         {% endif %}
                     </div>
-                    <div class="col-span-2">
-                        <label for="{{form.ending_time.id_for_label}}" class="block mb-2 text-sm font-medium text-gray-900">{{form.ending_time.label}}</label>
+                    <div>
+                        <label for="{{form.ending_time.id_for_label}}" class="field-label">Bidding closes</label>
                         {{form.ending_time}}
-                            <p class="text-red-500 text-sm mt-1">{{ form.ending_time.errors.0 }}</p>
+                        {% if form.ending_time.errors %}
+                            <p class="field-error">{{ form.ending_time.errors.0 }}</p>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="flex justify-center mx-auto pt-3">
-                    <button {% if messages %}
+                <button {% if messages %}
                     _="on load put '' into <input/>'s value"
-                    {% endif %} id="auctionButton" {% if messages %}  {% endif %} type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center ">
-                        Create Auction 
-                    </button>
-                </div>
-  
-
-                
-
+                    {% endif %} id="auctionButton" type="submit" class="button w-full">
+                    Schedule auction
+                </button>

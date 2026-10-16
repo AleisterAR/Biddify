@@ -1,0 +1,35 @@
+{% comment %}
+A single lot as a hanging auction tag.
+Expects: href, image, name, lot (auction id or empty), and optionally amount, amount_label, ends_at, starts_at, note.
+{% endcomment %}
+<a href="{{ href }}" class="lot-link tag-outline group block focus:outline-none">
+  <article class="lot-tag h-full">
+    <span class="lot-tag-hole" aria-hidden="true"></span>
+    <div class="flex items-center justify-between px-4 pt-9 pb-3">
+      <span class="lot-number">{% if lot %}Lot {{ lot|stringformat:"03d" }}{% else %}Unlisted{% endif %}</span>
+      {% if ends_at %}
+      <span class="status-chip bg-gallery text-ink figure" data-countdown="{{ ends_at|date:'c' }}" data-ended-text="Closed"></span>
+      {% elif starts_at %}
+      <span class="status-chip bg-paddle-light text-paddle">Upcoming</span>
+      {% endif %}
+    </div>
+    <div class="mx-4 aspect-[4/5] overflow-hidden bg-gallery">
+      {% if image %}
+      <img class="w-full h-full object-cover" src="/localstorage/{{ image }}" alt="{{ name }}" loading="lazy">
+      {% else %}
+      <div class="w-full h-full flex items-center justify-center text-ink-faint text-sm">No photo yet</div>
+      {% endif %}
+    </div>
+    <div class="flex flex-col flex-1 px-4 pt-3 pb-4">
+      <h3 class="font-display text-xl font-semibold leading-snug line-clamp-2 group-hover:text-paddle transition-colors">{{ name }}</h3>
+      {% if amount_label %}
+      <div class="mt-auto pt-3 flex items-baseline justify-between gap-2">
+        <span class="meta-label">{{ amount_label }}</span>
+        <span class="font-display text-2xl font-semibold figure"><span class="currency">€</span>{{ amount }}</span>
+      </div>
+      {% elif note %}
+      <p class="mt-auto pt-3 meta-label">{{ note }}</p>
+      {% endif %}
+    </div>
+  </article>
+</a>

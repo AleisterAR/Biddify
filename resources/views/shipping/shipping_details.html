@@ -1,42 +1,44 @@
 {% extends 'utilities/master.html' %}
+{% block title %}Delivery address | Biddify{% endblock title %}
 {% block content %}
-<div class="container max-w-screen-md mx-auto py-10 px-3">
-    <h1 class="mb-2 text-3xl font-bold leading-none tracking-tight text-gray-900">Shipping details</h1>
-    <p class="mb-8 text-gray-600">Where should we send <span class="font-semibold text-gray-900">{{ shipment.item.name }}</span>?</p>
+<div class="max-w-screen-md mx-auto px-4 py-12">
+    <a href="{% url 'shipments' %}" class="text-sm font-medium text-ink-soft hover:text-ink">Back to shipments</a>
+    <h1 class="mt-4 display-lg">Where should we send it?</h1>
+    <p class="mt-3 text-ink-soft">Delivery address for <span class="font-semibold text-ink">{{ shipment.item.name }}</span>.</p>
 
-    <form method="post" class="space-y-5">
+    <form method="post" class="mt-10 space-y-6">
         {% csrf_token %}
         {% if form.non_field_errors %}
-        <div class="p-3 text-sm text-red-700 bg-red-50">{{ form.non_field_errors }}</div>
+        <div class="px-3 py-2.5 text-sm font-medium bg-outbid-light text-outbid" role="alert">{{ form.non_field_errors }}</div>
         {% endif %}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             {% for field in form %}
                 {% if field.name != 'method' %}
                 <div class="{% if field.name == 'address_line' %}md:col-span-2{% endif %}">
-                    <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">{{ field.label }}</label>
+                    <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
                     {{ field }}
-                    {% for error in field.errors %}<p class="mt-1 text-sm text-red-600">{{ error }}</p>{% endfor %}
+                    {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
                 </div>
                 {% endif %}
             {% endfor %}
         </div>
 
-        <div>
-            <p class="mb-2 text-sm font-medium text-gray-900">{{ form.method.label }}</p>
+        <fieldset>
+            <legend class="field-label">{{ form.method.label }}</legend>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {% for radio in form.method %}
-                <label for="{{ radio.id_for_label }}" class="flex items-center gap-3 p-4 border border-gray-300 cursor-pointer hover:bg-gray-50">
+                <label for="{{ radio.id_for_label }}" class="flex items-center gap-3 p-4 border border-ink/15 cursor-pointer hover:bg-gallery has-[:checked]:border-paddle has-[:checked]:bg-paddle-light transition-colors">
                     {{ radio.tag }}
-                    <span class="text-sm text-gray-900">{{ radio.choice_label }}</span>
+                    <span class="text-sm font-medium">{{ radio.choice_label }}</span>
                 </label>
                 {% endfor %}
             </div>
-            <p class="mt-2 text-xs text-gray-500">Shipping is included in the price you paid. Carrier: Biddify Express (demo carrier, no real parcels are sent).</p>
-        </div>
+            <p class="mt-2 text-sm text-ink-soft">Shipping is included in the price you paid. Biddify Express is a demo carrier, so no real parcel is sent.</p>
+        </fieldset>
 
-        <div class="flex gap-3">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium text-sm px-5 py-2.5">Confirm address</button>
-            <a href="{% url 'shipments' %}" class="text-blue-700 bg-white border border-gray-300 hover:text-opacity-70 font-medium text-sm px-5 py-2.5">Cancel</a>
+        <div class="flex flex-wrap gap-3 pt-2">
+            <button type="submit" class="button">Confirm address</button>
+            <a href="{% url 'shipments' %}" class="button-quiet">Cancel</a>
         </div>
     </form>
 </div>

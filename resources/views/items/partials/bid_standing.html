@@ -1,0 +1,15 @@
+<div id="bid-standing" {% if oob %}hx-swap-oob="true"{% endif %} aria-live="polite">
+    {% if has_bid and latest_bids %}
+        {% if latest_bids.0.bidder_id == viewer.id %}
+        <p class="flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-leading-light text-leading">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+            You're the highest bidder
+        </p>
+        {% else %}
+        <p class="flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-outbid-light text-outbid {% if oob %}animate-row-in{% endif %}">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            You've been outbid. Bid again to take the lead.
+        </p>
+        {% endif %}
+    {% endif %}
+</div>

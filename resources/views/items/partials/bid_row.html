@@ -1,0 +1,8 @@
+<li class="flex items-center gap-3 py-3 {% if leading %}{% if fresh %}animate-row-in{% endif %}{% endif %}">
+    <span class="inline-flex w-9 h-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold uppercase {% if leading %}bg-leading text-white{% else %}bg-gallery text-ink-soft{% endif %}" aria-hidden="true">{{ bid.bidder.username|first }}</span>
+    <div class="min-w-0 flex-1">
+        <p class="text-sm font-semibold truncate">{% if bid.bidder_id == viewer.id %}You{% else %}{{ bid.bidder.username }}{% endif %}{% if leading %} <span class="status-chip ms-1 px-1.5 py-0.5 bg-leading-light text-leading">Highest</span>{% endif %}</p>
+        <p class="text-xs text-ink-faint" data-time-ago="{{ bid.bid_time|date:'c' }}"></p>
+    </div>
+    <span class="font-display text-lg font-semibold figure {% if not leading %}text-ink-soft{% endif %}"><span class="currency">€</span>{{ bid.bid_amount }}</span>
+</li>

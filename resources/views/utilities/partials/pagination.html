@@ -1,0 +1,13 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="flex flex-col items-center gap-3 pt-14" aria-label="Pagination">
+  <p class="text-sm text-ink-soft">Page <span class="font-semibold text-ink figure">{{ page_obj.number }}</span> of <span class="font-semibold text-ink figure">{{ page_obj.paginator.num_pages }}</span>, <span class="figure">{{ page_obj.paginator.count }}</span> lots in total</p>
+  <div class="inline-flex gap-2">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="button-quiet">Previous page</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="button-quiet">Next page</a>
+    {% endif %}
+  </div>
+</nav>
+{% endif %}

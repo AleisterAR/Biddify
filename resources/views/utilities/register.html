@@ -1,54 +1,27 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/global.css' %}?{% now 'U' %}">
-    <script defer src="{% static 'js/app.js' %}?{% now 'U' %}"></script>
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css"  rel="stylesheet" />
-    <title>Biddify</title>
-</head>
-<body>
-    <section class="bg-gray-50">
-        <div class="lg:py-10 sm:py-0">
-            <div class="flex flex-col items-center justify-center px-6 py-6 mx-auto lg:py-0">
-                <div class="w-full md:mt-4 sm:max-w-lg xl:p-0">
-                    <div class="grid grid-cols-3 gap-7">
-                        <a class="mt-2 text-blue-800" href="{% url 'home' %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 25 25" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 ml-2 mr-2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                            </svg>
-                        </a>
-                        <div class="flex mb-5 text-2xl font-semibold text-gray-900">
-                            <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
-                            Biddify
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full bg-white rounded-lg shadow md:mt-4 sm:max-w-lg xl:p-0 ">
-                    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                            Create an account
-                        </h1>
-                        <form x-data="user_register" class="space-y-4 md:space-y-6" id="registerForm" x-clover-form="submit" enctype="multipart/form-data">
+{% extends 'utilities/auth_base.html' %}
+{% block title %}Create an account | Biddify{% endblock title %}
+{% block pitch %}Your next find is one bid away.{% endblock pitch %}
+{% block pitch_detail %}Create an account to bid on live lots, or to list your own objects for auction.{% endblock pitch_detail %}
+{% block form %}
+                    <h1 class="display-lg">Create an account</h1>
+                    <form x-data="user_register" class="mt-8 space-y-5" id="registerForm" x-clover-form="submit" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label for="inputFirstname" class="block mb-2 text-sm font-medium text-gray-900 ">Your first name</label>
-                                    <input x-clover-verify type="text" name="firstname" id="inputFirstname" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                    <div x-text="errors.firstname" class="text-red-500 text-sm mt-1"></div>
+                                    <label for="inputFirstname" class="field-label">First name</label>
+                                    <input x-clover-verify type="text" name="firstname" id="inputFirstname" class="field">
+                                    <div x-text="errors.firstname" class="field-error"></div>
                                 </div>
                                 <div>
-                                    <label for="inputLastname" class="block mb-2 text-sm font-medium text-gray-900 ">Your last name</label>
-                                    <input x-clover-verify type="text" name="lastname" id="inputLastname" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                    <div x-text="errors.lastname" class="text-red-500 text-sm mt-1"></div>
+                                    <label for="inputLastname" class="field-label">Last name</label>
+                                    <input x-clover-verify type="text" name="lastname" id="inputLastname" class="field">
+                                    <div x-text="errors.lastname" class="field-error"></div>
                                 </div>
                             </div>
                             <div>
-                                <label for="inputEmail" class="block mb-2 text-sm font-medium text-gray-900 ">Your email</label>
-                                <input x-clover-verify type="text" name="email" id="inputEmail" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                <div x-text="errors.email" class="text-red-500 text-sm mt-1"></div>
+                                <label for="inputEmail" class="field-label">Email</label>
+                                <input x-clover-verify type="text" name="email" id="inputEmail" class="field">
+                                <div x-text="errors.email" class="field-error"></div>
                             </div>
                             <div x-data="{
                                 username: '',
@@ -76,49 +49,43 @@
                                     }
                                 }
                             }">
-                                <label for="inputUsername" class="block mb-2 text-sm font-medium text-gray-900 ">Your username</label>
-                                <input x-clover-verify type="text" name="username" id="inputUsername" x-model="username" @input.debounce.500ms="checkUsername()" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                <div x-text="errors.username" id="username-error" class="text-red-500 text-sm mt-1"></div>
-                                <div x-text="status" class="text-sm mt-1" :class="status === 'Username is available' ? 'text-green-500' : 'text-red-500'"></div>
+                                <label for="inputUsername" class="field-label">Username</label>
+                                <input x-clover-verify type="text" name="username" id="inputUsername" x-model="username" @input.debounce.500ms="checkUsername()" class="field">
+                                <div x-text="errors.username" id="username-error" class="field-error"></div>
+                                <div x-text="status" class="text-sm mt-1.5 font-medium" :class="status === 'Username is available' ? 'text-leading' : 'text-outbid'"></div>
                             </div>
                             <div>
-                                <label for="inputPassword" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-                                <input x-clover-verify type="password" name="password" id="inputPassword" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" >
-                                <div x-text="errors.password" class="text-red-500 text-sm mt-1"></div>
+                                <label for="inputPassword" class="field-label">Password</label>
+                                <input x-clover-verify type="password" name="password" id="inputPassword" class="field" >
+                                <div x-text="errors.password" class="field-error"></div>
                             </div>
                             <div>
-                                <label for="inputPasswordConfirm" class="block mb-2 text-sm font-medium text-gray-900">Confirm your password</label>
-                                <input x-clover-verify type="password" name="passwordconfirm" id="inputPasswordConfirm" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" >
-                                <div x-text="errors.passwordconfirm" class="text-red-500 text-sm mt-1"></div>
+                                <label for="inputPasswordConfirm" class="field-label">Confirm password</label>
+                                <input x-clover-verify type="password" name="passwordconfirm" id="inputPasswordConfirm" class="field" >
+                                <div x-text="errors.passwordconfirm" class="field-error"></div>
                             </div>
                             <div>
-                                <label for="inputPhone" class="block mb-2 text-sm font-medium text-gray-900 ">Your phone number</label>
-                                <input type="text" name="phone" id="inputPhone" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">                       
+                                <label for="inputPhone" class="field-label">Phone number <span class="font-normal text-ink-faint">(optional)</span></label>
+                                <input type="text" name="phone" id="inputPhone" class="field">                       
                             </div>
                             <div>
-                                <label for="inputAddress" class="block mb-2 text-sm font-medium text-gray-900 ">Your address</label>
-                                <textarea name="address" id="inputAddress" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "></textarea>
+                                <label for="inputAddress" class="field-label">Delivery address <span class="font-normal text-ink-faint">(optional)</span></label>
+                                <textarea name="address" id="inputAddress" class="field"></textarea>
                             </div>
                             <div class="flex items-start">
                                 <div class="flex items-center h-5">
-                                  <input id="terms" aria-describedby="terms" name="terms" x-clover-verify="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-0">
+                                  <input id="terms" aria-describedby="terms" name="terms" x-clover-verify="terms" type="checkbox" class="w-5 h-5 border border-ink/30 text-paddle focus:ring-paddle/30">
                                 </div>
                                 <div class="ml-3 text-sm">
-                                  <label for="terms" class="font-light text-gray-500">I accept the <a class="font-medium hover:text-blue-600 hover:underline" href="#" >Terms and Conditions</a></label>
+                                  <label for="terms" class="text-ink-soft">I accept the <a class="text-link" href="#">terms and conditions</a></label>
                                 </div>      
                             </div>
-                            <div x-text="errors.terms" class="text-red-500 text-sm mt-1"></div>
-                            <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Create an account</button>
-                            <p class="text-sm font-light text-gray-500">
-                                Already have an account? <a href="{% url 'login' %}" class="font-medium text-primary-600 hover:text-blue-500">Login here</a>
-                            </p>
+                            <div x-text="errors.terms" class="field-error"></div>
+                            <button type="submit" class="button w-full">Create account</button>
+                            <p class="text-sm text-ink-soft">Already have an account? <a href="{% url 'login' %}" class="text-link">Sign in</a></p>
                         </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+{% endblock form %}
+{% block scripts %}
     <script>
         document.addEventListener("alpine:init", ()=>{
             Alpine.data("user_register", ()=>({
@@ -157,5 +124,4 @@
             }))
         })
     </script>
-</body>
-</html>
+{% endblock scripts %}
