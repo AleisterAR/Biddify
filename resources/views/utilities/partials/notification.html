@@ -1,6 +1,6 @@
 <div id="notification-list" hx-swap-oob="afterbegin">
-  <a class="swapable-a flex gap-3 px-4 py-3 smooth-transition hover:bg-gallery animate-row-in {% if notification.is_read %} bg-gallery/60 {% endif %}" {% if not notification.is_read %} hx-post="{% url 'mark_as_read' notification.message %}" hx-trigger="intersect delay:500ms once" hx-swap="outerHTML" hx-target="this" {% endif %}>
-    <span class="mt-1.5 w-2 h-2 shrink-0 rounded-full {% if notification.is_read %}bg-transparent{% else %}bg-paddle{% endif %}"></span>
+  <div class="swapable-a flex gap-3 px-4 py-3 smooth-transition hover:bg-gallery animate-row-in {% if notification.is_read %} bg-gallery/60 {% endif %}" {% if not notification.is_read %} hx-post="{% url 'mark_as_read' notification.message %}" hx-trigger="intersect delay:500ms once" hx-swap="outerHTML" hx-target="this" {% endif %}>
+    <span class="mt-1.5 w-2 h-2 shrink-0 rounded-full {% if notification.is_read %}bg-transparent{% else %}bg-brass-dark{% endif %}" aria-hidden="true"></span>{% if not notification.is_read %}<span class="sr-only">Unread:</span>{% endif %}
     <div class="w-full">
       <div class="text-sm text-ink mb-1">{{ notification.message }}</div>
       <div class="text-xs text-ink-faint" data-time-ago="{{ notification.created_at|date:'c' }}">just now</div>
@@ -8,18 +8,20 @@
     <button type="button" aria-label="Delete notification" class="self-start text-ink-faint hover:text-outbid" hx-delete="{% url "delete_notification" notification.message %}">
       {% include 'utilities/partials/notification_close_icon.html' %}
     </button>
-  </a>
+  </div>
 </div>
 
 <div id="notification-empty-message" hx-swap-oob="outerHTML"></div>
 
-<a id="clear-all-btn" hx-swap-oob="outerHTML" hx-delete="{% url 'delete_all_notifications' %}" hx-target="#notification-list" hx-swap="innerHTML"
-  class="flex items-center justify-center gap-2 p-3 text-sm font-medium text-outbid border-t border-ink/10 hover:bg-outbid-light cursor-pointer">
-  Clear all notifications
-</a>
+<div id="clear-all-btn" hx-swap-oob="outerHTML">
+  <button type="button" hx-delete="{% url 'delete_all_notifications' %}" hx-target="#notification-list" hx-swap="innerHTML"
+    class="flex w-full items-center justify-center gap-2 p-3 text-sm font-medium text-ink-soft border-t border-ink/10 hover:bg-gallery hover:text-ink cursor-pointer">
+    Clear all notifications
+  </button>
+</div>
 
 <div id="new-noti-indicator" hx-swap-oob="innerHTML">
   {% if has_unread %}
-    <div class="absolute block w-3 h-3 bg-paddle border-2 border-card rounded-full top-2.5 end-2.5 animate-pulse"></div>
+    <div class="absolute block w-3 h-3 bg-brass border-2 border-canvas rounded-full top-2.5 end-2.5"></div>
   {% endif %}
 </div>

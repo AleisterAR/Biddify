@@ -5,8 +5,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from participants.models import Participant
+from participants.forms import ProfileForm
+from django.urls import reverse
 from django.contrib.auth import logout, get_user_model
 from bid.models import Auction
+from bid.views import featured_auctions_queryset
 from item.models import ItemImage
 from django.db.models import Count, Max, OuterRef, Subquery
 from django.utils import timezone
@@ -37,6 +40,8 @@ def user_dashboard(request):
     context = {
         "live_count": live_auctions.count(),
         "hero_lot": live_auctions.order_by('ending_time', '-bid_count').first(),
+        # Rendered on first paint so the section never flashes its empty state before HTMX refreshes it
+        "featured_auctions": featured_auctions_queryset()[:4],
     }
     return render(request, 'utilities/home.html', context=context)
 
@@ -64,3 +69,14 @@ def check_username(request):
     
 def about_us(request):
     return render(request, 'utilities/about_us.html')
+
+@login_required
+def profile(request):
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect(f"{reverse('profile')}?saved=1")
+    else:
+        form = ProfileForm(instance=request.user)
+    return render(request, 'utilities/profile.html', {"form": form, "saved": request.GET.get("saved") == "1"})

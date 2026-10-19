@@ -1,12 +1,12 @@
 {% if auctions %}
-<p class="mb-6 text-sm text-ink-soft"><span class="font-semibold text-ink figure">{{ auctions.paginator.count }}</span> lot{{ auctions.paginator.count|pluralize }} open</p>
+<h2 class="mb-6 text-sm font-normal text-ink-soft"><span class="font-semibold text-ink figure">{{ auctions.paginator.count }}</span> lot{{ auctions.paginator.count|pluralize }} open</h2>
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8" id="items-list">
   {% for auction in auctions %}
     {% url 'item_detail' auction.id as item_url %}
     {% if auction.highest_bid %}
-      {% include 'utilities/partials/lot_card.html' with href=item_url image=auction.first_image name=auction.name lot=auction.lot_id amount=auction.highest_bid amount_label="Current bid" ends_at=auction.auction_ending_time %}
+      {% include 'utilities/partials/lot_card.html' with href=item_url image=auction.first_image item=auction name=auction.name lot=auction.lot_id amount=auction.highest_bid amount_label="Current bid" ends_at=auction.auction_ending_time %}
     {% else %}
-      {% include 'utilities/partials/lot_card.html' with href=item_url image=auction.first_image name=auction.name lot=auction.lot_id amount=auction.starting_price amount_label="Opening price" ends_at=auction.auction_ending_time %}
+      {% include 'utilities/partials/lot_card.html' with href=item_url image=auction.first_image item=auction name=auction.name lot=auction.lot_id amount=auction.starting_price amount_label="Opening price" ends_at=auction.auction_ending_time %}
     {% endif %}
   {% endfor %}
 </div>

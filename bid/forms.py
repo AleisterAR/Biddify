@@ -24,17 +24,17 @@ class AuctionForm(forms.ModelForm):
         ending_time = cleaned_data.get("ending_time")
 
         if not starting_time:
-            self.add_error('starting_time', 'Starting time is required!')
+            self.add_error('starting_time', 'Choose when bidding opens.')
         
         if not ending_time:
-            self.add_error('ending_time', 'Ending time is required!')
+            self.add_error('ending_time', 'Choose when bidding closes.')
 
         if starting_time and ending_time:
             if ending_time <= starting_time:
-                self.add_error('ending_time', "Ending time must be later than starting time.")
+                self.add_error('ending_time', "Bidding has to close after it opens.")
 
         if starting_time and starting_time < now():
-            self.add_error('starting_time', "Starting time must be in the future.")
+            self.add_error('starting_time', "Choose an opening time in the future.")
 
         return cleaned_data
 
@@ -55,14 +55,14 @@ class BidForm(forms.ModelForm):
         if bid_amount is not None:
             auction = cleaned_data.get('auction')
             if bid_amount <= 0:
-                self.add_error('bid_amount',"Your bid price must be more than zero!")
+                self.add_error('bid_amount',"Enter an amount above €0.")
             elif previous_bid := auction.bids.last():
                 if bid_amount <= previous_bid.bid_amount:
-                    self.add_error('bid_amount', f"Your bid price must be more than the previous bid of € {previous_bid.bid_amount}!")
+                    self.add_error('bid_amount', f"Bid more than €{previous_bid.bid_amount}, the current highest bid.")
             elif starting_price := auction.item.starting_price:
                 if bid_amount < starting_price:
-                    self.add_error('bid_amount', f"Your bid price must be € {starting_price} or more than € {starting_price}!")
+                    self.add_error('bid_amount', f"The opening price is €{starting_price}. Bid at least that.")
         else:
-            self.add_error('bid_amount',"Bid price is required!")
+            self.add_error('bid_amount',"Enter an amount to bid.")
         
         return cleaned_data

@@ -9,15 +9,15 @@
 </head>
 <body>
     <div class="min-h-screen grid lg:grid-cols-[1fr_1.1fr]">
-        <aside class="hidden lg:flex flex-col justify-between bg-surface text-white border-e border-ink/10 p-12">
+        <aside class="hidden lg:flex flex-col justify-between bg-surface text-canvas border-e border-ink/10 p-12">
             <a href="{% url 'home' %}" class="flex items-center gap-2.5">
                 <span class="font-display text-2xl font-bold">Biddify</span>
             </a>
             <div>
-                <p class="font-display text-5xl font-semibold leading-[1.05] max-w-md">{% block pitch %}{% endblock pitch %}</p>
-                <p class="mt-5 max-w-sm text-white/70 leading-relaxed">{% block pitch_detail %}{% endblock pitch_detail %}</p>
+                <p class="font-display text-5xl font-semibold leading-[1.12] max-w-md">{% block pitch %}{% endblock pitch %}</p>
+                <p class="mt-5 max-w-sm text-canvas/70 leading-relaxed">{% block pitch_detail %}{% endblock pitch_detail %}</p>
             </div>
-            <p class="text-sm text-white/50">Payments by Stripe. Every lot ships with a tracking number.</p>
+            <p class="text-sm text-canvas/50">Payments by Stripe. Every lot ships with a tracking number.</p>
         </aside>
         <main class="flex flex-col px-6 py-10 sm:px-12">
             <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-sm font-medium text-ink-soft hover:text-ink">

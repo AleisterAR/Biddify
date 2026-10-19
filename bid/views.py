@@ -19,7 +19,7 @@ def create_auction(request, item_id):
             auction = form.save(commit=False)
             auction.item = item
             auction.save()
-            messages.success(request, "Auction has been registered successfully!")
+            messages.success(request, "Your auction is scheduled.")
             response = render(request, 'items/partials/start_auction_partial.html', {'form': form, 'item': item})
             response["HX-Trigger"] = "auction_created"
             return response
@@ -45,11 +45,13 @@ def mark_as_read(request, notification_message):
     has_unread = Notification.objects.filter(user=request.user, is_read=False).count() > 0
     return render(request, 'utilities/partials/read_notification.html', context={"notification": new_noti, "has_unread": has_unread})
 
-def feature_auctions(request):
+def featured_auctions_queryset():
+    """Open lots with at least one bid, highest bid first."""
     first_images = ItemImage.objects.filter(item=OuterRef('item_id')).values('image')[:1]
-    auctions = Auction.objects.prefetch_related('bids').annotate(max_bid = Max('bids__bid_amount'), first_image=Subquery(first_images)).exclude(max_bid=None).filter(ending_time__gt=timezone.now()).order_by('-max_bid')
+    return Auction.objects.select_related('item').annotate(max_bid = Max('bids__bid_amount'), first_image=Subquery(first_images)).exclude(max_bid=None).filter(ending_time__gt=timezone.now()).order_by('-max_bid')
 
-    return render(request, 'utilities/partials/featured_auctions.html', context={'featured_auctions':auctions})
+def feature_auctions(request):
+    return render(request, 'utilities/partials/featured_auctions.html', context={'featured_auctions':featured_auctions_queryset()})
 
 def auctions(request):
     search = request.GET.get("search","")

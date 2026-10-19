@@ -1,15 +1,36 @@
 {% extends 'utilities/auth_base.html' %}
-{% block title %}Payment received | Biddify{% endblock title %}
+{% block title %}{% if payment %}Payment received{% else %}Confirming payment{% endif %} | Biddify{% endblock title %}
 {% block pitch %}Sold, and it's yours.{% endblock pitch %}
 {% block pitch_detail %}The seller is notified as soon as you've added a delivery address.{% endblock pitch_detail %}
 {% block form %}
+    {% if payment %}
     <span class="inline-flex w-16 h-16 items-center justify-center rounded-full bg-leading-light text-leading" aria-hidden="true">
         <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
     </span>
     <h1 class="mt-6 display-lg">Payment received</h1>
-    <p class="mt-4 text-lg text-ink-soft leading-relaxed">Next, tell us where to send your object. Shipping is already included in what you paid.</p>
+    <p class="mt-4 text-lg text-ink-soft leading-relaxed">
+        You paid <span class="font-semibold text-ink figure">€{{ payment.amount|floatformat:"0" }}</span>{% if shipment %} for {{ shipment.item.name }}{% endif %}.
+        Next, tell us where to send it. We hold your payment until 3 days after it reaches you, then release it to the seller.
+    </p>
     <div class="mt-8 flex flex-wrap gap-3">
-        <a href="{% url 'shipments' %}" class="button">Add delivery address</a>
+        {% if shipment and shipment.status == 'awaiting_address' %}
+        <a href="{% url 'shipping_details' shipment.id %}" class="button">Add delivery address</a>
+        {% elif shipment %}
+        <a href="{% url 'track_shipment' shipment.id %}" class="button">Track your delivery</a>
+        {% else %}
+        <a href="{% url 'shipments' %}" class="button">Go to shipments</a>
+        {% endif %}
         <a href="{% url 'home' %}" class="button-quiet">Back to Biddify</a>
     </div>
+    {% if not request.user.address %}
+    <p class="mt-6 text-sm text-ink-soft">Tip: save an address in <a href="{% url 'profile' %}" class="text-link">your profile</a> and we'll fill it in for you next time.</p>
+    {% endif %}
+    {% else %}
+    <h1 class="display-lg">Confirming your payment</h1>
+    <p class="mt-4 text-lg text-ink-soft leading-relaxed">Stripe hasn't confirmed this payment to us yet. If you completed checkout, it will appear on the lot shortly, and you won't be charged twice.</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{% url 'shipments' %}" class="button">Go to shipments</a>
+        <a href="{% url 'home' %}" class="button-quiet">Back to Biddify</a>
+    </div>
+    {% endif %}
 {% endblock form %}

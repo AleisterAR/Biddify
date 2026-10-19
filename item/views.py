@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from itertools import chain
 from payments.models import Payment
+from payments.views import completed_payment
 from shipping.models import Shipment
 
 # Create your views here.
@@ -26,7 +27,7 @@ def inventory(request):
     highest_bids = Bid.objects.filter(auction=OuterRef('pk')).order_by('-bid_amount')
     won_auctions = Auction.objects.annotate(
     top_bid=Subquery(highest_bids.values('bidder')[:1])).filter(top_bid=request.user.id,ending_time__lte=timezone.now())
-    unpaid_auctions = won_auctions.exclude(payment__user_email=request.user.email)
+    unpaid_auctions = won_auctions.exclude(payment__payment_status='completed')
     unpaid_items = Item.objects.filter(auction__in=unpaid_auctions).annotate(first_image=Subquery(first_images), lot_id=Subquery(lot_ids))
     items = list(chain(items, unpaid_items))
     if search:
@@ -63,11 +64,8 @@ def item_detail(request, item_id):
         if auction.auction_ended():
             winner = bids[0].bidder.id if len(bids) != 0 else None
         if winner == request.user.id:
-            payment = Payment.objects.filter(
-                auction=auction,
-                user_email=request.user.email,
-                payment_status='completed'
-            ).first()
+            # Matched on the auction, not the email: Stripe may hold a different address than the account
+            payment = completed_payment(auction)
             payment_made = payment is not None
             if payment_made:
                 # Payments made before shipping existed have no shipment yet (seller unknown)

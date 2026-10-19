@@ -81,6 +81,7 @@
                                 </div>      
                             </div>
                             <div x-text="errors.terms" class="field-error"></div>
+                            <div x-show="formError" x-text="formError" class="px-3 py-2.5 text-sm font-medium bg-outbid-light text-outbid" role="alert"></div>
                             <button type="submit" class="button w-full">Create account</button>
                             <p class="text-sm text-ink-soft">Already have an account? <a href="{% url 'login' %}" class="text-link">Sign in</a></p>
                         </form>
@@ -90,16 +91,18 @@
         document.addEventListener("alpine:init", ()=>{
             Alpine.data("user_register", ()=>({
                 rule:{
-                    firstname:[Clover.rule.required("First name is required!"), Clover.rule.flname("First name must be between 1 and 50 characters long and can only contain letters, spaces, and hyphens.")],
-                    lastname:[Clover.rule.required("Last name is required!"), Clover.rule.flname("Last name must be between 1 and 50 characters long and can only contain letters, spaces, and hyphens.")],
-                    username: [Clover.rule.required("Username is required!"), Clover.rule.usernameLength("Username must have length of between 3 to 15 characters!"), Clover.rule.usernameRestriction("Username must not contain special characters except \"._-\"")],
-                    password: [Clover.rule.required("Password is required!"), Clover.rule.password("Password must be at least 8 characters long, must contain at least one uppercase letter, one lowercase letter, one number and one special character (e.g., !@#$%^&*#).")],
-                    passwordconfirm: [Clover.rule.required("Password confirmation is required!"), Clover.rule.passwordconfirm("Two passwords must match!")],
-                    email: [Clover.rule.required("Email is required!"), Clover.rule.mail('Please enter a valid email address (e.g., name@example.com).')],
-                    terms: [Clover.rule.termsCheck("You must agreee to the Terms and Conditions to continue.")],
+                    firstname:[Clover.rule.required("Enter your first name."), Clover.rule.flname("Use letters only, with spaces, hyphens or apostrophes between names.")],
+                    lastname:[Clover.rule.required("Enter your last name."), Clover.rule.flname("Use letters only, with spaces, hyphens or apostrophes between names.")],
+                    username: [Clover.rule.required("Choose a username."), Clover.rule.usernameLength("Use 3 to 15 characters."), Clover.rule.usernameRestriction("Use letters, numbers, dots, underscores or hyphens only.")],
+                    password: [Clover.rule.required("Choose a password."), Clover.rule.password("Use 8 to 25 characters, with an uppercase letter, a lowercase letter, a number and a symbol from @$!%*?&#.")],
+                    passwordconfirm: [Clover.rule.required("Type your password again."), Clover.rule.passwordconfirm("The two passwords don't match.")],
+                    email: [Clover.rule.required("Enter your email address."), Clover.rule.mail('Enter an email address like name@example.com.')],
+                    terms: [Clover.rule.termsCheck("Agree to the Terms and Conditions to create your account.")],
                 },
                 errors: {},
+                formError: "",
                 async submit() {
+                this.formError = "";
                 const form = this.$el;
                 const formData = new FormData(form);
                 if (!Object.keys(this.errors).length) {
@@ -114,10 +117,13 @@
                         }
                         const response = await res.json();
                         if (response.status === 'success') {
-                            window.location = "/login"
-                        } 
+                            // Carry ?next through so a new collector lands back on the lot they wanted
+                            window.location = "/login/" + window.location.search
+                        } else {
+                            this.formError = "We couldn't create your account. Check the details above and try again."
+                        }
                     } catch (error) {
-                        
+                        this.formError = "We couldn't create your account. That username or email may already be in use, or the connection dropped. Try again."
                     }
                 } 
             },

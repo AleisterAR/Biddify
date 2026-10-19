@@ -5,7 +5,7 @@
   <div class="max-w-screen-xl mx-auto px-4 pt-14 pb-20 md:pt-20 md:pb-28 grid gap-14 md:grid-cols-[1.15fr_1fr] items-center">
     <div>
       <h1 class="display-xl max-w-xl">Antiques and collectibles, sold live.</h1>
-      <p class="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">Bid against other collectors in real time. Every lot comes with its provenance, and every win is paid for and shipped without leaving Biddify.</p>
+      <p class="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">Bid against other collectors in real time. Check a lot's provenance before you bid, then pay and ship every win without leaving Biddify.</p>
       <div class="mt-9 flex flex-wrap gap-3">
         <a href="{% url 'auctions' %}" class="button px-6">Browse live auctions</a>
         <a href="{% url 'inventory' %}" class="button-quiet px-6">Sell an object</a>
@@ -20,12 +20,12 @@
       <span class="absolute top-0 left-1/2 w-px h-[76px] bg-ink/30" aria-hidden="true"></span>
       <div class="w-full max-w-[340px] origin-top animate-tag-swing tag-outline tag-outline-lifted">
         {% if hero_lot %}
-        <a href="{% url 'item_detail' hero_lot.item_id %}" class="block focus:outline-none group">
+        <a href="{% url 'item_detail' hero_lot.item_id %}" class="tag-focus block group">
           <article class="lot-tag">
             <span class="lot-tag-hole" aria-hidden="true"></span>
             <div class="flex items-center justify-between px-5 pt-10 pb-3">
-              <span class="lot-number">Lot {{ hero_lot.id|stringformat:"03d" }}</span>
-              <span class="status-chip bg-outbid-light text-outbid"><span class="live-dot" aria-hidden="true"></span>Live</span>
+              <span class="flex items-center gap-2"><span class="lot-number">Lot {{ hero_lot.id|stringformat:"03d" }}</span>{% if hero_lot.item.provenance and hero_lot.item.verified %}<span class="verified-mark"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.25" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>Verified</span>{% endif %}</span>
+              <span class="status-chip chip-live"><span class="live-dot" aria-hidden="true"></span>Live</span>
             </div>
             <div class="mx-5 aspect-[4/5] bg-gallery overflow-hidden">
               {% if hero_lot.first_image %}
@@ -33,11 +33,11 @@
               {% endif %}
             </div>
             <div class="px-5 pt-4 pb-5">
-              <h2 class="font-display text-2xl font-semibold leading-snug group-hover:text-paddle transition-colors">{{ hero_lot.item.name }}</h2>
+              <h2 class="font-display text-2xl font-semibold leading-snug decoration-brass decoration-1 underline-offset-4 group-hover:underline">{{ hero_lot.item.name }}</h2>
               <div class="mt-4 flex items-end justify-between gap-3">
                 <div>
                   <p class="meta-label">{% if hero_lot.max_bid %}Current bid{% else %}Opening price{% endif %}</p>
-                  <p class="font-display text-4xl font-semibold figure"><span class="currency">€</span>{% firstof hero_lot.max_bid hero_lot.item.starting_price %}</p>
+                  <p class="price text-4xl"><span class="currency">€</span>{% firstof hero_lot.max_bid hero_lot.item.starting_price %}</p>
                 </div>
                 <div class="text-right">
                   <p class="meta-label">Closes in</p>

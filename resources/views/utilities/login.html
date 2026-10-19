@@ -19,17 +19,20 @@
                         <div class="hidden px-3 py-2.5 text-sm font-medium bg-outbid-light text-outbid" id="something_wrong" role="alert">That username and password don't match. Check both and try again.</div>
                         <div x-show="credentialError" x-text="credentialError" class="px-3 py-2.5 text-sm font-medium bg-outbid-light text-outbid" role="alert"></div>
                         <button type="submit" class="button w-full">Sign in</button>
-                        <p class="text-sm text-ink-soft">New to Biddify? <a href="{% url 'user_register' %}" class="text-link">Create an account</a></p>
+                        <p class="text-sm text-ink-soft">New to Biddify? <a href="{% url 'user_register' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" class="text-link">Create an account</a></p>
                     </form>
 {% endblock form %}
 {% block scripts %}
     <script>
         something_wrong_error = document.getElementById("something_wrong")
+        // Return to the lot (or page) that asked the visitor to sign in; only same-site paths are honoured
+        const nextParam = new URLSearchParams(window.location.search).get("next");
+        const nextUrl = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/home/";
         document.addEventListener('alpine:init', () => {
             Alpine.data('login', () => ({
                 rule: {
-                    "username": [Clover.rule.required("Username is required!")],
-                    "password": [Clover.rule.required("Password is required!")]
+                    "username": [Clover.rule.required("Enter your username.")],
+                    "password": [Clover.rule.required("Enter your password.")]
                 },
                 errors: {},
                 credentialError: "",
@@ -51,7 +54,7 @@
                                 window.location.href = '/admin/';
                             }
                             else if (response.status === "success" && response.role === "participant") {
-                                window.location.href = '/home/';
+                                window.location.href = nextUrl;
                             } else if (response.status === "failure" && response.errors === "credential_error") {
                                 something_wrong_error.classList.remove("hidden")
                             }

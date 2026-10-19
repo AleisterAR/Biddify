@@ -371,11 +371,12 @@ document.addEventListener('alpine:init', () => {
                 }, 300);
             };
 
-            el.addEventListener('focus', handler);
+            // Validate once the visitor has typed or left the field, never on first focus
+            el.addEventListener('blur', handler);
             el.addEventListener('input', handler);
 
             cleanup(() => {
-                el.removeEventListener('focus', handler);
+                el.removeEventListener('blur', handler);
                 el.removeEventListener('input', handler);
             });
         }
@@ -432,7 +433,8 @@ function splitDuration(ms) {
 function formatCountdown(ms, style) {
     const { d, h, m, s } = splitDuration(ms);
     if (style === 'long') {
-        return d > 0 ? `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s` : `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+        // Seconds only matter on the final day
+        return d > 0 ? `${d}d ${pad(h)}h ${pad(m)}m` : `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
     }
     if (d > 0) return `${d}d ${h}h left`;
     if (h > 0) return `${h}h ${pad(m)}m left`;
@@ -455,9 +457,13 @@ function tickClocks() {
         if (diff <= 0) {
             el.textContent = el.dataset.endedText || 'Ended';
             el.dataset.urgency = 'ended';
-            if ('reloadOnEnd' in el.dataset && !el.dataset.reloaded) {
-                el.dataset.reloaded = '1';
-                setTimeout(() => window.location.reload(), 1000);
+            if (!el.dataset.endFired) {
+                el.dataset.endFired = '1';
+                // Pages decide what the end of a clock means (e.g. the item page swaps in the hammer state)
+                el.dispatchEvent(new CustomEvent('countdown:end', { bubbles: true }));
+                if ('reloadOnEnd' in el.dataset) {
+                    setTimeout(() => window.location.reload(), 1000);
+                }
             }
             return;
         }

@@ -1,6 +1,6 @@
 from django.urls import path
 from django.shortcuts import redirect
-from .views import custom_login, user_dashboard, user_register, user_logout, check_username, about_us
+from .views import custom_login, user_dashboard, user_register, user_logout, check_username, about_us, profile
 
 urlpatterns = [
     path("", lambda x: redirect("home")),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('register/',user_register,name="user_register"),
     path('logout/', user_logout, name="logout"),
     path('about_us/', about_us, name="about_us"),
+    path('profile/', profile, name="profile"),
 ]
 
 htmx_urlpatterns = [

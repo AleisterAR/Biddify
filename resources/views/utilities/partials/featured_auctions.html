@@ -2,7 +2,7 @@
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8">
   {% for featured_auction in featured_auctions|slice:":4" %}
     {% url 'item_detail' featured_auction.item_id as item_url %}
-    {% include 'utilities/partials/lot_card.html' with href=item_url image=featured_auction.first_image name=featured_auction.item.name lot=featured_auction.id amount=featured_auction.max_bid amount_label="Current bid" ends_at=featured_auction.ending_time %}
+    {% include 'utilities/partials/lot_card.html' with href=item_url image=featured_auction.first_image item=featured_auction.item name=featured_auction.item.name lot=featured_auction.id amount=featured_auction.max_bid amount_label="Current bid" ends_at=featured_auction.ending_time %}
   {% endfor %}
 </div>
 {% else %}

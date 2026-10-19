@@ -1,0 +1,75 @@
+{% extends 'utilities/master.html' %}
+{% block title %}Your profile | Biddify{% endblock title %}
+{% block content %}
+<section class="bg-gallery border-b border-ink/10">
+  <div class="max-w-screen-lg mx-auto px-4 pt-12 pb-8">
+    <h1 class="display-lg">Your profile</h1>
+    <p class="mt-3 text-ink-soft">Signed in as <span class="font-semibold text-ink">{{ request.user.username }}</span>. Collector since {{ request.user.date_joined|date:"F Y" }}.</p>
+  </div>
+</section>
+
+<div class="max-w-screen-lg mx-auto px-4 py-10">
+  {% if saved %}
+  <p class="mb-8 flex items-center gap-2 px-3 py-2.5 text-sm font-semibold bg-leading-light text-leading" role="status">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+    Your profile is saved.
+  </p>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="mb-8 px-3 py-2.5 text-sm font-medium bg-outbid-light text-outbid" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="grid gap-6 md:grid-cols-[16rem_1fr] md:gap-12 pb-10 border-b border-ink/10">
+      <div>
+        <h2 class="display-md">Your details</h2>
+        <p class="mt-2 text-sm text-ink-soft leading-relaxed">Sellers see your name when you win one of their lots. We send receipts to your email.</p>
+      </div>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="{{ form.first_name.id_for_label }}" class="field-label">{{ form.first_name.label }}</label>
+          {{ form.first_name }}
+          {% for error in form.first_name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.last_name.id_for_label }}" class="field-label">{{ form.last_name.label }}</label>
+          {{ form.last_name }}
+          {% for error in form.last_name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="sm:col-span-2">
+          <label for="{{ form.email.id_for_label }}" class="field-label">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-[16rem_1fr] md:gap-12 py-10 border-b border-ink/10">
+      <div>
+        <h2 class="display-md">Delivery</h2>
+        <p class="mt-2 text-sm text-ink-soft leading-relaxed">When you win a lot, we fill these in for you on the delivery form. You can still change them for each purchase.</p>
+      </div>
+      <div class="grid gap-5">
+        <div class="sm:max-w-xs">
+          <label for="{{ form.phone.id_for_label }}" class="field-label">{{ form.phone.label }}</label>
+          {{ form.phone }}
+          {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.address.id_for_label }}" class="field-label">{{ form.address.label }}</label>
+          {{ form.address }}
+          <p class="mt-1.5 text-[13px] text-ink-soft">Street, building and apartment. You'll add the city, postal code and country when you confirm a delivery.</p>
+          {% for error in form.address.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 pt-8 md:ps-[calc(16rem+3rem)]">
+      <button type="submit" class="button">Save profile</button>
+      <a href="{% url 'home' %}" class="button-quiet">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock content %}

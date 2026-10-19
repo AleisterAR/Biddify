@@ -61,7 +61,7 @@ STRIPE_SECRET_KEY  =  "[your_stripe_secret_key]"
 As the next step, install stripe-cli, this will differ according to the operating system, so it is recommended to check out the [🔗documentation](https://docs.stripe.com/stripe-cli). Next run the following commands to login to Stripe account and get Webhook Secret Key.
 ```bash
 stripe login
-stripe listen --forward-to localhost:8000/payment/stripe/webhook/
+stripe listen --events checkout.session.completed --forward-to localhost:8000/payment/stripe/webhook/
 ```
 A Webhook Secret Key will be generated for you, so place it in **settings.py** as well.
 ```python

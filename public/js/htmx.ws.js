@@ -417,7 +417,12 @@ This extension adds support for WebSockets to htmx.  See /www/extensions/ws.md f
 	 */
 	function maybeCloseWebSocketSource(elt) {
 		if (!api.bodyContains(elt)) {
-			api.getInternalData(elt).webSocket.close();
+			// Biddify patch: the element may already be cleaned up (e.g. the bid panel swapped
+			// out when the hammer falls), leaving no socket to close
+			var webSocket = api.getInternalData(elt).webSocket;
+			if (webSocket) {
+				webSocket.close();
+			}
 			return true;
 		}
 		return false;

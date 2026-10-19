@@ -1,16 +1,29 @@
 {% comment %}
 A single lot as a hanging auction tag.
-Expects: href, image, name, lot (auction id or empty), and optionally amount, amount_label, ends_at, starts_at, note.
+Expects: href, image, name, lot (auction id or empty), and optionally amount, amount_label, ends_at, starts_at, note,
+and item (an Item) so a verified provenance can be stamped on the tag.
 {% endcomment %}
-<a href="{{ href }}" class="lot-link tag-outline group block focus:outline-none">
+<a href="{{ href }}" class="lot-link tag-outline tag-focus group block">
   <article class="lot-tag h-full">
     <span class="lot-tag-hole" aria-hidden="true"></span>
-    <div class="flex items-center justify-between px-4 pt-9 pb-3">
-      <span class="lot-number">{% if lot %}Lot {{ lot|stringformat:"03d" }}{% else %}Unlisted{% endif %}</span>
+    <div class="flex items-center justify-between gap-2 px-4 pt-9 pb-3">
+      <span class="flex items-center gap-2 min-w-0">
+        <span class="lot-number">{% if lot %}Lot {{ lot|stringformat:"03d" }}{% else %}Unlisted{% endif %}</span>
+        {% if item.provenance and item.verified %}
+        <span class="verified-mark" title="Provenance verified by Biddify">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.25" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+          <span class="sr-only sm:not-sr-only">Verified</span>
+        </span>
+        {% endif %}
+      </span>
       {% if ends_at %}
-      <span class="status-chip bg-gallery text-ink figure" data-countdown="{{ ends_at|date:'c' }}" data-ended-text="Closed"></span>
+      <span class="status-chip bg-gallery text-ink">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="sr-only">Live, closes in</span>
+        <span class="figure" data-countdown="{{ ends_at|date:'c' }}" data-ended-text="Closed"></span>
+      </span>
       {% elif starts_at %}
-      <span class="status-chip bg-paddle-light text-paddle">Upcoming</span>
+      <span class="status-chip chip-upcoming">Upcoming</span>
       {% endif %}
     </div>
     <div class="mx-4 aspect-[4/5] overflow-hidden bg-gallery">
@@ -21,11 +34,11 @@ Expects: href, image, name, lot (auction id or empty), and optionally amount, am
       {% endif %}
     </div>
     <div class="flex flex-col flex-1 px-4 pt-3 pb-4">
-      <h3 class="font-display text-xl font-semibold leading-snug line-clamp-2 group-hover:text-paddle transition-colors">{{ name }}</h3>
+      <h3 class="font-display text-xl font-semibold leading-snug line-clamp-2 decoration-brass decoration-1 underline-offset-4 group-hover:underline">{{ name }}</h3>
       {% if amount_label %}
       <div class="mt-auto pt-3 flex items-baseline justify-between gap-2">
         <span class="meta-label">{{ amount_label }}</span>
-        <span class="font-display text-2xl font-semibold figure"><span class="currency">€</span>{{ amount }}</span>
+        <span class="price text-2xl"><span class="currency">€</span>{{ amount }}</span>
       </div>
       {% elif note %}
       <p class="mt-auto pt-3 meta-label">{{ note }}</p>

@@ -3,11 +3,11 @@
   {% for belonging in belongings %}
     {% url 'item_detail' belonging.id as item_url %}
     {% if belonging.owner_id != request.user.id %}
-      {% include 'utilities/partials/lot_card.html' with href=item_url image=belonging.first_image name=belonging.name lot=belonging.lot_id note="Won. Open to pay and arrange delivery." %}
+      {% include 'utilities/partials/lot_card.html' with href=item_url image=belonging.first_image item=belonging name=belonging.name lot=belonging.lot_id note="Won. Open to pay and arrange delivery." %}
     {% elif belonging.lot_id %}
-      {% include 'utilities/partials/lot_card.html' with href=item_url image=belonging.first_image name=belonging.name lot=belonging.lot_id amount=belonging.starting_price amount_label="Opening price" %}
+      {% include 'utilities/partials/lot_card.html' with href=item_url image=belonging.first_image item=belonging name=belonging.name lot=belonging.lot_id amount=belonging.starting_price amount_label="Opening price" %}
     {% else %}
-      {% include 'utilities/partials/lot_card.html' with href=item_url image=belonging.first_image name=belonging.name lot=None note="Not listed yet. Open to schedule an auction." %}
+      {% include 'utilities/partials/lot_card.html' with href=item_url image=belonging.first_image item=belonging name=belonging.name lot=None note="Not listed yet. Open to schedule an auction." %}
     {% endif %}
   {% endfor %}
 </div>

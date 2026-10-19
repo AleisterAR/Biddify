@@ -1,16 +1,15 @@
 {% load static %}
 {% with url_name=request.resolver_match.url_name %}
 <nav class="bg-canvas/90 backdrop-blur border-b border-ink/10" id="navbar">
-  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 h-16">
-    <a href="{% url 'home' %}" class="flex items-center gap-2.5">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4">
+    <a href="{% url 'home' %}" class="flex items-center gap-2.5 h-16">
       <span class="font-display text-2xl font-bold tracking-tight">Biddify</span>
     </a>
 
     <div class="flex items-center gap-1 md:order-2">
       {% if request.user.is_authenticated %}
       <div hx-ext="ws" id="noti-div">
-        <button id="dropdownNotificationButton" data-dropdown-toggle="dropdownNotification" data-dropdown-delay="400"
-          data-dropdown-trigger="hover" aria-label="Notifications"
+        <button id="dropdownNotificationButton" data-dropdown-toggle="dropdownNotification" aria-label="Notifications"
           class="relative inline-flex items-center justify-center w-11 h-11 text-ink-soft hover:text-ink hover:bg-gallery transition-colors"
           type="button">
           <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 20">
@@ -18,21 +17,21 @@
           </svg>
           <div id="new-noti-indicator">
             {% if has_unread %}
-            <div class="absolute block w-3 h-3 bg-paddle border-2 border-card rounded-full top-2.5 end-2.5 animate-pulse"></div>
+            <div class="absolute block w-3 h-3 bg-brass border-2 border-canvas rounded-full top-2.5 end-2.5"></div>
             {% endif %}
           </div>
         </button>
         <div id="dropdownNotification" class="z-50 hidden w-full max-w-sm bg-card border border-ink/10 shadow-xl shadow-ink/10"
           aria-labelledby="dropdownNotificationButton">
           <div class="px-4 py-3 font-display text-lg font-semibold border-b border-ink/10">Notifications</div>
-          <div class="divide-y divide-ink/5 max-h-[300px] overflow-y-auto" id="notification-list" hx-target="closest a"
+          <div class="divide-y divide-ink/5 max-h-[300px] overflow-y-auto" id="notification-list" hx-target="closest .swapable-a"
             hx-swap="outerHTML swap:1s">
             {% if notifications %}
             {% for notification in notifications %}
-            <a class="swapable-a flex gap-3 px-4 py-3 smooth-transition hover:bg-gallery {% if notification.is_read %} bg-gallery/60 {% endif %}"
+            <div class="swapable-a flex gap-3 px-4 py-3 smooth-transition hover:bg-gallery {% if notification.is_read %} bg-gallery/60 {% endif %}"
               {% if not notification.is_read %} hx-post="{% url 'mark_as_read' notification.message %}"
               hx-trigger="intersect delay:500ms once" hx-swap="outerHTML" hx-target="this" {% endif %}>
-              <span class="mt-1.5 w-2 h-2 shrink-0 rounded-full {% if notification.is_read %}bg-transparent{% else %}bg-paddle{% endif %}"></span>
+              <span class="mt-1.5 w-2 h-2 shrink-0 rounded-full {% if notification.is_read %}bg-transparent{% else %}bg-brass-dark{% endif %}" aria-hidden="true"></span>{% if not notification.is_read %}<span class="sr-only">Unread:</span>{% endif %}
               <div class="w-full">
                 <div class="text-sm text-ink mb-1">{{ notification.message }}</div>
                 <div class="text-xs text-ink-faint" data-time-ago="{{ notification.created_at|date:'c' }}"></div>
@@ -40,7 +39,7 @@
               <button type="button" aria-label="Delete notification" class="self-start text-ink-faint hover:text-outbid" hx-delete="{% url "delete_notification" notification.message %}">
                 {% include 'utilities/partials/notification_close_icon.html' %}
               </button>
-            </a>
+            </div>
             {% endfor %}
             {% else %}
             <div class="px-4 py-6 text-sm text-center text-ink-soft" id="notification-empty-message">
@@ -50,29 +49,31 @@
           </div>
           <div id="clear-all-btn">
             {% if notifications or notification %}
-            <a hx-delete="{% url 'delete_all_notifications' %}" hx-target="#notification-list" hx-swap="innerHTML"
-              class="flex items-center justify-center gap-2 p-3 text-sm font-medium text-outbid border-t border-ink/10 hover:bg-outbid-light cursor-pointer">
+            <button type="button" hx-delete="{% url 'delete_all_notifications' %}" hx-target="#notification-list" hx-swap="innerHTML"
+              class="flex w-full items-center justify-center gap-2 p-3 text-sm font-medium text-ink-soft border-t border-ink/10 hover:bg-gallery hover:text-ink cursor-pointer">
               Clear all notifications
-            </a>
+            </button>
             {% endif %}
           </div>
         </div>
       </div>
 
-      <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover"
-        class="inline-flex items-center gap-2 h-11 ps-1.5 pe-3 hover:bg-gallery transition-colors" type="button">
+      {# Account menu: desktop only; on small screens these links live in the menu panel below #}
+      <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" aria-label="Account menu"
+        class="hidden md:inline-flex items-center gap-2 h-11 ps-1.5 pe-3 hover:bg-gallery transition-colors" type="button">
         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gallery-deep text-ink text-sm font-semibold uppercase">{{ request.user.username|first }}</span>
-        <span class="hidden sm:inline text-sm font-semibold">{{ request.user.username }}</span>
+        <span class="text-sm font-semibold">{{ request.user.username }}</span>
         <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
         </svg>
       </button>
       <div id="dropdownHover" class="z-50 hidden bg-card border border-ink/10 shadow-xl shadow-ink/10 w-48">
         <ul class="py-1 text-sm" aria-labelledby="dropdownHoverButton">
-          <li><a href="{% url 'inventory' %}" class="block px-4 py-2.5 hover:bg-gallery">Inventory</a></li>
-          <li><a href="{% url 'shipments' %}" class="block px-4 py-2.5 hover:bg-gallery">Shipments</a></li>
+          <li><a href="{% url 'profile' %}" class="block px-4 py-2.5 hover:bg-gallery {% if url_name == 'profile' %}font-semibold{% endif %}">Profile</a></li>
+          <li><a href="{% url 'inventory' %}" class="block px-4 py-2.5 hover:bg-gallery {% if url_name == 'inventory' %}font-semibold{% endif %}">Inventory</a></li>
+          <li><a href="{% url 'shipments' %}" class="block px-4 py-2.5 hover:bg-gallery {% if url_name == 'shipments' %}font-semibold{% endif %}">Shipments</a></li>
           <li class="border-t border-ink/10 mt-1 pt-1">
-            <a href="{% url 'logout' %}" class="block px-4 py-2.5 text-outbid hover:bg-outbid-light">Sign out</a>
+            <a href="{% url 'logout' %}" class="block px-4 py-2.5 hover:bg-gallery">Sign out</a>
           </li>
         </ul>
       </div>
@@ -81,31 +82,50 @@
       {% endif %}
 
       <button data-collapse-toggle="navbar-default" type="button"
-        class="inline-flex items-center justify-center w-11 h-11 text-ink-soft md:hidden hover:bg-gallery"
+        class="group inline-flex items-center justify-center w-11 h-11 text-ink-soft md:hidden hover:bg-gallery"
         aria-controls="navbar-default" aria-expanded="false">
-        <span class="sr-only">Open main menu</span>
-        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+        <span class="sr-only">Main menu</span>
+        <svg class="w-5 h-5 group-aria-expanded:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+        </svg>
+        <svg class="w-4 h-4 hidden group-aria-expanded:block" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 12 12M13 1 1 13" />
         </svg>
       </button>
     </div>
 
-    <div class="hidden w-full md:flex md:w-auto md:order-1" id="navbar-default">
-      <ul class="flex flex-col md:flex-row md:items-center gap-1 md:gap-8 py-3 md:py-0 text-[15px] font-medium">
-        <li>
-          <a href="{% url 'home' %}" class="block py-2 border-b-2 {% if url_name == 'home' %}border-paddle text-ink{% else %}border-transparent text-ink-soft hover:text-ink{% endif %}"
-            {% if url_name == 'home' %}aria-current="page"{% endif %}>Home</a>
-        </li>
-        <li>
-          <a href="{% url 'auctions' %}" class="flex items-center gap-2 py-2 border-b-2 {% if url_name == 'auctions' %}border-paddle text-ink{% else %}border-transparent text-ink-soft hover:text-ink{% endif %}"
-            {% if url_name == 'auctions' %}aria-current="page"{% endif %}>Auctions</a>
-        </li>
-        <li>
-          <a href="{% url 'about_us' %}" class="block py-2 border-b-2 {% if url_name == 'about_us' %}border-paddle text-ink{% else %}border-transparent text-ink-soft hover:text-ink{% endif %}"
-            {% if url_name == 'about_us' %}aria-current="page"{% endif %}>How it works</a>
-        </li>
+    {# One menu, two layouts: a full-width panel under the bar on small screens, inline links from md up #}
+    {% with link="block px-3 py-3 md:px-0 md:py-2 md:border-b-2 transition-colors" on="bg-gallery font-semibold text-ink md:bg-transparent md:font-medium md:border-brass" off="text-ink-soft hover:text-ink hover:bg-gallery md:hover:bg-transparent md:border-transparent" %}
+    <div class="hidden w-full md:flex md:w-auto md:order-1 -mx-4 px-4 md:mx-0 md:px-0 border-t border-ink/10 md:border-0" id="navbar-default">
+      <ul class="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-8 pt-3 pb-2 md:p-0 text-[15px] font-medium">
+        <li><a href="{% url 'home' %}" class="{{ link }} {% if url_name == 'home' %}{{ on }}{% else %}{{ off }}{% endif %}" {% if url_name == 'home' %}aria-current="page"{% endif %}>Home</a></li>
+        <li><a href="{% url 'auctions' %}" class="{{ link }} {% if url_name == 'auctions' %}{{ on }}{% else %}{{ off }}{% endif %}" {% if url_name == 'auctions' %}aria-current="page"{% endif %}>Auctions</a></li>
+        <li><a href="{% url 'about_us' %}" class="{{ link }} {% if url_name == 'about_us' %}{{ on }}{% else %}{{ off }}{% endif %}" {% if url_name == 'about_us' %}aria-current="page"{% endif %}>How it works</a></li>
       </ul>
+
+      {% if request.user.is_authenticated %}
+      <div class="md:hidden border-t border-ink/10 pt-3 pb-4">
+        <p class="flex items-center gap-3 px-3 pb-3">
+          <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-gallery-deep text-ink text-sm font-semibold uppercase" aria-hidden="true">{{ request.user.username|first }}</span>
+          <span class="min-w-0">
+            <span class="block text-[13px] text-ink-soft">Signed in as</span>
+            <span class="block text-sm font-semibold truncate">{{ request.user.username }}</span>
+          </span>
+        </p>
+        <ul class="flex flex-col gap-0.5 text-[15px] font-medium" aria-label="Your account">
+          <li><a href="{% url 'profile' %}" class="{{ link }} {% if url_name == 'profile' %}{{ on }}{% else %}{{ off }}{% endif %}" {% if url_name == 'profile' %}aria-current="page"{% endif %}>Profile</a></li>
+          <li><a href="{% url 'inventory' %}" class="{{ link }} {% if url_name == 'inventory' %}{{ on }}{% else %}{{ off }}{% endif %}" {% if url_name == 'inventory' %}aria-current="page"{% endif %}>Inventory</a></li>
+          <li><a href="{% url 'shipments' %}" class="{{ link }} {% if url_name == 'shipments' %}{{ on }}{% else %}{{ off }}{% endif %}" {% if url_name == 'shipments' %}aria-current="page"{% endif %}>Shipments</a></li>
+          <li><a href="{% url 'logout' %}" class="{{ link }} {{ off }}">Sign out</a></li>
+        </ul>
+      </div>
+      {% else %}
+      <div class="md:hidden border-t border-ink/10 pt-3 pb-4">
+        <p class="px-3 text-sm text-ink-soft">New to Biddify? <a href="{% url 'user_register' %}" class="text-link">Create an account</a> to bid and sell.</p>
+      </div>
+      {% endif %}
     </div>
+    {% endwith %}
   </div>
 </nav>
 {% endwith %}

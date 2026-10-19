@@ -48,36 +48,45 @@
         </div>
 
         {# ---------- Bid panel ---------- #}
-        <aside class="lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:row-span-2 tag-outline">
+        <aside id="bid-panel" class="lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:row-span-2 tag-outline">
             <div class="lot-tag">
                 <span class="lot-tag-hole" aria-hidden="true"></span>
                 <div class="px-6 pt-10 pb-7">
                     <div class="flex items-center justify-between gap-3">
-                        <span class="lot-number">{% if auction_created %}Lot {{ auction.id|stringformat:"03d" }}{% else %}Not yet listed{% endif %}</span>
+                        <span class="flex items-center gap-2"><span class="lot-number">{% if auction_created %}Lot {{ auction.id|stringformat:"03d" }}{% else %}Not yet listed{% endif %}</span>{% if item.provenance and item.verified %}<span class="verified-mark"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.25" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>Provenance verified</span>{% endif %}</span>
                         {% if auction_created and not auction.auction_ended %}
                             {% if auction_started %}
-                            <span class="status-chip bg-outbid-light text-outbid"><span class="live-dot" aria-hidden="true"></span>Live</span>
+                            <span class="status-chip chip-live"><span class="live-dot" aria-hidden="true"></span>Live</span>
                             {% else %}
-                            <span class="status-chip bg-paddle-light text-paddle">Upcoming</span>
+                            <span class="status-chip chip-upcoming">Upcoming</span>
                             {% endif %}
                         {% elif auction.auction_ended %}
                             <span class="status-chip bg-gallery text-ink-soft">Closed</span>
                         {% endif %}
                     </div>
 
-                    <h1 class="mt-3 font-display text-3xl md:text-4xl font-semibold leading-tight">{{ item.name }}{% if item.year %} <span class="text-ink-faint font-medium figure">({{ item.year }})</span>{% endif %}</h1>
+                    <h1 class="mt-3 font-display text-3xl md:text-4xl font-semibold leading-tight">{{ item.name }}{% if item.year %} <span class="font-sans text-[0.55em] font-medium tracking-normal text-ink-faint figure align-middle">({{ item.year }})</span>{% endif %}</h1>
 
                     {% if auction_created and not auction.auction_ended %}
                     <div class="mt-5 flex items-baseline justify-between gap-3 py-3 border-y border-ink/10">
                         <span class="meta-label">{% if auction_started %}Closes in{% else %}Opens in{% endif %}</span>
                         <span id="countdown" class="text-xl font-semibold figure"
                             data-countdown="{% if auction_started %}{{ auction.ending_time|date:'c' }}{% else %}{{ auction.starting_time|date:'c' }}{% endif %}"
-                            data-countdown-style="long" data-reload-on-end {% if not auction_started %}data-no-urgency{% endif %}
+                            data-countdown-style="long" {% if not auction_started %}data-reload-on-end data-no-urgency{% endif %}
                             data-ended-text="{% if auction_started %}Closing{% else %}Opening{% endif %}"></span>
                     </div>
                     {% endif %}
 
-                    <div class="mt-5">
+                    <div class="relative mt-5">
+                        {% if auction.auction_ended %}
+                            {% if latest_bids and winner == request.user.id %}
+                            <span class="hammer-stamp text-2xl text-leading border-leading" data-hammer="This lot is yours.">Sold<span class="mt-1 font-sans text-[10px] tracking-[0.2em]">to you</span></span>
+                            {% elif latest_bids %}
+                            <span class="hammer-stamp text-2xl text-ink border-ink" data-hammer="This lot sold to another collector.">Sold</span>
+                            {% else %}
+                            <span class="hammer-stamp text-xl text-ink-faint border-ink-faint" data-hammer="This lot passed without any bids.">Passed</span>
+                            {% endif %}
+                        {% endif %}
                         {% if auction_created %}
                             {% if latest_bids %}
                                 {% if auction.auction_ended %}
@@ -136,6 +145,7 @@
                                     </div>
                                     <button id="bid-button" class="button px-6" type="submit" {% if not auction_started %}disabled{% endif %}>Place bid</button>
                                 </div>
+                                <p id="next-bid" class="mt-2 text-[13px] text-ink-soft figure"></p>
                                 <p id="bid-error" class="field-error min-h-[1.25rem]" role="alert"></p>
                                 {% if auction_started %}
                                 <div class="flex flex-wrap items-center gap-2" id="quick-bids" aria-label="Quick bid amounts"></div>
@@ -150,6 +160,13 @@
                                 <p class="font-display text-2xl font-semibold text-leading">You won this lot</p>
                                 <p class="mt-1 text-sm text-ink-soft">Pay now to have the seller ship it to you.</p>
                                 <button data-auction-id="{{ auction.id }}" class="button-go w-full mt-4" id="payment-btn">Pay €{{ highest_bid.bid_amount }} by card</button>
+                                <p class="mt-3 flex gap-2 text-[13px] leading-snug text-ink-soft">
+                                    <svg class="w-4 h-4 mt-px shrink-0 text-leading" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                    <span>Biddify holds your payment until 3 days after the object reaches you, then releases it to the seller.</span>
+                                </p>
+                                {% if not request.user.address %}
+                                <p class="mt-2 ps-6 text-[13px] leading-snug text-ink-soft">No delivery address yet? <a href="{% url 'profile' %}" class="text-link font-medium">Add one to your profile</a> and it'll be filled in after you pay.</p>
+                                {% endif %}
                             </div>
                             {% elif winner == request.user.id and payment_made and shipment %}
                             <div class="p-4 bg-gallery">
@@ -162,7 +179,7 @@
                             </div>
                             {% elif auction.auction_ended %}
                             <p class="px-3 py-2.5 text-sm bg-gallery text-ink-soft">
-                                {% if latest_bids %}Bidding has closed. This lot sold to {% if ownership %}{{ highest_bid.bidder }}{% else %}another collector{% endif %}.{% else %}Bidding has closed without any bids.{% endif %}
+                                {% if latest_bids %}Bidding has closed. This lot sold to {% if ownership %}{{ highest_bid.bidder }}{% else %}another collector{% endif %} for <span class="figure">€{{ highest_bid.bid_amount }}</span>.{% if ownership %} We'll let you know when the buyer has paid.{% endif %}{% else %}Bidding closed without any bids, so the lot passed unsold.{% endif %}
                             </p>
                             {% endif %}
                         </div>
@@ -227,6 +244,7 @@
     </div>
 </div>
 
+<p id="hammer-announce" class="sr-only" aria-live="assertive"></p>
 <script src="https://js.stripe.com/v3/"></script>
 <script>
     const auctionId = "{{ auction.id }}";
@@ -248,8 +266,14 @@
         const hasBids = current.dataset.hasBids === "1";
         const options = hasBids ? [amount + 5, amount + 10, amount + 25] : [amount, amount + 5, amount + 10];
         holder.innerHTML = '<span class="meta-label me-1">Quick bid</span>' + options.map((value) =>
-            `<button type="button" data-quick-bid="${value}" class="button-quiet min-h-[36px] px-3 text-sm figure">€${value}</button>`
+            `<button type="button" data-quick-bid="${value}" class="button-quiet px-3.5 text-sm figure">€${value}</button>`
         ).join("");
+        // Keep the minimum in view so nobody has to work it out
+        const minimum = hasBids ? amount + 1 : amount;
+        const nextBid = document.getElementById("next-bid");
+        if (nextBid) nextBid.textContent = `Bid €${minimum} or more. Bids are binding.`;
+        const input = document.getElementById("id_bid_amount");
+        if (input) input.placeholder = String(minimum);
     }
     document.addEventListener("click", (event) => {
         const chip = event.target.closest("[data-quick-bid]");
@@ -281,8 +305,9 @@
         });
     }
 
-    const paymentButton = document.getElementById("payment-btn");
-    if (paymentButton) {
+    function setupPayment() {
+        const paymentButton = document.getElementById("payment-btn");
+        if (!paymentButton) return;
         fetch("{% url 'get_stripe_config' %}", {method: "GET"})
         .then(response => response.json())
         .then((data) => {
@@ -295,6 +320,38 @@
                 .then((data) => stripe.redirectToCheckout({sessionId: data.id}))
             })
         })
+    }
+    setupPayment();
+
+    // When the clock runs out, the hammer falls in place: fetch the closed panel,
+    // swap it in, jolt the tag and ink the stamp. No reload, nothing else on the page moves.
+    function bringDownHammer(attempt = 0) {
+        setTimeout(async () => {
+            try {
+                const res = await fetch(window.location.href, {cache: "no-store"});
+                const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+                const fresh = doc.getElementById("bid-panel");
+                if (!fresh || !fresh.querySelector("[data-hammer]")) {
+                    // The server clock may lag ours by a moment
+                    return attempt < 5 ? bringDownHammer(attempt + 1) : window.location.reload();
+                }
+                htmx.swap(document.getElementById("bid-panel"), fresh.outerHTML, {swapStyle: "outerHTML"});
+                const panel = document.getElementById("bid-panel");
+                const tag = panel.querySelector(".lot-tag");
+                tag.style.transformOrigin = "50% 0";
+                tag.classList.add("animate-hammer-jolt");
+                const stamp = panel.querySelector("[data-hammer]");
+                stamp.classList.add("animate-stamp");
+                document.getElementById("hammer-announce").textContent = "Bidding has closed. " + stamp.dataset.hammer;
+                setupPayment();
+            } catch (error) {
+                window.location.reload();
+            }
+        }, attempt === 0 ? 600 : 1500);
+    }
+    const closingClock = document.getElementById("countdown");
+    if (isAuctionStarted && closingClock) {
+        closingClock.addEventListener("countdown:end", () => bringDownHammer());
     }
 </script>
 {% endblock content %}
