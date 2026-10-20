@@ -6,7 +6,7 @@ from django.contrib import messages
 import json
 from django_htmx.http import trigger_client_event
 from django.http import HttpResponse
-from django.db.models import Q, Max, F, OuterRef, Subquery
+from django.db.models import Q, Max, F, OuterRef, Subquery, Case, When, Value, IntegerField
 from django.utils import timezone
 from django.core.paginator import Paginator
 
@@ -59,7 +59,13 @@ def auctions(request):
     filter_country = request.GET.get("filter_country", "")
     filter_condition = request.GET.get("filter_condition", "")
     first_images = ItemImage.objects.filter(item=OuterRef('id')).values('image')[:1]
-    auctions = Item.objects.filter(auction__starting_time__lte=timezone.now(), auction__ending_time__gte=timezone.now()).annotate(highest_bid=Max('auction__bids__bid_amount'), first_image=Subquery(first_images), auction_ending_time=F('auction__ending_time'), lot_id=F('auction__id'))
+    now = timezone.now()
+    # Lots that haven't opened yet are listed too (flagged upcoming) so other users can find them before bidding starts
+    auctions = Item.objects.filter(auction__ending_time__gte=now).annotate(
+        highest_bid=Max('auction__bids__bid_amount'), first_image=Subquery(first_images),
+        auction_starting_time=F('auction__starting_time'), auction_ending_time=F('auction__ending_time'), lot_id=F('auction__id'),
+        is_upcoming=Case(When(auction__starting_time__gt=now, then=Value(1)), default=Value(0), output_field=IntegerField()),
+    ).order_by('is_upcoming', 'auction_ending_time', 'id')
     filters = Q()
     if search:
         filters &= Q(name__icontains=search)

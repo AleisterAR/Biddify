@@ -23,7 +23,10 @@ and item (an Item) so a verified provenance can be stamped on the tag.
         <span class="figure" data-countdown="{{ ends_at|date:'c' }}" data-ended-text="Closed"></span>
       </span>
       {% elif starts_at %}
-      <span class="status-chip chip-upcoming">Upcoming</span>
+      <span class="status-chip chip-upcoming">
+        <span>Opens in</span>
+        <span class="figure" data-countdown="{{ starts_at|date:'c' }}" data-countdown-style="long" data-no-urgency data-ended-text="Opening"></span>
+      </span>
       {% endif %}
     </div>
     <div class="mx-4 aspect-[4/5] overflow-hidden bg-gallery">
